@@ -31,13 +31,13 @@ public class MemberRestController {
     }
 
     // 이메일로 회원 조회
-    @GetMapping("/{email}")
+    @GetMapping("/email/{email}")
     public ResponseEntity<MemberRes> emaillist(@PathVariable String email) {
         return ResponseEntity.ok(memberService.getByEmail(email));
     }
 
     // 닉네임으로 회원 조회
-    @GetMapping("/{nickname}")
+    @GetMapping("/nickname/{nickname}")
     public ResponseEntity<List<MemberRes>> nicknamelist(@PathVariable String nickname) {
         return ResponseEntity.ok(memberService.getByNickname(nickname));
     }
