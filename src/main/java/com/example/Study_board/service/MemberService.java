@@ -16,7 +16,7 @@ public interface MemberService {
     List<MemberRes> list();
 
     // 닉네임으로 회원 조회
-    MemberRes getByNickname(String nickname);
+    List<MemberRes> getByNickname(String nickname);
 
     // member_id로 회원 조회
     MemberRes getById(Long id);

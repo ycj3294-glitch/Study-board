@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import org.intellij.lang.annotations.Language;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -20,10 +21,11 @@ public class MemberDao {
     private final JdbcTemplate jdbc;
 
     // 회원 가입 sql
+    @Transactional
     public Long signup(MemberSignupReq m) {
         @Language("SQL")
         String sql = """
-        INSERT INTO STUDY_MEMBER(MEMBER_ID, EMAIL, PWD, NICKNAME) VALUES (SEQ_MEMBER.NEXTVAL, ?, ?, ?, ?)";
+        INSERT INTO STUDY_MEMBER(MEMBER_ID, EMAIL, PWD, NICKNAME) VALUES (SEQ_STUDY_MEMBER.NEXTVAL, ?, ?, ?)
         """;
         jdbc.update(sql, m.getEmail(), m.getPwd(), m.getNickname());
         return jdbc.queryForObject("SELECT SEQ_STUDY_MEMBER.CURRVAL FROM DUAL", Long.class);
@@ -57,17 +59,20 @@ public class MemberDao {
     }
 
     // nickname으로 회원 조회
-    public MemberRes findByNickname(String nickname) {
+    public List<MemberRes> findByNickname(String nickname) {
         @Language("SQL")
         String sql = """        
         SELECT * FROM STUDY_MEMBER WHERE NICKNAME =?
         """;
         List<MemberRes> list = jdbc.query(sql, new MemberRowMapper(), nickname);
-        return list.isEmpty() ? null : list.get(0);
+        return list.isEmpty() ? null : list;
     }
     // 전체 회원 조회
     public List<MemberRes> findAll() {
-        String sql = "SELECT * FROM STUDY_MEMBER ORDER BY ID DESC";
+        @Language("SQL")
+        String sql = """
+        SELECT * FROM STUDY_MEMBER ORDER BY MEMBER_ID DESC
+        """;
         return jdbc.query(sql, new MemberRowMapper());
     }
     // Mapper

@@ -7,7 +7,6 @@ import com.example.Study_board.dto.MemberSignupReq;
 import com.example.Study_board.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.batch.BatchProperties;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -31,12 +30,8 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public MemberRes login(String email, String pwd) {
         MemberRes member = memberDao.findByEmail(email);
-        if (member == null || !member.getPwd().equals(pwd)) {
-            throw new IllegalArgumentException("이메일이 존재하지 않거나 비밀번호가 맞지 않습니다.");
-            return null;
-        }
-        return new MemberRes(member.getId(), member.getEmail(), member.getPwd(), member.getRedDate());
-    }
+        return new MemberRes(member.getId(), member.getEmail(), member.getNickname(), member.getRedDate());
+    }//패스워드 res에 일부러 안넣었는데 이거 비밀번호 조회가 꼭 필요한가?
 
 
     @Override
@@ -52,17 +47,23 @@ public class MemberServiceImpl implements MemberService {
         }
 
     @Override
-    public MemberRes getByNickname(String nickname) {
-        return null;
+    public List<MemberRes> getByNickname(String nickname) {
+        List<MemberRes> list = memberDao.findByNickname(nickname);
+        if(list == null) throw new IllegalArgumentException("해당 닉네임을 가진 회원은 없습니다.");
+        return memberDao.findByNickname(nickname);
     }
 
     @Override
     public MemberRes getById(Long id) {
-        return null;
+        MemberRes memberRes = memberDao.findById(id);
+        if(memberRes == null) throw new IllegalArgumentException("입력 id에 해당하는 회원은 없습니다.");
+        return memberDao.findById(id);
     }
 
     @Override
     public MemberRes getByEmail(String email) {
-        return null;
+        MemberRes memberRes = memberDao.findByEmail(email);
+        if(memberRes == null) throw new IllegalArgumentException("해당 이메일을 가진 회원은 없습니다.");
+        return memberDao.findByEmail(email);
     }
 }
