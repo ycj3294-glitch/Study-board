@@ -15,12 +15,15 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+
+// 3단계 : MemberService의 설계를 구체적으로 구성, dao에서 만든 기능을 불러와서 시행하는 걸로 구현하며 시행하기 전 예외사항이 있으면 그를 반영
+
 public class MemberServiceImpl implements MemberService {
-    private final MemberDao memberDao;
+    private final MemberDao memberDao; // 클래스를 불러와야 기능을 사용 가능
 
     @Override
     public long signup(MemberSignupReq req) {
-        // 중복 이메일 예외 처리
+        // 중복 이메일 예외 처리(예외사항)
         if(memberDao.findByEmail(req.getEmail()) != null) {
             throw new IllegalArgumentException("Email이 이미 있습니다.");
         }

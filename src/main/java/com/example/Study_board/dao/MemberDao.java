@@ -17,6 +17,10 @@ import java.util.List;
 @Repository
 @RequiredArgsConstructor
 @Slf4j
+
+// 1단계
+// 데이터베이스랑 연결되어서 직접 쿼리문을 날려주는 기능을 담당, 각 기능별로 데이터베이스에 정보를 저장하거나 저장된 정보를 조회
+
 public class MemberDao {
     private final JdbcTemplate jdbc;
 

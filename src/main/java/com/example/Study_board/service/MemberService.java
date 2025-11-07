@@ -5,6 +5,8 @@ import com.example.Study_board.dto.MemberSignupReq;
 
 import java.util.List;
 
+// 2단계 : 어떤 기능을 구현할지 설계 단계
+
 public interface MemberService {
     // 회원가입
     long signup(MemberSignupReq req);

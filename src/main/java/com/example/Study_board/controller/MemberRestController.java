@@ -12,8 +12,11 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/members")
+@RequestMapping("/api/members") // localport:XXXX/api/members 주소에서 실행될 수 있는 기능,
+                                    // 각 기능별 mapping 뒤의 주소를 추가하면 해당 기능이 지정됨
 @Slf4j
+
+// 4단계 : 기능테스트, 제대로 기능이 잘 돌아가는지 확인
 public class MemberRestController {
     private final MemberService memberService;
 
