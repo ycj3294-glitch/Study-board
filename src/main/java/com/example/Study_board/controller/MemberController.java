@@ -56,6 +56,7 @@ public class MemberController {
             model.addAttribute("error", "이미 있는 이메일 입니다.");
             return "login/new";
         }
+
         return "login/login";
     }
 

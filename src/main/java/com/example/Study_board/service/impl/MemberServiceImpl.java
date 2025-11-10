@@ -27,6 +27,10 @@ public class MemberServiceImpl implements MemberService {
         if(memberDao.findByEmail(req.getEmail()) != null) {
             throw new IllegalArgumentException("Email이 이미 있습니다.");
         }
+        // 중복 닉네임 예외 처리
+        if(memberDao.findByNickname(req.getNickname()) != null) {
+            throw new IllegalArgumentException(("닉네임이 이미 있습니다."));
+        }
         return memberDao.signup(req);
     }
 
