@@ -1,6 +1,5 @@
 package com.example.Study_board.dto;
 
-
 import lombok.*;
 
 @Getter
@@ -8,8 +7,9 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class BoardReq {
-    private String nickname;
-    private String title;
+
+public class CommentCreateReq {
+    private Long board_id;
+    private Long member_id;
     private String contents;
 }
