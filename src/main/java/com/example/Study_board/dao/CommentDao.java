@@ -1,8 +1,6 @@
 package com.example.Study_board.dao;
 
-import com.example.Study_board.dto.BoardRes;
 import com.example.Study_board.dto.CommentRes;
-import com.example.Study_board.dto.MemberRes;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
