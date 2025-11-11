@@ -19,7 +19,7 @@ import java.sql.SQLException;
 public class CommentDao {
     private final JdbcTemplate jdbc;
 
-    // 코멘트 작성
+    // 코멘트 작성 (테이블 생성에 insert 구문 예시 있음)
     // 코멘트 수정
     // 코멘트 삭제
     // mapper
