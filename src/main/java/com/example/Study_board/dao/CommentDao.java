@@ -1,8 +1,10 @@
 package com.example.Study_board.dao;
 
+import com.example.Study_board.dto.CommentCreateReq;
 import com.example.Study_board.dto.CommentRes;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.intellij.lang.annotations.Language;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -16,8 +18,18 @@ import java.sql.SQLException;
 
 public class CommentDao {
     private final JdbcTemplate jdbc;
+    // 코멘트 작성
+    public Long save(CommentCreateReq c){
+        @Language("SQL")
+                String sql = """
+INSERT INTO STUDY_COMMENT (COMMENT_ID, BOARD_ID, MEMBER_ID, CONTENTS) 
+VALUES(SEQ_STUDY_COMMENT.nextval, ?, ?, ? ); 
+    """;
+        jdbc.update(sql,c.getBoard_id(),c.getMember_id(),c.getContents());
+        return jdbc.queryForObject("SELECT seq_study_comment.CURRVAL FROM dual", Long.class);
+    }
 
-    // 개별 게시글(comment_id)로 코멘트 조회
+    // 개별 게시글(BOARD_id)로 코멘트 조회
 
     // 코멘트 작성 (테이블 생성에 insert 구문 예시 있음)
     // 코멘트 수정
