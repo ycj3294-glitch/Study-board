@@ -19,6 +19,8 @@ import java.sql.SQLException;
 public class CommentDao {
     private final JdbcTemplate jdbc;
 
+    // 개별 게시글(comment_id)로 코멘트 조회
+
     // 코멘트 작성 (테이블 생성에 insert 구문 예시 있음)
     // 코멘트 수정
     // 코멘트 삭제
