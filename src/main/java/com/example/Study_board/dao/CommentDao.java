@@ -19,9 +19,9 @@ import java.sql.SQLException;
 public class CommentDao {
     private final JdbcTemplate jdbc;
 
-    // 게시글 작성
-    // 게시글 수정
-    // 게시글 삭제
+    // 코멘트 작성
+    // 코멘트 수정
+    // 코멘트 삭제
     // mapper
     static class CommentRowMapper implements RowMapper<CommentRes> {
 
