@@ -17,11 +17,7 @@ public class ReactionServiceImpl implements ReactionService {
     @Override
     @Transactional
     public Long recordReaction(ReactionCreateReq req) {
-        if(req.getTarget_type() == "board") {
-//            req.setTarget_id() = board_id;
-        } else if(req.getTarget_type() == "comment") {
-//            req.setTarget_id() = comment_id;
-        } else {
+        if(!("board".equals(req.getTarget_type()) || "comment".equals(req.getTarget_type()))) {
             throw new RuntimeException("해당 type이 없습니다.");
         }
         return reactionDao.recordReaction(req);
