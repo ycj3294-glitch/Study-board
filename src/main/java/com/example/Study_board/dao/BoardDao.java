@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class BoardDao {
     public List<BoardListRes> findAllByBoardType(String board_type) {
         @Language("SQL")
         String sql = """
-                SELECT\s
+                SELECT
                     b.BOARD_ID,
                     b.MEMBER_ID,
                     m.NICKNAME,
@@ -36,9 +37,9 @@ public class BoardDao {
                 JOIN STUDY_MEMBER m ON b.MEMBER_ID = m.MEMBER_ID
                 LEFT JOIN REACTION r ON r.TARGET_TYPE = 'BOARD' AND r.TARGET_ID = b.BOARD_ID
                 WHERE b.BOARD_TYPE = ?
-                GROUP BY\s
+                GROUP BY
                     b.BOARD_ID, b.MEMBER_ID, m.NICKNAME, b.TITLE, b.VIEW_COUNT, b.REG_DATE
-                ORDER BY b.REG_DATE DESC;
+                ORDER BY b.REG_DATE DESC
                 """;
         List<BoardListRes> list = jdbc.query(sql, new BoardListRowMapper(), board_type);
         return list;
@@ -48,26 +49,35 @@ public class BoardDao {
     public BoardRes findByBoardID(Long board_id) {
         @Language("SQL")
         String sql = """
-                SELECT t.*, b.CONTENTS
+        SELECT
+            t.BOARD_ID       AS BOARD_ID,
+            t.MEMBER_ID      AS MEMBER_ID,
+            t.NICKNAME       AS NICKNAME,
+            t.TITLE          AS TITLE,
+            t.VIEW_COUNT     AS VIEW_COUNT,
+            t.LIKE_COUNT     AS LIKE_COUNT,
+            t.REPORT_COUNT   AS REPORT_COUNT,
+            t.REG_DATE       AS REG_DATE,
+            b.CONTENTS       AS CONTENTS
         FROM (
-            SELECT\s
+            SELECT
                 b.BOARD_ID,
                 b.MEMBER_ID,
                 m.NICKNAME,
                 b.TITLE,
                 b.VIEW_COUNT,
-                NVL(SUM(CASE WHEN r.ACTION = 'LIKE' THEN 1 ELSE 0 END),0) AS LIKE_COUNT,
-                NVL(SUM(CASE WHEN r.ACTION = 'REPORT' THEN 1 ELSE 0 END),0) AS REPORT_COUNT,
+                NVL(SUM(CASE WHEN r.ACTION = 'LIKE' THEN 1 ELSE 0 END), 0) AS LIKE_COUNT,
+                NVL(SUM(CASE WHEN r.ACTION = 'REPORT' THEN 1 ELSE 0 END), 0) AS REPORT_COUNT,
                 b.REG_DATE
             FROM STUDY_BOARD b
             JOIN STUDY_MEMBER m ON b.MEMBER_ID = m.MEMBER_ID
-            LEFT JOIN REACTION r\s
+            LEFT JOIN REACTION r
                 ON r.TARGET_TYPE='BOARD' AND r.TARGET_ID=b.BOARD_ID
             WHERE b.BOARD_ID = ?
             GROUP BY b.BOARD_ID, b.MEMBER_ID, m.NICKNAME, b.TITLE, b.VIEW_COUNT, b.REG_DATE
         ) t
-        JOIN STUDY_BOARD b ON b.BOARD_ID = t.BOARD_ID;
-""";
+        JOIN STUDY_BOARD b ON b.BOARD_ID = t.BOARD_ID        
+        """;
         List<BoardRes> list = jdbc.query(sql, new BoardResRowMapper(), board_id);
         return list.isEmpty() ? null : list.get(0);
     }
@@ -96,11 +106,17 @@ public class BoardDao {
     static class BoardResRowMapper implements RowMapper<BoardRes> {
         @Override
         public BoardRes mapRow(ResultSet rs, int rowNum) throws SQLException {
+            // 디버깅용
+            ResultSetMetaData meta = rs.getMetaData();
+            for (int i = 1; i <= meta.getColumnCount(); i++) {
+                System.out.println(meta.getColumnLabel(i));
+            }
+
             return new BoardRes(
                     rs.getLong("BOARD_ID"),
                     rs.getLong("MEMBER_ID"),
-                    rs.getString("TITLE"),
                     rs.getString("NICKNAME"),
+                    rs.getString("TITLE"),
                     rs.getString("CONTENTS"),
                     rs.getLong("VIEW_COUNT"),
                     rs.getLong("LIKE_COUNT"),

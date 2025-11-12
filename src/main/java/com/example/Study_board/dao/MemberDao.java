@@ -56,7 +56,7 @@ public class MemberDao {
     public MemberRes findById(Long id) {
         @Language("SQL")
         String sql = """
-        SELECT * FROM STUDY_MEMBER WHERE ID=?
+        SELECT * FROM STUDY_MEMBER WHERE MEMBER_ID=?
         """;
         List<MemberRes> list = jdbc.query(sql, new MemberRowMapper(), id);
         return list.isEmpty() ? null : list.get(0);

@@ -23,7 +23,7 @@ public class CommentDao {
         @Language("SQL")
                 String sql = """
 INSERT INTO STUDY_COMMENT (COMMENT_ID, BOARD_ID, MEMBER_ID, CONTENTS) 
-VALUES(SEQ_STUDY_COMMENT.nextval, ?, ?, ? ); 
+VALUES(SEQ_STUDY_COMMENT.nextval, ?, ?, ? )
     """;
         jdbc.update(sql,c.getBoard_id(),c.getMember_id(),c.getContents());
         return jdbc.queryForObject("SELECT seq_study_comment.CURRVAL FROM dual", Long.class);
