@@ -28,12 +28,32 @@ VALUES(SEQ_STUDY_COMMENT.nextval, ?, ?, ? )
         jdbc.update(sql,c.getBoard_id(),c.getMember_id(),c.getContents());
         return jdbc.queryForObject("SELECT seq_study_comment.CURRVAL FROM dual", Long.class);
     }
+    // 코멘트 삭제
+    public boolean delete(Long id){
+        @Language("SQL")
+                String sql = "DELETE FROM comments WHRER id =?";
+        return jdbc.update(sql,id) > 0;
+    }
+    //코멘트 아이디로 검색필요
+//    public CommentRes findById(Long id){
+//        @Language("SQL")
+//                String sql = """
+//SELECT BOARD_ID,MEMBER_ID,NICKNAME,CONTENTS, FROM STUDY_COMMENT C WHERE COMMENT_ID = ?
+//JOIN STUDY_MEMBER S ON C.MEMBER_ID = S.MEMBER_ID
+//"""
+//    }
+
 
     // 개별 게시글(BOARD_id)로 코멘트 조회
 
-    // 코멘트 작성 (테이블 생성에 insert 구문 예시 있음)
+
     // 코멘트 수정
-    // 코멘트 삭제
+    public boolean update(CommentCreateReq c, Long id){
+        @Language("SQL")
+                String sql = "UPDATE STUDY_COMMENT SET CONTENTS = ? WHERE COMMENT_ID =?";
+        return jdbc.update(sql, c.getContents(), id) > 0;
+    }
+
     // mapper
     static class CommentRowMapper implements RowMapper<CommentRes> {
 

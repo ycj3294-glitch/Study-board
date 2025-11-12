@@ -26,5 +26,14 @@ public class CommentServiceImpl implements CommentService {
         }
         return commentDao.save(req);
     }
-    // 확인용;;ㅣ
+
+    @Override
+    public boolean delete(Long id) {
+        return commentDao.delete(id);
+    }
+@Override
+    public boolean update(CommentCreateReq req, Long id){
+//        if (commentDao.)
+        return commentDao.update(req, id);
+}
 }
