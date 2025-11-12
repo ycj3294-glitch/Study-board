@@ -26,5 +26,5 @@ public class CommentServiceImpl implements CommentService {
         }
         return commentDao.save(req);
     }
-    // 확인용;;ㅣ
+    // 여기서 커밋 되는지 확인해보자
 }
