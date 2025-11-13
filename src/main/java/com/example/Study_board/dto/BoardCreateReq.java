@@ -11,7 +11,7 @@ import lombok.*;
 
 public class BoardCreateReq {
     private String board_type;
-    private String member_id;
+    private Long member_id;
     private String title;
     private String contents;
 }

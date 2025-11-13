@@ -1,5 +1,6 @@
 package com.example.Study_board.dao;
 
+import com.example.Study_board.dto.BoardCreateReq;
 import com.example.Study_board.dto.BoardListRes;
 import com.example.Study_board.dto.BoardRes;
 import lombok.RequiredArgsConstructor;
@@ -82,8 +83,32 @@ public class BoardDao {
         return list.isEmpty() ? null : list.get(0);
     }
     // 게시글 작성
+    public Long save(BoardCreateReq b) {
+        @Language("SQL")
+        String sql = """
+        INSERT INTO STUDY_BOARD (BOARD_ID, BOARD_TYPE, MEMBER_ID, TITLE, CONTENTS) 
+        VALUES(SEQ_STUDY_BOARD.nextval, ?, ?, ?, ?)
+        """;
+        jdbc.update(sql, b.getBoard_type(), b.getMember_id(), b.getTitle(), b.getContents());
+        return jdbc.queryForObject("SELECT SEQ_STUDY_BOARD.CURRVAL FROM dual", Long.class);
+    }
     // 게시글 수정
+    public boolean update(Long board_id, String title, String contents) {
+        @Language("SQL")
+        String sql = "UPDATE STUDY_BOARD SET  TITLE = ?, CONTENTS = ? WHERE BOARD_ID = ?";
+        return jdbc.update(sql, title, contents, board_id) > 0;
+    }
+    // 게시글 작성자 조회 (ByBoard_id)
+    public Long ByBoard_id(Long board_id) {
+        String sql = "SELECT MEMBER_ID FROM STUDY_BOARD WHERE BOARD_ID = ?";
+        return jdbc.queryForObject(sql, Long.class, board_id);
+    }
     // 게시글 삭제
+    public boolean delete(Long board_id) {
+        @Language("SQL")
+        String sql = "DELETE FROM STUDY_BOARD WHERE BOARD_ID = ?";
+        return jdbc.update(sql, board_id) > 0;
+    }
 
 
     // list용 mapper
