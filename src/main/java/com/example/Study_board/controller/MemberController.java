@@ -39,7 +39,7 @@ public class MemberController {
             return "login/login";
         }
         session.setAttribute("loginMember", member);
-        return "redirect:/posts";
+        return "redirect:/home";
     }
 
     // 회원가입 페이지 이동
@@ -69,4 +69,8 @@ public class MemberController {
         return "login/list";
     }
 
+    @GetMapping("/home")
+    public String home() {
+        return "home";
+    }
 }

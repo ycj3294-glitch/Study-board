@@ -26,5 +26,16 @@ public class CommentServiceImpl implements CommentService {
         }
         return commentDao.save(req);
     }
-    // 여기서 커밋 되는지 확인해보자
+
+
+    @Override
+    public boolean delete(Long id) {
+        return commentDao.delete(id);
+    }
+@Override
+    public boolean update(CommentCreateReq req, Long id){
+//        if (commentDao.)
+        return commentDao.update(req, id);
+}
+
 }

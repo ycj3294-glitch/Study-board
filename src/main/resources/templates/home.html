@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>곰사육사 강의 수강생 커뮤니티</title>
+    <style>
+      /* ---------- Design tokens ---------- */
+      :root {
+        --bg: #f4f6fb;
+        --card: #ffffff;
+        --border: #e6e8ef;
+        --text: #101828;
+        --muted: #667085;
+        --primary: #6f7ddf; /* 상단바 보라색 톤 */
+        --primary-600: #5f6dcd;
+        --accent: #0d6efd; /* 버튼 파랑 */
+        --accent-600: #0b5ed7;
+        --radius: 14px;
+        --shadow: 0 16px 40px rgba(16, 24, 40, 0.08);
+      }
+
+      /* ---------- reset & base ---------- */
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+      body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font: 16px/1.6 "Noto Sans KR", system-ui, -apple-system, Segoe UI,
+          Roboto, Arial, sans-serif;
+      }
+
+      /* ---------- header ---------- */
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: linear-gradient(0deg, var(--primary-600), var(--primary));
+        color: #fff;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      }
+      .header-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 10px 16px;
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        gap: 12px;
+        align-items: center;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+      }
+      .logo-img {
+        width: 34px;
+        height: auto;
+        border-radius: 0;
+        object-fit: contain; /* 이미지가 꽉 차도록 */
+        display: block;
+        box-shadow: none;
+      }
+
+      .brand h1 {
+        margin: 0;
+        font-size: 18px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .top-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+      .pill {
+        background: transparent;
+        border: none;
+        color: #fff;
+        padding: 0px 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .pill:hover {
+        text-decoration: underline;
+      }
+
+      .search {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #fff;
+        border-radius: 999px;
+        padding: 6px 10px;
+        min-width: 240px;
+      }
+      .search input {
+        border: 0;
+        outline: 0;
+        width: 220px;
+        font-size: 14px;
+        color: var(--text);
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #e9f7ee;
+        color: #1d6d3a;
+        border: 1px solid #bfe3cb;
+        padding: 4px 8px;
+        border-radius: 8px;
+        font-size: 12px;
+      }
+
+      /* ---------- layout ---------- */
+      .container {
+        flex: 1;
+        max-width: 1320px; /* 중앙 영역에 여유를 더 줌 */
+        margin: 18px auto;
+        padding: 0 16px;
+        display: grid;
+        grid-template-columns: 180px 1fr 220px; /* 좌측=180px, 우측=220px로 슬림화 */
+        gap: 18px;
+      }
+
+      /* ---------- left sidebar ---------- */
+      aside.nav {
+        position: sticky;
+        top: 72px;
+        align-self: start;
+      }
+      .menu {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 12px;
+        box-shadow: var(--shadow);
+      }
+      .menu a {
+        display: block;
+        padding: 12px 14px;
+        margin: 6px 0;
+        text-decoration: none;
+        color: var(--text);
+        background: #f8f9fe;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        font-weight: 600;
+      }
+      .menu a:hover {
+        background: #eef0fd;
+      }
+
+      /* ---------- main content ---------- */
+      main {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* 2열 */
+        grid-template-rows: auto auto; /* 2행 */
+        gap: 18px;
+      }
+      .board {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 10px 12px;
+      }
+      .board h2 {
+        margin-bottom: 6px;
+        font-size: 18px;
+      }
+      .section-caption {
+        display: inline-block;
+        margin: 0 6px 12px;
+        font-size: 12px;
+        color: var(--muted);
+        border: 1px dashed var(--border);
+        padding: 4px 8px;
+        border-radius: 8px;
+        background: #fafbff;
+      }
+      .postlist {
+        list-style: none;
+        margin: 0;
+        padding: 0 4px;
+      }
+      .postlist li {
+        padding: 5px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .postlist li:last-child {
+        border-bottom: 0;
+      }
+      .postlist a {
+        font-size: 14px; /* 리스트 글씨 크기 */
+        color: var(--text);
+        text-decoration: none;
+        line-height: 1.4;
+      }
+      .postlist a:hover {
+        text-decoration: underline;
+      }
+      .postlist .tag {
+        color: #444;
+        font-weight: 700;
+        margin-right: 4px;
+      }
+      .postlist .em {
+        font-weight: 700;
+      }
+
+      /* ---------- right sidebar ---------- */
+      aside.right {
+        position: sticky;
+        top: 72px;
+        align-self: start;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 16px;
+      }
+      .btn {
+        display: block;
+        width: 100%;
+        text-align: center;
+        text-decoration: none;
+        font-weight: 700;
+        padding: 12px 14px;
+        border-radius: 12px;
+        margin: 8px 0;
+        border: 1px solid transparent;
+      }
+      .btn.primary {
+        background: var(--accent);
+        color: #fff;
+      }
+      .btn.primary:hover {
+        background: var(--accent-600);
+      }
+      .btn.ghost {
+        background: #fff;
+        border-color: var(--border);
+        color: var(--text);
+      }
+      .btn.ghost:hover {
+        background: #f6f7fb;
+      }
+      .hero {
+        border-radius: var(--radius);
+        width: 100%;
+        height: auto;
+        display: block;
+        border: 1px solid var(--border);
+      }
+
+      /* ---------- footer ---------- */
+      footer {
+        margin-top: 28px;
+        background: var(--primary-600);
+        color: #dfe3ff;
+        border-top: 1px solid rgba(255, 255, 255, 0.15);
+      }
+      .footer-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 14px 16px;
+        display: flex;
+        gap: 24px;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .footer-links {
+        display: flex;
+        gap: 28px;
+        flex-wrap: wrap;
+      }
+      .footer-links a {
+        color: #fff;
+        text-decoration: none;
+        opacity: 0.95;
+      }
+      .footer-links a:hover {
+        text-decoration: underline;
+      }
+
+      /* ---------- responsive ---------- */
+      @media (max-width: 1100px) {
+        .container {
+          grid-template-columns: 220px 1fr;
+        }
+        aside.right {
+          grid-column: 1 / -1;
+          order: 3;
+          position: static;
+        }
+      }
+      @media (max-width: 780px) {
+        .header-inner {
+          grid-template-columns: 1fr auto;
+        }
+        .top-actions {
+          display: none;
+        }
+        .search {
+          grid-column: 1 / -1;
+        }
+        .container {
+          grid-template-columns: 1fr;
+        }
+        main {
+          grid-template-columns: 1fr;
+        }
+        aside.nav {
+          position: static;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="header-inner">
+        <div class="brand">
+          <img src="/image/bear.png" alt="곰사육사 로고" class="logo-img" />
+          <h1>곰사육사 강의 수강생 커뮤니티</h1>
+        </div>
+
+        <div class="top-actions" aria-label="빠른 메뉴">
+          <span class="pill">모아보기</span>
+          <span class="pill">공감글</span>
+          <span class="pill">추천글</span>
+          <span class="pill">홈으로</span>
+        </div>
+
+        <label class="search" aria-label="검색">
+          🔍
+          <input type="search" placeholder="검색어를 입력하세요." />
+        </label>
+      </div>
+    </header>
+
+    <div class="container">
+      <!-- left menu -->
+      <aside class="nav" aria-label="보드 메뉴">
+        <nav class="menu">
+          <a href="#">공지사항</a>
+          <a href="#">자유게시판</a>
+          <a href="#">코드게시판</a>
+          <a href="#">스터디게시판</a>
+        </nav>
+      </aside>
+
+      <!-- main boards -->
+      <main>
+        <!-- 공지사항 -->
+        <section class="board" aria-labelledby="notice-title">
+          <h2 id="notice-title">공지사항</h2>
+          <ul class="postlist">
+            <li>
+              <a href="#"
+                ><span class="tag">[단독]</span> 게시판 생성 드디어 오픈!!!</a
+              >
+            </li>
+            <li>
+              <a href="#"
+                ><span class="tag">[축하]</span> 게시판 활성화를 기대합니다.</a
+              >
+            </li>
+            <li>
+              <a href="#"
+                ><span class="tag">[잡담]</span> 오늘 주식이 왜
+                폭망인가요?!!!</a
+              >
+            </li>
+            <li>
+              <a href="#"
+                ><span class="tag">[잡담]</span> 게시판 DB 만드는거 도와줄
+                사람?</a
+              >
+            </li>
+            <li>
+              <a href="#"
+                ><span class="tag">[잡담]</span> 곰말고 다른 캐릭터 사용해요.</a
+              >
+            </li>
+            <li>
+              <a href="#"
+                ><span class="tag">[잡담]</span> 동굴님, 코드 나눔 합시다!!!</a
+              >
+            </li>
+            <li>
+              <a href="#"
+                ><span class="tag">[잡담]</span> 첫찌피티가 자바 공부에 도움
+                <span class="em">Good!</span></a
+              >
+            </li>
+          </ul>
+        </section>
+
+        <!-- 자유게시판 -->
+        <section class="board" aria-labelledby="free-title">
+          <h2 id="free-title">자유게시판</h2>
+          <ul class="postlist">
+            <li>
+              <a href="#"
+                ><span class="tag">[단독]</span> 게시판 생성 드디어 오픈!!!</a
+              >
+            </li>
+            <li>
+              <a href="#"
+                ><span class="tag">[축하]</span> 게시판 활성화를 기대합니다.</a
+              >
+            </li>
+            <li>
+              <a href="#"
+                ><span class="tag">[잡담]</span> 오늘 주식이 왜
+                폭망인가요?!!!</a
+              >
+            </li>
+            <li>
+              <a href="#"
+                ><span class="tag">[잡담]</span> 게시판 DB 만드는거 도와줄
+                사람?</a
+              >
+            </li>
+            <li>
+              <a href="#"
+                ><span class="tag">[잡담]</span> 곰말고 다른 캐릭터 사용해요.</a
+              >
+            </li>
+            <li>
+              <a href="#"
+                ><span class="tag">[잡담]</span> 동굴님, 코드 나눔 합시다!!!</a
+              >
+            </li>
+            <li>
+              <a href="#"
+                ><span class="tag">[잡담]</span> 첫찌피티가 자바 공부에 도움
+                <span class="em">Good!</span></a
+              >
+            </li>
+          </ul>
+        </section>
+
+        <!-- 코드게시판 -->
+        <section class="board" aria-labelledby="free-title">
+          <h2 id="free-title">코드게시판</h2>
+          <ul class="postlist">
+            <li>
+              <a href="#"
+                ><span class="tag">[단독]</span> 게시판 생성 드디어 오픈!!!</a
+              >
+            </li>
+            <li>
+              <a href="#"
+                ><span class="tag">[축하]</span> 게시판 활성화를 기대합니다.</a
+              >
+            </li>
+            <li>
+              <a href="#"
+                ><span class="tag">[잡담]</span> 오늘 주식이 왜
+                폭망인가요?!!!</a
+              >
+            </li>
+            <li>
+              <a href="#"
+                ><span class="tag">[잡담]</span> 게시판 DB 만드는거 도와줄
+                사람?</a
+              >
+            </li>
+            <li>
+              <a href="#"
+                ><span class="tag">[잡담]</span> 곰말고 다른 캐릭터 사용해요.</a
+              >
+            </li>
+            <li>
+              <a href="#"
+                ><span class="tag">[잡담]</span> 동굴님, 코드 나눔 합시다!!!</a
+              >
+            </li>
+            <li>
+              <a href="#"
+                ><span class="tag">[잡담]</span> 첫찌피티가 자바 공부에 도움
+                <span class="em">Good!</span></a
+              >
+            </li>
+          </ul>
+        </section>
+
+        <!-- 스터디게시판 -->
+        <section class="board" aria-labelledby="free-title">
+          <h2 id="free-title">스터디게시판</h2>
+          <ul class="postlist">
+            <li>
+              <a href="#"
+                ><span class="tag">[단독]</span> 게시판 생성 드디어 오픈!!!</a
+              >
+            </li>
+            <li>
+              <a href="#"
+                ><span class="tag">[축하]</span> 게시판 활성화를 기대합니다.</a
+              >
+            </li>
+            <li>
+              <a href="#"
+                ><span class="tag">[잡담]</span> 오늘 주식이 왜
+                폭망인가요?!!!</a
+              >
+            </li>
+            <li>
+              <a href="#"
+                ><span class="tag">[잡담]</span> 게시판 DB 만드는거 도와줄
+                사람?</a
+              >
+            </li>
+            <li>
+              <a href="#"
+                ><span class="tag">[잡담]</span> 곰말고 다른 캐릭터 사용해요.</a
+              >
+            </li>
+            <li>
+              <a href="#"
+                ><span class="tag">[잡담]</span> 동굴님, 코드 나눔 합시다!!!</a
+              >
+            </li>
+            <li>
+              <a href="#"
+                ><span class="tag">[잡담]</span> 첫찌피티가 자바 공부에 도움
+                <span class="em">Good!</span></a
+              >
+            </li>
+          </ul>
+        </section>
+      </main>
+
+      <!-- right sidebar -->
+      <aside class="right" aria-label="로그인 및 사이드">
+        <div class="card">
+          <a class="btn primary" href="#">로그인</a>
+          <a class="btn ghost" href="#">회원가입</a>
+        </div>
+        <div class="card">
+          <!-- 데모용 이미지: 필요시 교체 -->
+          <img
+            class="hero"
+            src="/image/banner.png"
+            alt="곰과 사파리 가이드 일러스트 대체 이미지"
+          />
+        </div>
+      </aside>
+    </div>
+
+    <footer>
+      <div class="footer-inner">
+        <nav class="footer-links" aria-label="푸터 링크">
+          <a href="#">이용규칙</a>
+          <a href="#">도움말</a>
+          <a href="#">만든이</a>
+        </nav>
+        <div>Copyright © 휴먼교육센터 2025</div>
+      </div>
+    </footer>
+  </body>
+</html>
