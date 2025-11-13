@@ -114,11 +114,12 @@
       /* layout */
       .container {
         flex: 1;
-        max-width: 1320px;
-        margin: 18px auto;
-        padding: 0 16px;
+        width: 100%;
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0px 24px;
         display: grid;
-        grid-template-columns: 180px 1fr 220px;
+        grid-template-columns: 200px minmax(0, 1.8fr) 220px;
         gap: 18px;
       }
 
@@ -136,7 +137,10 @@
         box-shadow: var(--shadow);
       }
       .menu a {
-        display: block;
+        display: flex; /* 가로/세로 중앙 정렬 가능 */
+        justify-content: center; /* 가로 중앙 */
+        align-items: center; /* 세로 중앙 */
+
         padding: 12px 14px;
         margin: 6px 0;
         text-decoration: none;
@@ -146,6 +150,7 @@
         border-radius: 12px;
         font-weight: 600;
       }
+
       .menu a:hover {
         background: #eef0fd;
       }
@@ -321,14 +326,13 @@
       <!-- left menu -->
       <aside class="nav" aria-label="보드 메뉴">
         <nav class="menu">
-          <a href="#">공지사항</a>
-          <a href="#">자유게시판</a>
-          <a href="#">코드게시판</a>
-          <a href="#">스터디게시판</a>
+          <a th:href="@{/board/notice}">공지사항</a>
+          <a th:href="@{/board/free}">자유게시판</a>
+          <a th:href="@{/board/code}">코드게시판</a>
+          <a th:href="@{/board/study}">스터디게시판</a>
         </nav>
       </aside>
 
-      <!-- main boards (원래 내용 그대로) -->
       <!-- main boards -->
       <main>
         <!-- 공지사항 -->
