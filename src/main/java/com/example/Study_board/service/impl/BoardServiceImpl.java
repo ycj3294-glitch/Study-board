@@ -3,10 +3,13 @@ package com.example.Study_board.service.impl;
 import com.example.Study_board.dao.BoardDao;
 import com.example.Study_board.dao.MemberDao;
 import com.example.Study_board.dto.BoardCreateReq;
+import com.example.Study_board.dto.BoardListRes;
 import com.example.Study_board.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +27,10 @@ public class BoardServiceImpl implements BoardService {
         return boardDao.save(b);
     }
 
+    @Override
+    public List<BoardListRes> list(String board) {
+        return boardDao.findAllByBoardType(board);
+    }
 
     // 게시글 수정
     @Override
