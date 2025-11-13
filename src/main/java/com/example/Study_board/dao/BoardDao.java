@@ -129,13 +129,14 @@ public class BoardDao {
     // 게시글 수정
     public boolean update(Long board_id, String title, String contents) {
         @Language("SQL")
-        String sql = "UPDATE STUDY_BOARD SET  TITLE = ?, CONTENTS = ? WHERE BOARD_ID = ?";
+        String sql = "UPDATE STUDY_BOARD SET  TITLE = ?, CONTENTS = ?, REG_DATE = SYSTIMESTAMP WHERE BOARD_ID = ?";
         return jdbc.update(sql, title, contents, board_id) > 0;
     }
-    // 게시글 작성자 조회 (ByBoard_id)
+    // 게시글 작성자 조회 (ByBoard_id) => 삭제, 수정 공동으로 사용중
     public Long ByBoard_id(Long board_id) {
         String sql = "SELECT MEMBER_ID FROM STUDY_BOARD WHERE BOARD_ID = ?";
-        return jdbc.queryForObject(sql, Long.class, board_id);
+        List<Long> result = jdbc.queryForList(sql, Long.class, board_id);
+        return result.isEmpty() ? null : result.get(0);
     }
     // 게시글 삭제
     public boolean delete(Long board_id) {
@@ -143,7 +144,28 @@ public class BoardDao {
         String sql = "DELETE FROM STUDY_BOARD WHERE BOARD_ID = ?";
         return jdbc.update(sql, board_id) > 0;
     }
-
+    // 게시글 공감 조회
+    public List<BoardListRes> findTopLiked(int limit) {
+        String sql = """
+        SELECT * FROM (
+            SELECT 
+                b.BOARD_ID,
+                b.BOARD_TYPE,
+                m.NICKNAME,
+                b.TITLE,
+                NVL(SUM(CASE WHEN r.ACTION = 'LIKE' THEN 1 ELSE 0 END), 0) AS LIKE_COUNT,
+                b.VIEW_COUNT,
+                TO_CHAR(b.REG_DATE, 'YYYY-MM-DD HH24:MI') AS REG_DATE
+            FROM STUDY_BOARD b
+            JOIN STUDY_MEMBER m ON b.MEMBER_ID = m.MEMBER_ID
+            LEFT JOIN REACTION r ON r.TARGET_TYPE='BOARD' AND r.TARGET_ID=b.BOARD_ID
+            GROUP BY b.BOARD_ID, b.BOARD_TYPE, m.NICKNAME, b.TITLE, b.VIEW_COUNT, b.REG_DATE
+            ORDER BY LIKE_COUNT DESC
+        )
+        WHERE ROWNUM <= ?
+    """;
+        return jdbc.query(sql, new BoardListRowMapper(), limit);
+    }
 
     // list용 mapper
     static class BoardListRowMapper implements RowMapper<BoardListRes> {

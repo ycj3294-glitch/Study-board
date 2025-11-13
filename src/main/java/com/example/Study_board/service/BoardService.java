@@ -13,10 +13,14 @@ public interface BoardService {
     List<BoardListRes> list(String board);
 
     // 게시글 수정
-    boolean update(Long board_id, BoardCreateReq b );
+    boolean update(Long board_id, Long member_id, String title, String contents);
     // 게시글 삭제
-    boolean delete(Long board_id);
-    // 추천 수 증가
-    // 공감 수 증가
-    // 신고 수 증가
+    boolean delete(Long board_id,  Long member_id);
+
+    // 게시글 전체 조회
+    List<BoardListRes> findAll();
+    // 공감글 조회
+    List<BoardListRes> findTopLiked(int limit);
+
+
 }

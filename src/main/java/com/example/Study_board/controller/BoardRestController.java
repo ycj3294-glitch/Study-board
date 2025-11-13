@@ -25,16 +25,16 @@ public class BoardRestController {
     }
 
     // 게시글 수정
-    @PutMapping("/{board_id}")
-    public ResponseEntity<Boolean> update(@PathVariable Long board_id, @RequestBody BoardCreateReq b) {
-        return ResponseEntity.ok(boardService.update(board_id, b));
-    }
+//    @PutMapping("/{board_id}")
+//    public ResponseEntity<Boolean> update(@PathVariable Long board_id, @RequestBody BoardCreateReq b) {
+//        return ResponseEntity.ok(boardService.update(board_id, b));
+//    }
 
     // 게시글 삭제
-    @DeleteMapping("/{board_id}")
-    public ResponseEntity<Boolean> delete(@PathVariable Long board_id) {
+//    @DeleteMapping("/{board_id}")
+//    public ResponseEntity<Boolean> delete(@PathVariable Long board_id) {
 //        MemberRes loginMember = (MemberRes) session.getAttribute("loginMember");
-        return ResponseEntity.ok(boardService.delete(board_id));
-    }
+//        return ResponseEntity.ok(boardService.delete(board_id, member_id));
+//    }
 
 }
