@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>곰사육사 강의 수강생 커뮤니티</title>
+
     <style>
       /* ---------- Design tokens ---------- */
       :root {
@@ -12,15 +13,14 @@
         --border: #e6e8ef;
         --text: #101828;
         --muted: #667085;
-        --primary: #6f7ddf; /* 상단바 보라색 톤 */
+        --primary: #6f7ddf;
         --primary-600: #5f6dcd;
-        --accent: #0d6efd; /* 버튼 파랑 */
+        --accent: #0d6efd;
         --accent-600: #0b5ed7;
         --radius: 14px;
         --shadow: 0 16px 40px rgba(16, 24, 40, 0.08);
       }
 
-      /* ---------- reset & base ---------- */
       * {
         box-sizing: border-box;
       }
@@ -40,7 +40,7 @@
           Roboto, Arial, sans-serif;
       }
 
-      /* ---------- header ---------- */
+      /* header */
       header {
         position: sticky;
         top: 0;
@@ -67,12 +67,8 @@
       .logo-img {
         width: 34px;
         height: auto;
-        border-radius: 0;
-        object-fit: contain; /* 이미지가 꽉 차도록 */
-        display: block;
-        box-shadow: none;
+        object-fit: contain;
       }
-
       .brand h1 {
         margin: 0;
         font-size: 18px;
@@ -90,7 +86,7 @@
         background: transparent;
         border: none;
         color: #fff;
-        padding: 0px 8px;
+        padding: 0 8px;
         font-size: 14px;
         font-weight: 600;
         cursor: pointer;
@@ -98,7 +94,6 @@
       .pill:hover {
         text-decoration: underline;
       }
-
       .search {
         display: flex;
         align-items: center;
@@ -115,30 +110,19 @@
         font-size: 14px;
         color: var(--text);
       }
-      .badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        background: #e9f7ee;
-        color: #1d6d3a;
-        border: 1px solid #bfe3cb;
-        padding: 4px 8px;
-        border-radius: 8px;
-        font-size: 12px;
-      }
 
-      /* ---------- layout ---------- */
+      /* layout */
       .container {
         flex: 1;
-        max-width: 1320px; /* 중앙 영역에 여유를 더 줌 */
+        max-width: 1320px;
         margin: 18px auto;
         padding: 0 16px;
         display: grid;
-        grid-template-columns: 180px 1fr 220px; /* 좌측=180px, 우측=220px로 슬림화 */
+        grid-template-columns: 180px 1fr 220px;
         gap: 18px;
       }
 
-      /* ---------- left sidebar ---------- */
+      /* left nav */
       aside.nav {
         position: sticky;
         top: 72px;
@@ -166,11 +150,11 @@
         background: #eef0fd;
       }
 
-      /* ---------- main content ---------- */
+      /* main boards */
       main {
         display: grid;
-        grid-template-columns: 1fr 1fr; /* 2열 */
-        grid-template-rows: auto auto; /* 2행 */
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto;
         gap: 18px;
       }
       .board {
@@ -183,16 +167,6 @@
       .board h2 {
         margin-bottom: 6px;
         font-size: 18px;
-      }
-      .section-caption {
-        display: inline-block;
-        margin: 0 6px 12px;
-        font-size: 12px;
-        color: var(--muted);
-        border: 1px dashed var(--border);
-        padding: 4px 8px;
-        border-radius: 8px;
-        background: #fafbff;
       }
       .postlist {
         list-style: none;
@@ -207,7 +181,7 @@
         border-bottom: 0;
       }
       .postlist a {
-        font-size: 14px; /* 리스트 글씨 크기 */
+        font-size: 14px;
         color: var(--text);
         text-decoration: none;
         line-height: 1.4;
@@ -224,7 +198,7 @@
         font-weight: 700;
       }
 
-      /* ---------- right sidebar ---------- */
+      /* right sidebar */
       aside.right {
         position: sticky;
         top: 72px;
@@ -274,7 +248,7 @@
         border: 1px solid var(--border);
       }
 
-      /* ---------- footer ---------- */
+      /* footer */
       footer {
         margin-top: 28px;
         background: var(--primary-600);
@@ -305,7 +279,7 @@
         text-decoration: underline;
       }
 
-      /* ---------- responsive ---------- */
+      /* responsive */
       @media (max-width: 1100px) {
         .container {
           grid-template-columns: 220px 1fr;
@@ -338,27 +312,10 @@
       }
     </style>
   </head>
+
   <body>
-    <header>
-      <div class="header-inner">
-        <div class="brand">
-          <img src="/image/bear.png" alt="곰사육사 로고" class="logo-img" />
-          <h1>곰사육사 강의 수강생 커뮤니티</h1>
-        </div>
-
-        <div class="top-actions" aria-label="빠른 메뉴">
-          <span class="pill">모아보기</span>
-          <span class="pill">공감글</span>
-          <span class="pill">추천글</span>
-          <span class="pill">홈으로</span>
-        </div>
-
-        <label class="search" aria-label="검색">
-          🔍
-          <input type="search" placeholder="검색어를 입력하세요." />
-        </label>
-      </div>
-    </header>
+    <!-- 헤더 포함 -->
+    <div th:replace="fragments/header :: siteHeader"></div>
 
     <div class="container">
       <!-- left menu -->
@@ -371,6 +328,7 @@
         </nav>
       </aside>
 
+      <!-- main boards (원래 내용 그대로) -->
       <!-- main boards -->
       <main>
         <!-- 공지사항 -->
@@ -557,11 +515,10 @@
       <!-- right sidebar -->
       <aside class="right" aria-label="로그인 및 사이드">
         <div class="card">
-          <a class="btn primary" href="#">로그인</a>
-          <a class="btn ghost" href="#">회원가입</a>
+          <a class="btn primary" th:href="@{/login}">로그인</a>
+          <a class="btn ghost" th:href="@{/signup}">회원가입</a>
         </div>
         <div class="card">
-          <!-- 데모용 이미지: 필요시 교체 -->
           <img
             class="hero"
             src="/image/banner.png"
@@ -571,15 +528,7 @@
       </aside>
     </div>
 
-    <footer>
-      <div class="footer-inner">
-        <nav class="footer-links" aria-label="푸터 링크">
-          <a href="#">이용규칙</a>
-          <a href="#">도움말</a>
-          <a href="#">만든이</a>
-        </nav>
-        <div>Copyright © 휴먼교육센터 2025</div>
-      </div>
-    </footer>
+    <!-- 푸터 포함 -->
+    <div th:replace="fragments/footer :: siteFooter"></div>
   </body>
 </html>
