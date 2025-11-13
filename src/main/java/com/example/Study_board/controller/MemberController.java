@@ -39,13 +39,13 @@ public class MemberController {
             return "login/login";
         }
         session.setAttribute("loginMember", member);
-        return "redirect:/home";
+        return "redirect:/community";
     }
 
     // 회원가입 페이지 이동
-    @GetMapping("/new")
+    @GetMapping("/signup")
     public String signupPage() {
-        return "login/new";
+        return "login/signup";
     }
 
     // 회원 가입 처리
@@ -69,8 +69,8 @@ public class MemberController {
         return "login/list";
     }
 
-    @GetMapping("/home")
+    @GetMapping("/community")
     public String home() {
-        return "home";
+        return "community";
     }
 }

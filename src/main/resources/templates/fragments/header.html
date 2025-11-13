@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+  <body>
+    <!-- 헤더 fragment -->
+    <header th:fragment="siteHeader">
+      <div class="header-inner">
+        <div class="brand">
+          <img src="/image/bear.png" alt="곰사육사 로고" class="logo-img" />
+          <h1>곰사육사 강의 수강생 커뮤니티</h1>
+        </div>
+
+        <div class="top-actions" aria-label="빠른 메뉴">
+          <span class="pill">모아보기</span>
+          <span class="pill">공감글</span>
+          <span class="pill">추천글</span>
+          <span class="pill">홈으로</span>
+        </div>
+
+        <label class="search" aria-label="검색">
+          🔍
+          <input type="search" placeholder="검색어를 입력하세요." />
+        </label>
+      </div>
+    </header>
+  </body>
+</html>
