@@ -70,4 +70,8 @@ public class BoardServiceImpl implements BoardService {
         return false;
         }
     }
+    // 게시글 전체 조회
+    public List<BoardListRes> findAll() {
+        return boardDao.findAll();
+    }
 }

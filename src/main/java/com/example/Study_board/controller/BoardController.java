@@ -1,5 +1,6 @@
 package com.example.Study_board.controller;
 
+import com.example.Study_board.dao.BoardDao;
 import com.example.Study_board.dto.BoardListRes;
 import com.example.Study_board.dto.BoardRes;
 import com.example.Study_board.service.BoardService;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -18,6 +20,7 @@ import java.util.List;
 @RequestMapping("/posts")
 @Slf4j
 public class BoardController {
+    private final BoardDao boardDao;
     private final BoardService boardService;
     private final String board1 = "board1";
     private final String board2 = "board2";
@@ -44,7 +47,7 @@ public class BoardController {
         return "post/list";
     }
     // ?? 게시판
-    @GetMapping("/board2")
+    @GetMapping("/board3")
     public String board3list(HttpSession session, Model model) {
         // 로그인 여부 확인 var은 타입 추론을 해서 자동으로 형을 찾아 줌
         var loginMember = session.getAttribute("loginMember");
@@ -54,7 +57,7 @@ public class BoardController {
         return "post/list";
     }
     // ?? 게시판
-    @GetMapping("/board3")
+    @GetMapping("/board4")
     public String board4list(HttpSession session, Model model) {
         // 로그인 여부 확인 var은 타입 추론을 해서 자동으로 형을 찾아 줌
         var loginMember = session.getAttribute("loginMember");
@@ -63,6 +66,24 @@ public class BoardController {
         model.addAttribute("posts", list);
         return "post/list";
     }
+    // 게시글 상세 보기
+    @GetMapping("/detail/{id}")
+    public String detail(@PathVariable("id") Long id, Model model, HttpSession session) {
+        var loginMember = session.getAttribute("loginMember");
+        if (loginMember == null) return "redirect:/";
+
+        BoardRes post = boardDao.findByBoardID(id);
+        if (post == null) {
+            model.addAttribute("error", "해당 게시글이 존재하지 않습니다.");
+            return "post/error"; // 없는 경우 따로 처리 가능
+        }
+
+        model.addAttribute("post", post);
+        return "post/detail"; // detail.html 템플릿으로 이동
+    }
+    // 공감글
+
+    // 추천글
 
 
 }

@@ -45,6 +45,40 @@ public class BoardDao {
         List<BoardListRes> list = jdbc.query(sql, new BoardListRowMapper(), board_type);
         return list;
     }
+    // 게시글 전체 조회
+    public List<BoardListRes> findAll() {
+        @Language("SQL")
+        String sql = """
+        
+                SELECT
+            b.BOARD_ID,
+            b.BOARD_TYPE,
+            b.MEMBER_ID,
+            m.NICKNAME,
+            b.TITLE,
+            b.VIEW_COUNT,
+            NVL(SUM(CASE WHEN r.ACTION = 'LIKE' THEN 1 ELSE 0 END), 0) AS LIKE_COUNT,
+            NVL(SUM(CASE WHEN r.ACTION = 'REPORT' THEN 1 ELSE 0 END), 0) AS REPORT_COUNT,
+            TO_CHAR(b.REG_DATE, 'YYYY-MM-DD HH24:MI:SS') AS REG_DATE
+        FROM STUDY_BOARD b
+        JOIN STUDY_MEMBER m
+            ON b.MEMBER_ID = m.MEMBER_ID
+        LEFT JOIN REACTION r
+            ON r.TARGET_TYPE = 'BOARD'
+            AND r.TARGET_ID = b.BOARD_ID
+        GROUP BY
+            b.BOARD_ID,
+            b.BOARD_TYPE,
+            b.MEMBER_ID,
+            m.NICKNAME,
+            b.TITLE,
+            b.VIEW_COUNT,
+            b.REG_DATE
+        ORDER BY b.BOARD_ID DESC
+        """;
+
+        return jdbc.query(sql, new BoardListRowMapper());
+    }
 
     // 게시글 조회
     public BoardRes findByBoardID(Long board_id) {
