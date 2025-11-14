@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Fragments</title>
+</head>
+<body>
+<!-- left menu -->
+<aside class="nav" aria-label="게시판 선택" th:fragment="left_Menu">
+    <nav class="menu">
+        <a th:href="@{/board/board1}">공지사항</a>
+        <a th:href="@{/board/board2}">자유게시판</a>
+        <a th:href="@{/board/board3}">코드게시판</a>
+        <a th:href="@{/board/board4}">스터디게시판</a>
+    </nav>
+</aside>
+</body>
+</html>

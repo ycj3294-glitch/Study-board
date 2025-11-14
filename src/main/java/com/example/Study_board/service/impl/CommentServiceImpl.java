@@ -4,11 +4,14 @@ import com.example.Study_board.dao.BoardDao;
 import com.example.Study_board.dao.CommentDao;
 import com.example.Study_board.dao.MemberDao;
 import com.example.Study_board.dto.CommentCreateReq;
+import com.example.Study_board.dto.CommentRes;
 import com.example.Study_board.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.security.PrivateKey;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
@@ -32,10 +35,15 @@ public class CommentServiceImpl implements CommentService {
     public boolean delete(Long id) {
         return commentDao.delete(id);
     }
-@Override
+    @Override
     public boolean update(CommentCreateReq req, Long id){
-//        if (commentDao.)
         return commentDao.update(req, id);
-}
+    }
+
+    @Override
+    public List<CommentRes> listByBoardid(Long board_id) {
+        return commentDao.findById(board_id);
+    }
+
 
 }

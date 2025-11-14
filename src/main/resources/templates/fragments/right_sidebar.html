@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!-- right sidebar -->
+<aside class="right" aria-label="로그인 및 사이드" th:fragment="right_menu">
+    <div class="card">
+        <a class="btn primary" th:href="@{/login}">로그인</a>
+        <a class="btn ghost" th:href="@{/login/signup}">회원가입</a>
+    </div>
+    <div class="card">
+        <img
+                class="hero"
+                src="/image/banner.png"
+                alt="곰과 사파리 가이드 일러스트 대체 이미지"
+        />
+    </div>
+</aside>
+</body>
+</html>

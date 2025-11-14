@@ -468,19 +468,19 @@
           <div class="post-meta">
             <span th:text="${post.nickname}">닉네임</span>
             <span
-              th:text="${#temporals.format(post.createdAt, 'yyyy.MM.dd HH:mm')}"
+              th:text="${#temporals.format(post.reg_date, 'yyyy.MM.dd HH:mm')}"
               >2025.11.01 12:00</span
             >
             <span>
               조회
-              <span th:text="${post.viewCount}">30</span>
+              <span th:text="${post.view_count}">30</span>
             </span>
           </div>
 
           <hr class="post-separator" />
 
           <!-- 본문 -->
-          <div class="post-content" th:text="${post.content}">
+          <div class="post-content" th:text="${post.contents}">
             게시글 내용이 들어갑니다.
           </div>
 
@@ -502,20 +502,20 @@
           <div class="comment-section">
             <div class="comment-header">
               <h3>댓글</h3>
-              <span th:text="${#lists.size(comments)} + '개'">0개</span>
+              <span th:text="${#lists.size(comment)} + '개'">0개</span>
             </div>
 
             <!-- 댓글 목록 -->
-            <div class="comment-list" th:if="${!#lists.isEmpty(comments)}">
-              <div class="comment-item" th:each="comment : ${comments}">
+            <div class="comment-list" th:if="${!#lists.isEmpty(comment)}">
+              <div class="comment-item" th:each="comment : ${comment}">
                 <div class="comment-meta">
                   <strong th:text="${comment.nickname}">댓글닉네임</strong>
                   <span
-                    th:text="${#temporals.format(comment.createdAt, 'MM/dd HH:mm')}"
+                    th:text="${#temporals.format(comment.reg_date, 'MM/dd HH:mm')}"
                     >11/01 12:34</span
                   >
                 </div>
-                <div class="comment-content" th:text="${comment.content}">
+                <div class="comment-content" th:text="${comment.contents}">
                   댓글 내용입니다.
                 </div>
               </div>

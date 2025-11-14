@@ -23,9 +23,9 @@
         <form class="login-form" th:action="@{/login}" method="post">
           <div class="input-group">
             <input
-              type="email"
-              name="email"
-              placeholder="이메일을 입력하세요"
+              type="member_email"
+              name="Email"
+              placeholder="아이디를 입력하세요"
               required
             />
           </div>
@@ -44,7 +44,7 @@
 
         <p class="signup-text">
           아직 회원이 아니신가요?
-          <a th:href="@{/signup}">회원가입</a>
+          <a th:href="@{/login/signup}">회원가입</a>
         </p>
       </div>
     </div>

@@ -3,7 +3,10 @@ package com.example.Study_board.controller;
 import com.example.Study_board.dao.BoardDao;
 import com.example.Study_board.dto.BoardListRes;
 import com.example.Study_board.dto.BoardRes;
+import com.example.Study_board.dto.CommentRes;
+import com.example.Study_board.dto.MemberRes;
 import com.example.Study_board.service.BoardService;
+import com.example.Study_board.service.CommentService;
 import org.springframework.ui.Model;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -17,73 +20,55 @@ import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/posts")
+@RequestMapping("/board")
 @Slf4j
 public class BoardController {
     private final BoardDao boardDao;
     private final BoardService boardService;
+    private final CommentService commentService;
     private final String board1 = "board1";
     private final String board2 = "board2";
     private final String board3 = "board3";
     private final String board4 = "board4";
-    // 자유게시판
-    @GetMapping("/board1")  // 게시글 목록 가져 오기
-    public String board1list(HttpSession session, Model model) {
-        // 로그인 여부 확인 var은 타입 추론을 해서 자동으로 형을 찾아 줌
-        var loginMember = session.getAttribute("loginMember");
-        if (loginMember == null) return "redirect:/";  // 세션이 없으면 로그인 페이지로 이동
-        List<BoardListRes> list = boardService.list(board1);
-        model.addAttribute("posts", list);
-        return "post/list";
-    }
-    // ?? 게시판
-    @GetMapping("/board2")
-    public String board2list(HttpSession session, Model model) {
-        // 로그인 여부 확인 var은 타입 추론을 해서 자동으로 형을 찾아 줌
-        var loginMember = session.getAttribute("loginMember");
-        if (loginMember == null) return "redirect:/";  // 세션이 없으면 로그인 페이지로 이동
-        List<BoardListRes> list = boardService.list(board2);
-        model.addAttribute("posts", list);
-        return "post/list";
-    }
-    // ?? 게시판
-    @GetMapping("/board3")
-    public String board3list(HttpSession session, Model model) {
-        // 로그인 여부 확인 var은 타입 추론을 해서 자동으로 형을 찾아 줌
-        var loginMember = session.getAttribute("loginMember");
-        if (loginMember == null) return "redirect:/";  // 세션이 없으면 로그인 페이지로 이동
-        List<BoardListRes> list = boardService.list(board3);
-        model.addAttribute("posts", list);
-        return "post/list";
-    }
-    // ?? 게시판
-    @GetMapping("/board4")
-    public String board4list(HttpSession session, Model model) {
-        // 로그인 여부 확인 var은 타입 추론을 해서 자동으로 형을 찾아 줌
-        var loginMember = session.getAttribute("loginMember");
-        if (loginMember == null) return "redirect:/";  // 세션이 없으면 로그인 페이지로 이동
-        List<BoardListRes> list = boardService.list(board4);
-        model.addAttribute("posts", list);
-        return "post/list";
-    }
-    // 게시글 상세 보기
-    @GetMapping("/detail/{id}")
-    public String detail(@PathVariable("id") Long id, Model model, HttpSession session) {
-        var loginMember = session.getAttribute("loginMember");
-        if (loginMember == null) return "redirect:/";
 
+
+    // 각 게시판 이동
+    @GetMapping("/{boardType}")  // 게시글 목록 가져 오기
+    public String boardlist(@PathVariable String boardType, HttpSession session, Model model) {
+        // 로그인 여부 확인 var은 타입 추론을 해서 자동으로 형을 찾아 줌
+        MemberRes loginMember = (MemberRes) session.getAttribute("loginMember");
+        if (loginMember == null) return "redirect:/login";  // 세션이 없으면 로그인 페이지로 이동
+        List<BoardListRes> list = boardService.list(boardType);
+        model.addAttribute("posts", list);
+        return "board/list";
+    }
+
+    // 게시글 상세 보기
+    @GetMapping("/detail/{id}") // 현재 이동시 주소 http://localhost:8112/posts/detail/id
+    public String detail(@PathVariable Long id, Model model, HttpSession session) {
+        // 로그인 여부 확인
+        MemberRes loginMember = (MemberRes) session.getAttribute("loginMember");
+        if (loginMember == null) return "redirect:/";
+        // 해당 게시글 정보 가져옴
         BoardRes post = boardDao.findByBoardID(id);
         if (post == null) {
             model.addAttribute("error", "해당 게시글이 존재하지 않습니다.");
             return "post/error"; // 없는 경우 따로 처리 가능
         }
-
+        // 게시글 정보를 모델링
         model.addAttribute("post", post);
-        return "post/detail"; // detail.html 템플릿으로 이동
-    }
-    // 공감글
 
-    // 추천글
+        // 해당 게시글 코멘트 리스트 정보를 가져옴
+        List<CommentRes> comment = commentService.listByBoardid(id);
+        if (comment == null) {
+            model.addAttribute("null", "아직 등록된 댓글이 없습니다. 첫 댓글을 남겨보세요!");
+        }
+
+        // 코멘트 정보를 모델링
+        model.addAttribute("commentlist", comment);
+        return "board/detail"; // detail.html 템플릿으로 이동
+    }
+
 
 
 }

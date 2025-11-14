@@ -324,14 +324,7 @@
 
     <div class="container">
       <!-- left menu -->
-      <aside class="nav" aria-label="보드 메뉴">
-        <nav class="menu">
-          <a th:href="@{/board1}">공지사항</a>
-          <a th:href="@{/board2}">자유게시판</a>
-          <a th:href="@{//board3}">코드게시판</a>
-          <a th:href="@{//board4}">스터디게시판</a>
-        </nav>
-      </aside>
+        <div th:replace="fragments/left_menu :: left_Menu"></div>
 
       <!-- main boards -->
       <main>
@@ -517,17 +510,7 @@
       </main>
 
       <!-- right sidebar -->
-      <aside class="right" aria-label="로그인 및 사이드">
-        <div class="card">
-          <a class="btn primary" th:href="@{/login}">로그인</a>
-          <a class="btn ghost" th:href="@{/signup}">회원가입</a>
-        </div>
-        <div class="card">
-          <img
-            class="hero"
-            src="/image/banner.png"
-            alt="곰과 사파리 가이드 일러스트 대체 이미지"
-          />
+        <div th:replace="fragments/right_sidebar :: right_menu"></div>
         </div>
       </aside>
     </div>

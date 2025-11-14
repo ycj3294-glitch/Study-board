@@ -13,24 +13,27 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.lang.reflect.Member;
 import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/login")
 @Slf4j
 
 public class MemberController {
     private final MemberService memberService;
 
     // 로그인 페이지 이동
-    @GetMapping("/") // 루트 경로 localhost:8111
+    @GetMapping // 루트 경로 localhost:8111/login
     public String loginPage() {
         return "login/login"; // resource/template/login.login.html 만들어줘야함
     }
+
     // 로그인 처리
-    @PostMapping("/login")
+    @PostMapping()
     public String login(@ModelAttribute LoginReq req, HttpSession session, Model model) {
         log.info("로그인 정보 : {}", req);
         MemberRes member = memberService.login(req.getEmail(), req.getPwd());
@@ -39,7 +42,7 @@ public class MemberController {
             return "login/login";
         }
         session.setAttribute("loginMember", member);
-        return "redirect:/community";
+        return "redirect:/";
     }
 
     // 회원가입 페이지 이동
@@ -69,8 +72,5 @@ public class MemberController {
         return "login/list";
     }
 
-    @GetMapping("/community")
-    public String home() {
-        return "community";
-    }
+
 }
