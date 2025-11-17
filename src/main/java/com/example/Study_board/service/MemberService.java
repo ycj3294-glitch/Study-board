@@ -26,5 +26,7 @@ public interface MemberService {
     // email로 회원 조회
     MemberRes getByEmail(String email);
     // 회원 정보 수정 (닉네임 + 비밀번호)
-    boolean update(long id, String nickname, String pwd);
+    boolean update(long id, String nickname, String pwd, String profilePath);
+    // 회원 탈퇴 조회
+    boolean delete(long id);
 }

@@ -11,9 +11,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.lang.reflect.Member;
 import java.util.List;
+import java.util.UUID;
 
 @Controller
 @RequiredArgsConstructor
@@ -87,18 +90,44 @@ public class MemberController {
     }
     // 회원 정보 수정
     @PostMapping("/member/update")
-    public String updateMember(@RequestParam String nickname,@RequestParam String pwd, HttpSession session, Model model) {
+    public String updateMember(@RequestParam String nickname, @RequestParam String pwd, @RequestParam(required = false) MultipartFile profileImage, HttpSession session, Model model) {
         // 세션에서 현재 로그인 회원 가져오기
         MemberRes loginmember = (MemberRes) session.getAttribute("loginMember");
 
         if (loginmember == null) {
             return "redirect:/login";
         }
+
+        // 프로필 이미지 저장 처리
+        String savedPath = loginmember.getProfilePath();  // 기본 이미지 유지 기본값
+        if (profileImage != null && !profileImage.isEmpty()) {
+            try {
+                String uploadDir = "src/main/resources/static/profile/";
+                File folder = new File(uploadDir);
+                if (!folder.exists()) {
+                    folder.mkdirs();
+                }
+                // 저장할 파일명: 회원ID_원본파일명
+                String fileName = loginmember.getId() + "_" + profileImage.getOriginalFilename();
+                File saveFile = new File(uploadDir + fileName);
+
+                profileImage.transferTo((saveFile));
+
+                // 웹에서 접근 가능한 경로로 변환
+                savedPath = "upload/profile/" + fileName;
+
+            }  catch (Exception e) {
+                model.addAttribute("error","이미지 업로드 실패:" +  e.getMessage());
+                return "memberinfo";
+            }
+        }
+
         // 서비스 계층에 수정 요청(id + 새 닉네임 + 새 비밀번호)
         boolean success = memberService.update(
                 loginmember.getId(),
                 nickname,
-                pwd
+                pwd,
+                savedPath
         );
 
         if (success) {
@@ -110,5 +139,20 @@ public class MemberController {
         session.setAttribute("loginMember", updated);
         // 다시 내 정보 페이지로
         return "redirect:/member/info";
+    }
+
+    @GetMapping("/member/dele")
+    public String deleteMember(HttpSession session) {
+        MemberRes loginmember = (MemberRes) session.getAttribute("loginMember");
+        if (loginmember == null) {
+            return "redirect:/login";
+        }
+        boolean deleted = memberService.delete(loginmember.getId());
+
+        if (deleted) {
+            session.invalidate();
+            return "redirect:/";
+        }
+        return "redirect:/member/info?error=delete-failed";
     }
 }

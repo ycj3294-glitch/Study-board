@@ -75,11 +75,21 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public boolean update(long id, String nickname, String pwd) {
+    public boolean update(long id, String nickname, String pwd, String profilePath) {
         try {
-            return memberDao.update(id, nickname, pwd);
-        }catch (DataAccessException e) {
+            return memberDao.update(id, nickname, pwd, profilePath);
+        }catch (Exception e) {
             log.error("회원 정보 수정 중 오류 발생: {}", e.getMessage(), e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean delete(long id) {
+        try {
+            return memberDao.delete(id);
+        }catch (Exception e) {
+            log.error("회원 탈퇴 중 오류 발생: {}", e.getMessage(), e);
             return false;
         }
     }
