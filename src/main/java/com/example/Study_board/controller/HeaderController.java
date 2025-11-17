@@ -21,11 +21,11 @@ public class HeaderController {
     @GetMapping("/listall")
     public String listAll(Model model) {
         // 모든 게시글 리스트 불러옴
-
+        List<BoardListRes> listall = boardService.findAll();
         // 모델에 게시글 리스트 입력
-
+        model.addAttribute("listall", listall);
         // 모델 명 지정
-
+        model.addAttribute("title", "전체 게시글");
         return "header/listall"; // header/listall.html
     }
 
@@ -33,11 +33,11 @@ public class HeaderController {
     @GetMapping("/like")
     public String bestByLike(Model model) {
         // 공감 순서로 게시글을 불러옴
-//        List<BoardListRes> posts = boardService.findTopLiked(10);
+        List<BoardListRes> posts = boardService.findTopLiked(10);
         // 모델에 게시글 리스트를 입력
-//        model.addAttribute("posts", posts);
+        model.addAttribute("posts", posts);
         // 모델 명 지정
-//        model.addAttribute("title", "공감 많은 게시글");
+        model.addAttribute("title", "공감 많은 게시글");
         return "header/like"; // header/like.html
     }
 

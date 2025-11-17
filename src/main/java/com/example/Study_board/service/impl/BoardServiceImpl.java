@@ -101,6 +101,8 @@ public class BoardServiceImpl implements BoardService {
     public List<BoardListRes> findAll() {
         return boardDao.findAll();
     }
+
+    // 공감 순서로 조회
     @Override
     public List<BoardListRes> findTopLiked(int limit) {
         return boardDao.findTopLiked(limit);
