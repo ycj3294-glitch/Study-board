@@ -17,4 +17,5 @@ public class MemberRes {
     private String nickname;
     private LocalDateTime redDate;
     private String profilePath;
+    private String pwd;
 }

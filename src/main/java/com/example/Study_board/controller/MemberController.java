@@ -101,37 +101,36 @@ public class MemberController {
         // 프로필 이미지 저장 처리
         String savedPath = loginmember.getProfilePath();  // 기본 이미지 유지 기본값
         if (profileImage != null && !profileImage.isEmpty()) {
+            String uploadDir = "src/main/resources/static/upload/profile/";
+            File folder = new File(uploadDir);
+            if (!folder.exists()) folder.mkdirs();
+
+            String fileName = loginmember.getId() + "_" + profileImage.getOriginalFilename();
+            File saveFile = new File(uploadDir + fileName);
+
             try {
-                String uploadDir = "src/main/resources/static/profile/";
-                File folder = new File(uploadDir);
-                if (!folder.exists()) {
-                    folder.mkdirs();
-                }
-                // 저장할 파일명: 회원ID_원본파일명
-                String fileName = loginmember.getId() + "_" + profileImage.getOriginalFilename();
-                File saveFile = new File(uploadDir + fileName);
-
-                profileImage.transferTo((saveFile));
-
-                // 웹에서 접근 가능한 경로로 변환
-                savedPath = "upload/profile/" + fileName;
-
-            }  catch (Exception e) {
-                model.addAttribute("error","이미지 업로드 실패:" +  e.getMessage());
-                return "memberinfo";
+                profileImage.transferTo(saveFile);
+                savedPath = "/upload/profile/" + fileName; // 웹에서 접근하는 경로
+            } catch (Exception e) {
+                e.printStackTrace();
+                model.addAttribute("error", "파일 업로드 중 오류가 발생했습니다.");
             }
+        }
+        // 비밀번호 변경 안 했으면 기존 값 사용
+        if (pwd == null || pwd.trim().isEmpty()) {
+            pwd = loginmember.getPwd();
         }
 
         // 서비스 계층에 수정 요청(id + 새 닉네임 + 새 비밀번호)
-        boolean success = memberService.update(
+        boolean success = memberService.updateProfile(
                 loginmember.getId(),
                 nickname,
                 pwd,
                 savedPath
         );
 
-        if (success) {
-            model.addAttribute("error", "회원 수정에 실패했습니다.");
+        if (!success) {
+            model.addAttribute("error", "회원 수정 중 문제가 발생했습니다.");
             return "memberinfo";
         }
         // DB에서 최신 정보 다시 조회 -> 세션 갱신

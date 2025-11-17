@@ -80,16 +80,16 @@ public class MemberDao {
         return jdbc.query(sql, new MemberRowMapper());
     }
     // 회원 정보 수정 : 닉네임 + 비밀번호
-    public boolean update(Long id, String nickname, String pwd, String profilePath) {
-        @Language("SQL")
-        String sql = """
-        UPDATE STUDY_MEMBER
-        SET NICKNAME = ?, PWD = ?, PROFILEPATH = ?
-        WHERE MEMBER_ID = ?
-    """;
-
-        return jdbc.update(sql, nickname, pwd, id) > 0;
-    }
+//    public boolean update(Long id, String nickname, String pwd, String profilePath) {
+//        @Language("SQL")
+//        String sql = """
+//        UPDATE STUDY_MEMBER
+//        SET NICKNAME = ?, PWD = ?, PROFILEPATH = ?
+//        WHERE MEMBER_ID = ?
+//    """;
+//
+//        return jdbc.update(sql, nickname, pwd, id) > 0;
+//    }
 
     // 회원 탈퇴
     public boolean delete(long id) {
@@ -99,6 +99,11 @@ public class MemberDao {
                 """;
         return jdbc.update(sql, id) > 0;
     }
+    public int updateProfile(Long memberId, String nickname, String password, String profilePath) {
+        String sql = "UPDATE STUDY_MEMBER SET nickname = ?, pwd = ?, profile_path = ? WHERE member_id = ?";
+        return jdbc.update(sql, nickname, password, profilePath, memberId);
+    }
+
 
     // Mapper
     static class MemberRowMapper implements RowMapper<MemberRes> {
@@ -110,7 +115,8 @@ public class MemberDao {
                     rs.getString("EMAIL"),
                     rs.getString("NICKNAME"),
                     rs.getTimestamp("REG_DATE").toLocalDateTime(),
-                    rs.getString("PROFILE_PATH")
+                    rs.getString("PROFILE_PATH"),
+                    rs.getString("PWD")
             );
         }
     }
