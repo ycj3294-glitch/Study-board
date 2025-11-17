@@ -37,7 +37,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public MemberRes login(String email, String pwd) {
         MemberRes member = memberDao.findByEmail(email);
-        return new MemberRes(member.getId(), member.getEmail(), member.getNickname(), member.getRedDate());
+        return new MemberRes(member.getId(), member.getEmail(), member.getNickname(), member.getRedDate(), member.getProfilePath());
     }//패스워드 res에 일부러 안넣었는데 이거 비밀번호 조회가 꼭 필요한가?
 
 
