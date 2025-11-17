@@ -73,4 +73,14 @@ public class MemberServiceImpl implements MemberService {
         if(memberRes == null) throw new IllegalArgumentException("해당 이메일을 가진 회원은 없습니다.");
         return memberDao.findByEmail(email);
     }
+
+    @Override
+    public boolean update(long id, String nickname, String pwd) {
+        try {
+            return memberDao.update(id, nickname, pwd);
+        }catch (DataAccessException e) {
+            log.error("회원 정보 수정 중 오류 발생: {}", e.getMessage(), e);
+            return false;
+        }
+    }
 }

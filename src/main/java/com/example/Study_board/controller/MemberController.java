@@ -10,10 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.Member;
 import java.util.List;
@@ -72,5 +69,46 @@ public class MemberController {
         return "login/list";
     }
 
+    // 회원 정보 페이지 표시
+    @GetMapping("/member/info")
+    public String memberInfo(HttpSession session, Model model) {
+        // 로그인된 회원 정보 가져오기
+        MemberRes member = (MemberRes) session.getAttribute("loginMember");
+        // 로그인이 안되어 있으면 로그인 페이지로 이동
+        if (member == null) {
+            return "redirect:/login";
+        }
 
+        // 회원 정보를 model에 담아 HTML에서 출력하도록 전달
+        model.addAttribute("member",member);
+
+        // memberinfo.html로 페이지 이동
+        return "memberinfo";
+    }
+    // 회원 정보 수정
+    @PostMapping("/member/update")
+    public String updateMember(@RequestParam String nickname,@RequestParam String pwd, HttpSession session, Model model) {
+        // 세션에서 현재 로그인 회원 가져오기
+        MemberRes loginmember = (MemberRes) session.getAttribute("loginMember");
+
+        if (loginmember == null) {
+            return "redirect:/login";
+        }
+        // 서비스 계층에 수정 요청(id + 새 닉네임 + 새 비밀번호)
+        boolean success = memberService.update(
+                loginmember.getId(),
+                nickname,
+                pwd
+        );
+
+        if (success) {
+            model.addAttribute("error", "회원 수정에 실패했습니다.");
+            return "memberinfo";
+        }
+        // DB에서 최신 정보 다시 조회 -> 세션 갱신
+        MemberRes updated = memberService.getById(loginmember.getId());
+        session.setAttribute("loginMember", updated);
+        // 다시 내 정보 페이지로
+        return "redirect:/member/info";
+    }
 }
