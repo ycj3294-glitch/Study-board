@@ -1,10 +1,457 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-<h2>제작자 페이지</h2>
-</body>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <title>만든이 - 곰사육사 강의 수강생 커뮤니티</title>
+
+    <style>
+      /* ---------- Design tokens ---------- */
+      :root {
+        --bg: #f4f6fb;
+        --card: #ffffff;
+        --border: #e6e8ef;
+        --text: #101828;
+        --muted: #667085;
+        --primary: #6f7ddf;
+        --primary-600: #5f6dcd;
+        --accent: #0d6efd;
+        --accent-600: #0b5ed7;
+        --radius: 14px;
+        --shadow: 0 16px 40px rgba(16, 24, 40, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+      body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        background: var(--bg);
+        color: var(--text);
+        font: 16px/1.6 "Noto Sans KR", system-ui, -apple-system, Segoe UI,
+          Roboto, Arial, sans-serif;
+      }
+
+      /* header – 공통 테마 */
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: linear-gradient(0deg, var(--primary-600), var(--primary));
+        color: #fff;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      }
+      .header-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 10px 16px;
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        gap: 12px;
+        align-items: center;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+      }
+      .logo-img {
+        width: 34px;
+        height: auto;
+        object-fit: contain;
+      }
+      .brand h1 {
+        margin: 0;
+        font-size: 18px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .top-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+      .pill {
+        background: transparent;
+        border: none;
+        color: #fff;
+        padding: 0 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .pill:hover {
+        text-decoration: underline;
+      }
+      .search {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #fff;
+        border-radius: 999px;
+        padding: 6px 10px;
+        min-width: 240px;
+      }
+      .search input {
+        border: 0;
+        outline: 0;
+        width: 220px;
+        font-size: 14px;
+        color: var(--text);
+      }
+
+      /* ----- 1컬럼 메인 레이아웃 ----- */
+      .page-container {
+        flex: 1;
+        width: 100%;
+        max-width: 960px;
+        margin: 40px auto;
+        padding: 0 20px 40px;
+      }
+
+      .about-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 24px 26px 26px;
+      }
+
+      .about-title {
+        margin: 0 0 6px;
+        font-size: 24px;
+        font-weight: 700;
+      }
+      .about-subtitle {
+        margin: 0 0 22px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+        color: #fff;
+        background: var(--accent);
+        margin-left: 6px;
+      }
+
+      .back-links {
+        margin-bottom: 18px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .back-links a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+      .back-links a:hover {
+        text-decoration: underline;
+      }
+
+      /* 팀 소개 레이아웃 */
+      .team-intro {
+        margin-bottom: 24px;
+        font-size: 14px;
+      }
+
+      .team-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+        margin-bottom: 24px;
+      }
+
+      .member-card {
+        border-radius: 18px;
+        border: 1px solid var(--border);
+        background: #f8f9fe;
+        padding: 16px 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .member-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        font-weight: 700;
+        color: #fff;
+      }
+
+      .member-name {
+        font-size: 16px;
+        font-weight: 700;
+      }
+
+      .member-role {
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .member-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 2px;
+      }
+
+      .tag {
+        font-size: 11px;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: #fff;
+        border: 1px solid var(--border);
+        color: var(--muted);
+      }
+
+      .member-desc {
+        font-size: 13px;
+        color: var(--text);
+      }
+
+      .member-links {
+        margin-top: 4px;
+        font-size: 12px;
+      }
+      .member-links a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+      .member-links a:hover {
+        text-decoration: underline;
+      }
+
+      .about-footer-note {
+        font-size: 13px;
+        color: var(--muted);
+        padding-top: 14px;
+        border-top: 1px solid var(--border);
+      }
+
+      /* footer – 공통 */
+      footer {
+        margin-top: 28px;
+        background: var(--primary-600);
+        color: #dfe3ff;
+        border-top: 1px solid rgba(255, 255, 255, 0.15);
+      }
+      .footer-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 14px 16px;
+        display: flex;
+        gap: 24px;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .footer-links {
+        display: flex;
+        gap: 28px;
+        flex-wrap: wrap;
+      }
+      .footer-links a {
+        color: #fff;
+        text-decoration: none;
+        opacity: 0.95;
+      }
+      .footer-links a:hover {
+        text-decoration: underline;
+      }
+
+      @media (max-width: 780px) {
+        .header-inner {
+          grid-template-columns: 1fr auto;
+        }
+        .top-actions {
+          display: none;
+        }
+        .search {
+          grid-column: 1 / -1;
+        }
+        .page-container {
+          margin-top: 24px;
+          padding: 0 14px 24px;
+        }
+        .about-card {
+          padding: 18px 16px 20px;
+        }
+        .team-grid {
+          grid-template-columns: 1fr; /* 모바일에서는 세로로 하나씩 */
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- 헤더 공통 -->
+    <div th:replace="fragments/header :: siteHeader"></div>
+
+    <main class="page-container">
+      <section class="about-card">
+        <div class="back-links">
+          <a th:href="@{/}">← 메인으로 돌아가기</a>
+        </div>
+
+        <h2 class="about-title">
+          만든이
+          <span class="badge">TEAM</span>
+        </h2>
+        <p class="about-subtitle">
+          곰사육사 강의 수강생 커뮤니티는 아래 네 명의 제작자가 함께
+          기획·디자인·개발했습니다.
+        </p>
+
+        <div class="team-intro">
+          <p>
+            “수강생들이 편하게 질문하고, 서로의 코드를 보며 성장하는 공간이
+            있었으면 좋겠다”는 생각에서 시작된 프로젝트입니다. 강의를 들으며
+            필요하다고 느낀 기능들을 하나씩 직접 구현해 보고, 실제로 수강생들이
+            사용할 수 있는 커뮤니티로 발전시키는 것을 목표로 했습니다.
+          </p>
+        </div>
+
+        <!-- 4명 제작자 카드 -->
+        <div class="team-grid">
+          <!-- Member 1 -->
+          <article class="member-card">
+            <div class="member-header">
+              <div class="avatar">A</div>
+              <div>
+                <div class="member-name">강용빈</div>
+                <div class="member-role">기획 · 페이지 디자인</div>
+              </div>
+            </div>
+            <div class="member-tags">
+              <span class="tag">Spring Boot</span>
+              <span class="tag">Figma</span>
+              <span class="tag">HTML, CSS</span>
+            </div>
+            <p class="member-desc">
+              전체 커뮤니티 구조를 기획하고 게시판, 댓글, 공감/신고 기능 등
+              페이지 전체 디자인을 구현했습니다. “배운 내용을 바로 서비스로
+              만들어 보자”는 마음으로 프로젝트를 협업하고 있습니다.
+            </p>
+            <div class="member-links">
+              <!-- 필요하면 깃허브 링크 연결 -->
+              <a
+                href="https://github.com/star-kbin"
+                target="_blank"
+                rel="noopener"
+                >GitHub 바로가기</a
+              >
+            </div>
+          </article>
+
+          <!-- Member 2 -->
+          <article class="member-card">
+            <div class="member-header">
+              <div class="avatar">B</div>
+              <div>
+                <div class="member-name">곰사육사 B</div>
+                <div class="member-role">프론트엔드 · UI 디자인</div>
+              </div>
+            </div>
+            <div class="member-tags">
+              <span class="tag">HTML/CSS</span>
+              <span class="tag">UX/UI</span>
+              <span class="tag">반응형 레이아웃</span>
+            </div>
+            <p class="member-desc">
+              상단 헤더, 좌측 메뉴, 카드형 게시판 레이아웃 등 지금 보시는 화면
+              디자인 전반을 담당했습니다. “조금만 더 귀엽고 보기 쉽도록”을
+              모토로 스타일을 계속 다듬고 있습니다.
+            </p>
+            <div class="member-links">
+              <a href="#" target="_blank" rel="noopener">Portfolio 보기</a>
+            </div>
+          </article>
+
+          <!-- Member 3 -->
+          <article class="member-card">
+            <div class="member-header">
+              <div class="avatar">C</div>
+              <div>
+                <div class="member-name">곰사육사 C</div>
+                <div class="member-role">데이터 · 서버 운영</div>
+              </div>
+            </div>
+            <div class="member-tags">
+              <span class="tag">DB 튜닝</span>
+              <span class="tag">로그 수집</span>
+              <span class="tag">운영 자동화</span>
+            </div>
+            <p class="member-desc">
+              접속 로그·에러 로그를 정리하고, 공감/조회수 등의 데이터를 나중에
+              분석할 수 있도록 설계했습니다. 안정적인 서비스 운영을 위해
+              배포·모니터링 환경도 함께 고민하고 있습니다.
+            </p>
+            <div class="member-links">
+              <a href="#" target="_blank" rel="noopener">Blog 방문하기</a>
+            </div>
+          </article>
+
+          <!-- Member 4 -->
+          <article class="member-card">
+            <div class="member-header">
+              <div class="avatar">D</div>
+              <div>
+                <div class="member-name">곰사육사 D</div>
+                <div class="member-role">콘텐츠 · 커뮤니티 운영</div>
+              </div>
+            </div>
+            <div class="member-tags">
+              <span class="tag">공지/가이드</span>
+              <span class="tag">문서 작성</span>
+              <span class="tag">커뮤니티 매니징</span>
+            </div>
+            <p class="member-desc">
+              공지사항, 도움말, 이용규칙 등 커뮤니티 안에서 필요한 글들을
+              정리하고, 수강생 분들의 피드백을 모아 개선 방향을 제안합니다.
+              질문이 잘 답변되는 분위기를 만드는 것이 가장 큰 목표입니다.
+            </p>
+            <div class="member-links">
+              <a href="#" target="_blank" rel="noopener">Contact</a>
+            </div>
+          </article>
+        </div>
+
+        <div class="about-footer-note">
+          앞으로도 새로운 아이디어와 기능을 계속 실험해 볼 예정입니다. “이런
+          기능 있으면 좋겠다” 싶은 것들이 있다면 자유게시판이나 건의 글을 통해
+          언제든지 알려 주세요. 🙌
+        </div>
+      </section>
+    </main>
+
+    <!-- 푸터 공통 -->
+    <div th:replace="fragments/footer :: siteFooter"></div>
+  </body>
 </html>

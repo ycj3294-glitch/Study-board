@@ -1,10 +1,451 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-<h2>이용규칙 페이지</h2>
-</body>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <title>이용규칙 - 곰사육사 강의 수강생 커뮤니티</title>
+
+    <style>
+      /* ---------- Design tokens ---------- */
+      :root {
+        --bg: #f4f6fb;
+        --card: #ffffff;
+        --border: #e6e8ef;
+        --text: #101828;
+        --muted: #667085;
+        --primary: #6f7ddf;
+        --primary-600: #5f6dcd;
+        --accent: #0d6efd;
+        --accent-600: #0b5ed7;
+        --radius: 14px;
+        --shadow: 0 16px 40px rgba(16, 24, 40, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+      body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        background: var(--bg);
+        color: var(--text);
+        font: 16px/1.6 "Noto Sans KR", system-ui, -apple-system, Segoe UI,
+          Roboto, Arial, sans-serif;
+      }
+
+      /* header – 공통 테마 */
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: linear-gradient(0deg, var(--primary-600), var(--primary));
+        color: #fff;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      }
+      .header-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 10px 16px;
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        gap: 12px;
+        align-items: center;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+      }
+      .logo-img {
+        width: 34px;
+        height: auto;
+        object-fit: contain;
+      }
+      .brand h1 {
+        margin: 0;
+        font-size: 18px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .top-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+      .pill {
+        background: transparent;
+        border: none;
+        color: #fff;
+        padding: 0 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .pill:hover {
+        text-decoration: underline;
+      }
+      .search {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #fff;
+        border-radius: 999px;
+        padding: 6px 10px;
+        min-width: 240px;
+      }
+      .search input {
+        border: 0;
+        outline: 0;
+        width: 220px;
+        font-size: 14px;
+        color: var(--text);
+      }
+
+      /* ----- 1컬럼 메인 레이아웃 ----- */
+
+      .page-container {
+        flex: 1;
+        width: 100%;
+        max-width: 960px;
+        margin: 40px auto;
+        padding: 0 20px 40px;
+      }
+
+      .rules-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 24px 26px 26px;
+      }
+
+      .rules-title {
+        margin: 0 0 6px;
+        font-size: 24px;
+        font-weight: 700;
+      }
+      .rules-subtitle {
+        margin: 0 0 22px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+        color: #fff;
+        background: var(--accent);
+        margin-left: 6px;
+      }
+
+      .rules-section {
+        margin-bottom: 22px;
+      }
+      .rules-section h3 {
+        margin: 0 0 8px;
+        font-size: 18px;
+        font-weight: 700;
+      }
+      .rules-section p {
+        margin: 0 0 6px;
+        font-size: 14px;
+      }
+      .rules-section ul {
+        margin: 4px 0 0 20px;
+        padding: 0;
+        font-size: 14px;
+      }
+
+      .rules-highlight {
+        margin-top: 8px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        background: #f8f9fe;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .back-links {
+        margin-bottom: 18px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .back-links a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+      .back-links a:hover {
+        text-decoration: underline;
+      }
+
+      .rules-updated {
+        margin-top: 4px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      /* footer – 공통 */
+      footer {
+        margin-top: 28px;
+        background: var(--primary-600);
+        color: #dfe3ff;
+        border-top: 1px solid rgba(255, 255, 255, 0.15);
+      }
+      .footer-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 14px 16px;
+        display: flex;
+        gap: 24px;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .footer-links {
+        display: flex;
+        gap: 28px;
+        flex-wrap: wrap;
+      }
+      .footer-links a {
+        color: #fff;
+        text-decoration: none;
+        opacity: 0.95;
+      }
+      .footer-links a:hover {
+        text-decoration: underline;
+      }
+
+      @media (max-width: 780px) {
+        .header-inner {
+          grid-template-columns: 1fr auto;
+        }
+        .top-actions {
+          display: none;
+        }
+        .search {
+          grid-column: 1 / -1;
+        }
+        .page-container {
+          margin-top: 24px;
+          padding: 0 14px 24px;
+        }
+        .rules-card {
+          padding: 18px 16px 20px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- 헤더 공통 -->
+    <div th:replace="fragments/header :: siteHeader"></div>
+
+    <main class="page-container">
+      <div class="rules-card">
+        <div class="back-links">
+          <a th:href="@{/}">← 메인으로 돌아가기</a>
+        </div>
+
+        <h2 class="rules-title">
+          이용규칙
+          <span class="badge">RULES</span>
+        </h2>
+        <p class="rules-subtitle">
+          곰사육사 강의 수강생 커뮤니티를 모두가 안전하고 즐겁게 사용할 수
+          있도록 아래 이용규칙을 꼭 읽어 주세요.
+        </p>
+        <p class="rules-updated">
+          ※ 이 이용규칙은 서비스 운영 상황에 따라 변경될 수 있으며, 변경 시
+          공지사항을 통해 안내드립니다.
+        </p>
+
+        <!-- 1. 목적 -->
+        <section class="rules-section">
+          <h3>1. 커뮤니티의 목적</h3>
+          <p>
+            이 커뮤니티는 곰사육사 강의를 수강하는 학습자들이
+            <strong>학습 내용 공유, 질문, 정보 교류, 스터디 활동</strong>을 하기
+            위한 공간입니다.
+          </p>
+          <p>
+            상업적 광고, 강의와 무관한 홍보, 분쟁을 유도하는 활동 등 커뮤니티
+            목적과 맞지 않는 이용은 제한될 수 있습니다.
+          </p>
+        </section>
+
+        <!-- 2. 회원 계정 -->
+        <section class="rules-section">
+          <h3>2. 회원 계정 및 보안</h3>
+          <ul>
+            <li>
+              회원은 자신의 계정(이메일, 비밀번호)을 안전하게 관리해야 합니다.
+            </li>
+            <li>
+              타인의 이름, 단체명, 강사명을 사칭하는 닉네임 사용은 금지됩니다.
+            </li>
+            <li>
+              계정 공유 및 양도는 허용하지 않으며, 발견 시 서비스 이용이 제한될
+              수 있습니다.
+            </li>
+          </ul>
+        </section>
+
+        <!-- 3. 게시물 작성 기준 -->
+        <section class="rules-section">
+          <h3>3. 게시물 작성 규칙</h3>
+          <p>
+            다음에 해당하는 게시글과 댓글은 작성이 제한되거나, 운영자에 의해
+            수정·삭제될 수 있습니다.
+          </p>
+          <ul>
+            <li>
+              욕설, 비방, 혐오 표현, 인신공격 등 타인을 불쾌하게 하는 내용
+            </li>
+            <li>정치·종교 논쟁을 유도하거나 사회적 갈등을 조장하는 내용</li>
+            <li>
+              도배, 스팸, 무단 광고, 외부 서비스/강의 홍보 및 영업 목적의 글
+            </li>
+            <li>
+              개인정보(연락처, 주소, 계좌번호 등)를 과도하게 노출하는 내용
+            </li>
+            <li>저작권을 침해하는 자료(불법 복제본, 무단 공유 코드·교재 등)</li>
+            <li>기타 관련 법령 및 커뮤니티 목적에 어긋난다고 판단되는 내용</li>
+          </ul>
+          <div class="rules-highlight">
+            타인의 코드를 공유할 때에는 출처를 명시하고, 허용 범위 내에서 일부
+            발췌·요약하여 공유해 주세요.
+          </div>
+        </section>
+
+        <!-- 4. 저작권 -->
+        <section class="rules-section">
+          <h3>4. 저작권 및 콘텐츠 이용</h3>
+          <ul>
+            <li>
+              회원이 작성한 게시물의 저작권은 원칙적으로 작성자 본인에게
+              있습니다.
+            </li>
+            <li>
+              운영자는 서비스 품질 개선, 강의 안내 등을 위해 게시물을
+              인용·소개할 수 있으며, 이 경우 개인정보는 노출하지 않습니다.
+            </li>
+            <li>
+              강의 자료, 캡처 화면, 문제·해설 등은 외부 사이트에 무단 유출하거나
+              재배포할 수 없습니다.
+            </li>
+          </ul>
+        </section>
+
+        <!-- 5. 공감 / 신고 및 제재 -->
+        <section class="rules-section">
+          <h3>5. 공감 / 신고 및 제재</h3>
+          <ul>
+            <li>
+              공감 버튼은 도움이 되거나 동의하는 글에 사용하는 긍정적인 피드백
+              도구입니다.
+            </li>
+            <li>
+              신고 버튼은 규칙 위반, 스팸, 부적절한 게시물 발견 시 사용해
+              주세요.
+            </li>
+            <li>
+              신고가 누적되거나 명백한 규칙 위반이 확인되면, 운영자는 게시물
+              숨김/삭제 및 회원 제재(일시 정지, 영구 차단 등)를 진행할 수
+              있습니다.
+            </li>
+          </ul>
+          <div class="rules-highlight">
+            신고 기능은 모두를 위한 안전장치입니다. 개인적인 감정 다툼이나 의견
+            차이만으로 남용하지 말아 주세요.
+          </div>
+        </section>
+
+        <!-- 6. 개인정보 -->
+        <section class="rules-section">
+          <h3>6. 개인정보 보호</h3>
+          <ul>
+            <li>
+              운영자는 서비스 제공을 위해 필요한 최소한의 정보만을
+              수집·보관합니다.
+            </li>
+            <li>
+              비밀번호와 같은 민감 정보는 안전한 방식으로 관리되며, 운영자도
+              원문을 확인할 수 없습니다.
+            </li>
+            <li>
+              회원은 게시글·댓글에 본인 또는 타인의 개인정보를 과도하게 올리지
+              않도록 주의해야 합니다.
+            </li>
+          </ul>
+        </section>
+
+        <!-- 7. 서비스 이용 제한 및 책임 -->
+        <section class="rules-section">
+          <h3>7. 서비스 이용 제한 및 책임</h3>
+          <ul>
+            <li>
+              운영자는 서버 점검, 서비스 개선, 외부 요인 등으로 서비스의 일부
+              또는 전부를 일시 중단할 수 있습니다.
+            </li>
+            <li>
+              회원이 이용규칙 및 관련 법령을 위반하여 발생한 문제에 대해서는
+              해당 회원에게 책임이 있습니다.
+            </li>
+            <li>
+              커뮤니티에 게시된 내용은 각 작성자의 개인적인 의견이며, 운영자의
+              공식 입장과는 다를 수 있습니다.
+            </li>
+          </ul>
+        </section>
+
+        <!-- 8. 규칙 변경 -->
+        <section class="rules-section">
+          <h3>8. 이용규칙의 변경</h3>
+          <p>
+            운영자는 서비스 운영 정책, 관련 법령 변경 등을 반영하기 위해 이
+            이용규칙을 수정할 수 있습니다.
+          </p>
+          <ul>
+            <li>
+              중요한 변경 사항이 있을 경우 공지사항을 통해 사전에 안내합니다.
+            </li>
+            <li>
+              공지 후에도 커뮤니티를 계속 이용하는 경우, 변경된 규칙에 동의한
+              것으로 간주됩니다.
+            </li>
+          </ul>
+        </section>
+
+        <!-- 9. 문의 -->
+        <section class="rules-section">
+          <h3>9. 문의처</h3>
+          <p>
+            이용규칙과 관련해 궁금한 점이나 개선 제안이 있다면 자유게시판에
+            <strong>[건의]</strong> 말머리로 글을 남기거나, 공지사항에 안내된
+            운영자 이메일로 연락해 주세요.
+          </p>
+          <div class="rules-highlight">
+            커뮤니티는 혼자가 아니라 함께 만드는 공간입니다. 규칙을 지키면서
+            편안하고 즐거운 학습 환경을 함께 만들어 주세요. 🙌
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- 푸터 공통 -->
+    <div th:replace="fragments/footer :: siteFooter"></div>
+  </body>
 </html>

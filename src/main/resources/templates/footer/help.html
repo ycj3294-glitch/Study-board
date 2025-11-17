@@ -1,10 +1,425 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-<h2>도움말 페이지</h2>
-</body>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <title>도움말 - 곰사육사 강의 수강생 커뮤니티</title>
+
+    <style>
+      /* ---------- Design tokens ---------- */
+      :root {
+        --bg: #f4f6fb;
+        --card: #ffffff;
+        --border: #e6e8ef;
+        --text: #101828;
+        --muted: #667085;
+        --primary: #6f7ddf;
+        --primary-600: #5f6dcd;
+        --accent: #0d6efd;
+        --accent-600: #0b5ed7;
+        --radius: 14px;
+        --shadow: 0 16px 40px rgba(16, 24, 40, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+      body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        background: var(--bg);
+        color: var(--text);
+        font: 16px/1.6 "Noto Sans KR", system-ui, -apple-system, Segoe UI,
+          Roboto, Arial, sans-serif;
+      }
+
+      /* header – 공통 테마 */
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: linear-gradient(0deg, var(--primary-600), var(--primary));
+        color: #fff;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      }
+      .header-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 10px 16px;
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        gap: 12px;
+        align-items: center;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+      }
+      .logo-img {
+        width: 34px;
+        height: auto;
+        object-fit: contain;
+      }
+      .brand h1 {
+        margin: 0;
+        font-size: 18px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .top-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+      .pill {
+        background: transparent;
+        border: none;
+        color: #fff;
+        padding: 0 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .pill:hover {
+        text-decoration: underline;
+      }
+      .search {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #fff;
+        border-radius: 999px;
+        padding: 6px 10px;
+        min-width: 240px;
+      }
+      .search input {
+        border: 0;
+        outline: 0;
+        width: 220px;
+        font-size: 14px;
+        color: var(--text);
+      }
+
+      /* ----- 1컬럼 메인 레이아웃 ----- */
+
+      .page-container {
+        flex: 1;
+        width: 100%;
+        max-width: 960px; /* 글 영역 넓게 */
+        margin: 40px auto;
+        padding: 0 20px 40px;
+      }
+
+      .help-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 24px 26px 26px;
+      }
+
+      .help-title {
+        margin: 0 0 6px;
+        font-size: 24px;
+        font-weight: 700;
+      }
+      .help-subtitle {
+        margin: 0 0 22px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+        color: #fff;
+        background: var(--accent);
+        margin-left: 6px;
+      }
+
+      .help-section {
+        margin-bottom: 24px;
+      }
+      .help-section h3 {
+        margin: 0 0 8px;
+        font-size: 18px;
+        font-weight: 700;
+      }
+      .help-section p {
+        margin: 0 0 6px;
+        font-size: 14px;
+      }
+      .help-section ul {
+        margin: 4px 0 0 20px;
+        padding: 0;
+        font-size: 14px;
+      }
+
+      .help-highlight {
+        margin-top: 8px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        background: #f8f9fe;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .faq-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        font-size: 14px;
+      }
+      .faq-item + .faq-item {
+        margin-top: 12px;
+        padding-top: 10px;
+        border-top: 1px solid var(--border);
+      }
+      .faq-q {
+        font-weight: 700;
+      }
+      .faq-a {
+        margin-top: 3px;
+        color: var(--muted);
+      }
+
+      .back-links {
+        margin-bottom: 18px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .back-links a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+      .back-links a:hover {
+        text-decoration: underline;
+      }
+
+      /* footer – 공통 */
+      footer {
+        margin-top: 28px;
+        background: var(--primary-600);
+        color: #dfe3ff;
+        border-top: 1px solid rgba(255, 255, 255, 0.15);
+      }
+      .footer-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 14px 16px;
+        display: flex;
+        gap: 24px;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .footer-links {
+        display: flex;
+        gap: 28px;
+        flex-wrap: wrap;
+      }
+      .footer-links a {
+        color: #fff;
+        text-decoration: none;
+        opacity: 0.95;
+      }
+      .footer-links a:hover {
+        text-decoration: underline;
+      }
+
+      @media (max-width: 780px) {
+        .header-inner {
+          grid-template-columns: 1fr auto;
+        }
+        .top-actions {
+          display: none;
+        }
+        .search {
+          grid-column: 1 / -1;
+        }
+        .page-container {
+          margin-top: 24px;
+          padding: 0 14px 24px;
+        }
+        .help-card {
+          padding: 18px 16px 20px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- 헤더 공통 -->
+    <div th:replace="fragments/header :: siteHeader"></div>
+
+    <main class="page-container">
+      <div class="help-card">
+        <div class="back-links">
+          <a th:href="@{/}">← 메인으로 돌아가기</a>
+        </div>
+
+        <h2 class="help-title">
+          도움말
+          <span class="badge">GUIDE</span>
+        </h2>
+        <p class="help-subtitle">
+          곰사육사 강의 수강생 커뮤니티 이용 방법과 자주 묻는 질문을 한 눈에
+          정리했습니다.
+        </p>
+
+        <!-- 1. 커뮤니티 소개 -->
+        <section class="help-section">
+          <h3>1. 커뮤니티 소개</h3>
+          <p>
+            이 커뮤니티는 곰사육사 강의를 수강하는 분들이
+            <strong>질문, 정보 공유, 스터디 모집</strong>을 자유롭게 할 수
+            있도록 만든 공간입니다.
+          </p>
+          <ul>
+            <li>공지사항: 강의 및 운영 공지, 필독 안내</li>
+            <li>자유게시판: 잡담, 일상, 질문 등 자유로운 글</li>
+            <li>코드게시판: 코드 리뷰, 에러 공유, 팁 정리</li>
+            <li>스터디게시판: 스터디 모집 및 후기 공유</li>
+          </ul>
+          <div class="help-highlight">
+            강의와 커뮤니티 관련 공지는 항상
+            <strong>공지사항 게시판</strong>을 먼저 확인해 주세요.
+          </div>
+        </section>
+
+        <!-- 2. 글쓰기 & 댓글 -->
+        <section class="help-section">
+          <h3>2. 글쓰기와 댓글 작성</h3>
+          <p>
+            각 게시판 상단의 <strong>글쓰기 버튼</strong>을 통해 새 글을 등록할
+            수 있습니다.
+          </p>
+          <ul>
+            <li>제목은 글의 내용을 짧고 명확하게 표현해 주세요.</li>
+            <li>
+              코드는 코드게시판에 올리거나 코드블록을 사용하면 가독성이
+              좋아집니다.
+            </li>
+            <li>
+              댓글은 질문 보충, 피드백, 응원 등 건전한 소통 위주로 작성해
+              주세요.
+            </li>
+          </ul>
+          <div class="help-highlight">
+            욕설, 비방, 정치/종교 논쟁 등 강의와 무관한 분쟁성 글은 사전 경고
+            없이 숨김/삭제될 수 있습니다.
+          </div>
+        </section>
+
+        <!-- 3. 공감 / 신고 기능 -->
+        <section class="help-section">
+          <h3>3. 공감 / 신고 기능</h3>
+          <p>
+            각 게시글과 댓글에는 <strong>공감</strong>과
+            <strong>신고</strong> 버튼이 있습니다.
+          </p>
+          <ul>
+            <li>
+              도움이 되었거나 공감되는 글에는 공감을 눌러 작성자에게 힘을
+              주세요.
+            </li>
+            <li>
+              광고·스팸·부적절한 글은 신고 버튼으로 알려 주시면 운영자가 확인 후
+              조치합니다.
+            </li>
+            <li>
+              신고가 누적되면 글이 자동으로 숨겨지거나, 운영자 판단에 따라
+              삭제될 수 있습니다.
+            </li>
+          </ul>
+        </section>
+
+        <!-- 4. 계정 / 프로필 -->
+        <section class="help-section">
+          <h3>4. 계정 및 프로필</h3>
+          <ul>
+            <li>
+              이메일로 회원가입 후 로그인하면 모든 게시판 기능을 사용할 수
+              있습니다.
+            </li>
+            <li>
+              닉네임은 <strong>내 정보 &gt; 프로필 수정</strong> 메뉴에서 변경할
+              수 있습니다.
+            </li>
+            <li>
+              비밀번호를 잊어버렸다면 로그인 화면의 비밀번호 찾기 또는
+              운영자에게 문의해 주세요.
+            </li>
+          </ul>
+        </section>
+
+        <!-- 5. FAQ -->
+        <section class="help-section">
+          <h3>5. 자주 묻는 질문(FAQ)</h3>
+          <ul class="faq-list">
+            <li class="faq-item">
+              <div class="faq-q">Q. 잘못 올린 글을 수정/삭제하고 싶어요.</div>
+              <div class="faq-a">
+                A. 내 게시글이라면 글 하단의 <strong>수정 / 삭제</strong> 버튼을
+                통해 바로 처리할 수 있습니다.
+              </div>
+            </li>
+            <li class="faq-item">
+              <div class="faq-q">Q. 광고 또는 이상한 글을 봤어요.</div>
+              <div class="faq-a">
+                A. 해당 글의 <strong>신고</strong> 버튼을 눌러 주세요. 운영자가
+                빠르게 확인 후 숨김/삭제 처리합니다.
+              </div>
+            </li>
+            <li class="faq-item">
+              <div class="faq-q">Q. 강의 내용 질문은 어디에 남기면 좋나요?</div>
+              <div class="faq-a">
+                A. 자유게시판이나 코드게시판에 <strong>[질문]</strong> 말머리를
+                달고 작성해 주시면 다른 수강생과 운영자가 함께 도와드립니다.
+              </div>
+            </li>
+            <li class="faq-item">
+              <div class="faq-q">
+                Q. 개선 요청이나 버그 제보는 어떻게 하나요?
+              </div>
+              <div class="faq-a">
+                A. 자유게시판에 <strong>[건의]</strong> 말머리를 달고
+                작성하거나, 공지사항에 안내된 연락처로 보내 주세요.
+              </div>
+            </li>
+          </ul>
+        </section>
+
+        <!-- 6. 마지막 안내 -->
+        <section class="help-section">
+          <h3>6. 추가 문의</h3>
+          <p>
+            이 도움말에 없는 내용이 궁금하다면 자유게시판에 글을 남기거나,
+            공지사항에 안내된 운영자 이메일로 문의해 주세요.
+          </p>
+          <div class="help-highlight">
+            커뮤니티는 함께 만들어 가는 공간입니다. 편하게 의견을 남겨 주시면
+            서비스 개선에 큰 도움이 됩니다. 🙌
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- 푸터 공통 -->
+    <div th:replace="fragments/footer :: siteFooter"></div>
+  </body>
 </html>
