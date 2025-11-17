@@ -5,6 +5,7 @@ import com.example.Study_board.dto.CommentRes;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.intellij.lang.annotations.Language;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -75,7 +76,20 @@ public class CommentDao {
     }
 
 
-    // 개별 게시글(BOARD_id)로 코멘트 조회
+    // 코멘트 id로 board id 조회
+    public Long findByCommentIdforBoardId(long comment_id) {
+        @Language("SQL")
+        String sql = """
+        SELECT BOARD_ID FROM STUDY_COMMENT WHERE COMMENT_ID = ?
+        """;
+        try {
+            return jdbc.queryForObject(sql, Long.class, comment_id);
+        } catch (EmptyResultDataAccessException e) {
+            return null; // DB에 없는 경우 null 반환
+        }
+    }
+
+
     // 코멘트 수정
     public boolean update(CommentCreateReq c, Long id){
         @Language("SQL")

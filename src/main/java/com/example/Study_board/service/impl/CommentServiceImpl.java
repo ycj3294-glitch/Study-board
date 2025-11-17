@@ -41,6 +41,12 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    public Long findByBoardid(long comment_id) {
+        return commentDao.findByCommentIdforBoardId(comment_id);
+    }
+
+
+    @Override
     public List<CommentRes> listByBoardid(Long board_id) {
         return commentDao.findById(board_id);
     }
