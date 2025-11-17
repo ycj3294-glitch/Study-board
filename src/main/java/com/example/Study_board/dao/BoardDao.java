@@ -48,9 +48,8 @@ public class BoardDao {
     // 게시글 전체 조회
     public List<BoardListRes> findAll() {
         @Language("SQL")
-        String sql = """
-        
-                SELECT
+        String sql = """        
+        SELECT
             b.BOARD_ID,
             b.BOARD_TYPE,
             b.MEMBER_ID,
@@ -76,7 +75,6 @@ public class BoardDao {
             b.REG_DATE
         ORDER BY b.BOARD_ID DESC
         """;
-
         return jdbc.query(sql, new BoardListRowMapper());
     }
 
@@ -146,6 +144,7 @@ public class BoardDao {
     }
     // 게시글 공감 조회
     public List<BoardListRes> findTopLiked(int limit) {
+        @Language("SQL")
         String sql = """
         SELECT * FROM (
             SELECT 

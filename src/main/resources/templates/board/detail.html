@@ -404,28 +404,6 @@
         text-decoration: underline;
       }
 
-      /* 인라인 공감/신고 버튼 공통 */
-      .inline-form {
-        display: inline;
-        margin: 0;
-      }
-
-      .btn-chip {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 2px 10px;
-        margin-left: 4px;
-        border-radius: 999px;
-        border: 1px solid var(--border);
-        background: #f8f9fe;
-        font-size: 12px;
-        cursor: pointer;
-      }
-      .btn-chip:hover {
-        background: #eef0fd;
-      }
-
       /* responsive */
       @media (max-width: 1100px) {
         .container {
@@ -497,32 +475,6 @@
               조회
               <span th:text="${post.view_count}">30</span>
             </span>
-
-            <!-- 공감 부분: 숫자 + 버튼 -->
-            <span>
-              공감수
-              <span th:text="${post.like_count}">10</span>
-              <form
-                class="inline-form"
-                th:action="@{/post/{id}/like(id=${post.id})}"
-                method="post"
-              >
-                <button type="submit" class="btn-chip">공감</button>
-              </form>
-            </span>
-
-            <!-- 신고 부분: 숫자 + 버튼 -->
-            <span>
-              신고수
-              <span th:text="${post.report_count}">1</span>
-              <form
-                class="inline-form"
-                th:action="@{/post/{id}/report(id=${post.id})}"
-                method="post"
-              >
-                <button type="submit" class="btn-chip">신고</button>
-              </form>
-            </span>
           </div>
 
           <hr class="post-separator" />
@@ -562,34 +514,7 @@
                     th:text="${#temporals.format(comment.reg_date, 'MM/dd HH:mm')}"
                     >11/01 12:34</span
                   >
-
-                  <!-- 댓글 공감 -->
-                  <span>
-                    공감수
-                    <span th:text="${comment.like_count}">10</span>
-                    <form
-                      class="inline-form"
-                      th:action="@{/comments/{id}/like(id=${comment.id})}"
-                      method="post"
-                    >
-                      <button type="submit" class="btn-chip">공감</button>
-                    </form>
-                  </span>
-
-                  <!-- 댓글 신고 -->
-                  <span>
-                    신고수
-                    <span th:text="${comment.report_count}">1</span>
-                    <form
-                      class="inline-form"
-                      th:action="@{/comments/{id}/report(id=${comment.id})}"
-                      method="post"
-                    >
-                      <button type="submit" class="btn-chip">신고</button>
-                    </form>
-                  </span>
                 </div>
-
                 <div class="comment-content" th:text="${comment.contents}">
                   댓글 내용입니다.
                 </div>

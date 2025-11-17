@@ -79,6 +79,17 @@ public class MemberDao {
         """;
         return jdbc.query(sql, new MemberRowMapper());
     }
+    // 회원 정보 수정 : 닉네임 + 비밀번호
+    public boolean update(Long id, String nickname, String pwd) {
+        @Language("SQL")
+        String sql = """
+        UPDATE STUDY_MEMBER
+        SET NICKNAME = ?, PWD = ?
+        WHERE MEMBER_ID = ?
+    """;
+
+        return jdbc.update(sql, nickname, pwd, id) > 0;
+    }
     // Mapper
     static class MemberRowMapper implements RowMapper<MemberRes> {
 

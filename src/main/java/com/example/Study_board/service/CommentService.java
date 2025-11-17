@@ -12,6 +12,8 @@ public interface CommentService {
     boolean delete(Long id);
     // 코멘트 수정
     boolean update(CommentCreateReq req,Long id);
+    // 코멘트 아이디로 보드 아이디 조회
+    public Long findByBoardid(long comment_id);
     // 해당 게시글 코멘트 조회
     List<CommentRes> listByBoardid(Long board_id);
 }

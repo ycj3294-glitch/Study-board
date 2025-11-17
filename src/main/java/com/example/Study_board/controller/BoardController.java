@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -48,7 +49,7 @@ public class BoardController {
     public String detail(@PathVariable Long id, Model model, HttpSession session) {
         // 로그인 여부 확인
         MemberRes loginMember = (MemberRes) session.getAttribute("loginMember");
-        if (loginMember == null) return "redirect:/";
+        if (loginMember == null) return "redirect:/login";
         // 해당 게시글 정보 가져옴
         BoardRes post = boardDao.findByBoardID(id);
         if (post == null) {
@@ -61,14 +62,18 @@ public class BoardController {
         // 해당 게시글 코멘트 리스트 정보를 가져옴
         List<CommentRes> comment = commentService.listByBoardid(id);
         if (comment == null) {
-            model.addAttribute("null", "아직 등록된 댓글이 없습니다. 첫 댓글을 남겨보세요!");
+            comment = new ArrayList<>();
+            model.addAttribute("comment", comment);
         }
 
         // 코멘트 정보를 모델링
-        model.addAttribute("commentlist", comment);
+        model.addAttribute("comment", comment);
         return "board/detail"; // detail.html 템플릿으로 이동
     }
 
+    // 게시글 작성
+    // 게시글 수정
+    // 게시글 삭제
 
 
 }
