@@ -48,6 +48,7 @@ public class BoardServiceImpl implements BoardService {
                 log.warn("수정 권한 없음 (요청자={}, 작성자={})", member_id, writerId);
                 return false;
             }
+            // 게시글 수정 실행
             boolean update = boardDao.update(board_id, title, contents);
             if (update) {
                 log.info("게시글 수정 성공 (board_id={}, 수정자={})", board_id, member_id);
