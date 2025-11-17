@@ -1,10 +1,581 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-<h2>회원정보 페이지</h2>
-</body>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <title>내 정보 수정 - 곰사육사 커뮤니티</title>
+
+    <style>
+      /* ---------- Design tokens ---------- */
+      :root {
+        --bg: #f4f6fb;
+        --card: #ffffff;
+        --border: #e6e8ef;
+        --text: #101828;
+        --muted: #667085;
+        --primary: #6f7ddf;
+        --primary-600: #5f6dcd;
+        --accent: #0d6efd;
+        --accent-600: #0b5ed7;
+        --radius: 14px;
+        --shadow: 0 16px 40px rgba(16, 24, 40, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+      body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        background: var(--bg);
+        color: var(--text);
+        font: 16px/1.6 "Noto Sans KR", system-ui, -apple-system, Segoe UI,
+          Roboto, Arial, sans-serif;
+      }
+
+      /* header (공통) */
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: linear-gradient(0deg, var(--primary-600), var(--primary));
+        color: #fff;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      }
+      .header-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 10px 16px;
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        gap: 12px;
+        align-items: center;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+      }
+      .logo-img {
+        width: 34px;
+        height: auto;
+        object-fit: contain;
+      }
+      .brand h1 {
+        margin: 0;
+        font-size: 18px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .top-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+      .pill {
+        background: transparent;
+        border: none;
+        color: #fff;
+        padding: 0 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .pill:hover {
+        text-decoration: underline;
+      }
+      .search {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #fff;
+        border-radius: 999px;
+        padding: 6px 10px;
+        min-width: 240px;
+      }
+      .search input {
+        border: 0;
+        outline: 0;
+        width: 220px;
+        font-size: 14px;
+        color: var(--text);
+      }
+
+      /* layout */
+      .container {
+        flex: 1;
+        width: 100%;
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 24px;
+        display: grid;
+        grid-template-columns: 200px minmax(0, 1.8fr) 220px;
+        gap: 18px;
+      }
+
+      /* left nav */
+      aside.nav {
+        position: sticky;
+        top: 72px;
+        align-self: start;
+      }
+      .menu {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 12px;
+        box-shadow: var(--shadow);
+      }
+      .menu a {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 12px 14px;
+        margin: 6px 0;
+        text-decoration: none;
+        color: var(--text);
+        background: #f8f9fe;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        font-weight: 600;
+      }
+      .menu a:hover {
+        background: #eef0fd;
+      }
+
+      /* 메인: 회원 정보 편집 카드 */
+      main.profile-page {
+        display: block;
+      }
+
+      .profile-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 22px 26px 26px;
+      }
+
+      .profile-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 18px;
+      }
+      .profile-title {
+        font-size: 20px;
+        font-weight: 700;
+      }
+      .profile-sub {
+        margin: 4px 0 0;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .btn-outline {
+        border-radius: 999px;
+        padding: 6px 14px;
+        border: 1px solid var(--border);
+        background: #fff;
+        font-size: 13px;
+        cursor: pointer;
+      }
+
+      /* 프로필 사진 영역 */
+      .profile-photo-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        margin-bottom: 20px;
+      }
+      .profile-photo {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        border: 2px solid var(--border);
+        overflow: hidden;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 26px;
+        font-weight: 700;
+      }
+      .profile-photo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .photo-text {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .photo-text-main {
+        font-size: 14px;
+        font-weight: 600;
+      }
+      .photo-text-sub {
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .btn-photo {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px 16px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: #fff;
+        font-size: 13px;
+        cursor: pointer;
+      }
+      .btn-photo:hover {
+        background: #f6f7fb;
+      }
+
+      /* form 요소 */
+      .profile-form {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .form-row {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .form-label {
+        font-size: 14px;
+        font-weight: 600;
+      }
+      .form-hint {
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .input,
+      .textarea {
+        width: 100%;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        padding: 10px 12px;
+        font-family: inherit;
+        font-size: 14px;
+        outline: none;
+        background: #fff;
+      }
+      .input:focus,
+      .textarea:focus {
+        border-color: var(--accent);
+      }
+
+      .readonly-text {
+        padding: 10px 0;
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      .profile-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 12px;
+      }
+      .btn-secondary {
+        border-radius: 999px;
+        padding: 8px 18px;
+        border: 1px solid var(--border);
+        background: #fff;
+        font-size: 14px;
+        cursor: pointer;
+      }
+      .btn-primary {
+        border-radius: 999px;
+        padding: 8px 24px;
+        border: none;
+        background: var(--accent);
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .btn-primary:hover {
+        background: var(--accent-600);
+      }
+
+      /* right sidebar */
+      aside.right {
+        position: sticky;
+        top: 72px;
+        align-self: start;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 16px;
+      }
+      .btn {
+        display: block;
+        width: 100%;
+        text-align: center;
+        text-decoration: none;
+        font-weight: 700;
+        padding: 12px 14px;
+        border-radius: 12px;
+        margin: 8px 0;
+        border: 1px solid transparent;
+      }
+      .btn.primary {
+        background: var(--accent);
+        color: #fff;
+      }
+      .btn.primary:hover {
+        background: var(--accent-600);
+      }
+      .btn.ghost {
+        background: #fff;
+        border-color: var(--border);
+        color: var(--text);
+      }
+      .btn.ghost:hover {
+        background: #f6f7fb;
+      }
+      .hero {
+        border-radius: var(--radius);
+        width: 100%;
+        height: auto;
+        display: block;
+        border: 1px solid var(--border);
+      }
+
+      /* footer */
+      footer {
+        margin-top: 28px;
+        background: var(--primary-600);
+        color: #dfe3ff;
+        border-top: 1px solid rgba(255, 255, 255, 0.15);
+      }
+      .footer-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 14px 16px;
+        display: flex;
+        gap: 24px;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .footer-links {
+        display: flex;
+        gap: 28px;
+        flex-wrap: wrap;
+      }
+      .footer-links a {
+        color: #fff;
+        text-decoration: none;
+        opacity: 0.95;
+      }
+      .footer-links a:hover {
+        text-decoration: underline;
+      }
+
+      /* responsive */
+      @media (max-width: 1100px) {
+        .container {
+          grid-template-columns: 220px 1fr;
+        }
+        aside.right {
+          grid-column: 1 / -1;
+          order: 3;
+          position: static;
+        }
+      }
+      @media (max-width: 780px) {
+        .header-inner {
+          grid-template-columns: 1fr auto;
+        }
+        .top-actions {
+          display: none;
+        }
+        .search {
+          grid-column: 1 / -1;
+        }
+        .container {
+          grid-template-columns: 1fr;
+        }
+        aside.nav {
+          position: static;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- 헤더 공통 -->
+    <div th:replace="fragments/header :: siteHeader"></div>
+
+    <div class="container">
+      <!-- 왼쪽 메뉴 -->
+      <aside class="nav" aria-label="보드 메뉴">
+        <nav class="menu">
+          <a th:href="@{/board/notice}">공지사항</a>
+          <a th:href="@{/board/free}">자유게시판</a>
+          <a th:href="@{/board/code}">코드게시판</a>
+          <a th:href="@{/board/study}">스터디게시판</a>
+        </nav>
+      </aside>
+
+      <!-- 가운데: 회원 정보 편집 -->
+      <main class="profile-page">
+        <section class="profile-card">
+          <div class="profile-header">
+            <div>
+              <div class="profile-title">내 정보 수정</div>
+              <p class="profile-sub">
+                프로필 사진, 비밀번호, 닉네임을 수정할 수 있습니다.
+              </p>
+            </div>
+            <a th:href="@{/}">
+              <button type="button" class="btn-outline">홈으로</button>
+            </a>
+          </div>
+
+          <!-- 프로필 사진 영역 -->
+          <div class="profile-photo-wrapper">
+            <div class="profile-photo">
+              <!-- 프로필 이미지가 있을 때 -->
+              <img
+                th:if="${member.profileImageUrl != null}"
+                th:src="${member.profileImageUrl}"
+                alt="프로필 사진"
+              />
+              <!-- 없을 때 이니셜 표시 -->
+              <span
+                th:if="${member.profileImageUrl == null}"
+                th:text="${#strings.substring(member.nickname, 0, 1)}"
+                >곰</span
+              >
+            </div>
+
+            <div class="photo-text">
+              <span class="photo-text-main">프로필 사진</span>
+              <span class="photo-text-sub">
+                정면 사진이나 캐릭터 이미지를 사용해 주세요. JPG, PNG 파일을
+                업로드할 수 있습니다.
+              </span>
+
+              <!-- 파일 선택 input 은 숨기고 버튼으로 트리거 -->
+              <div>
+                <input
+                  id="profileImageInput"
+                  name="profileImage"
+                  type="file"
+                  accept="image/*"
+                  style="display: none"
+                  form="profileForm"
+                />
+                <button
+                  type="button"
+                  class="btn-photo"
+                  onclick="document.getElementById('profileImageInput').click();"
+                >
+                  사진 변경
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 회원 정보 수정 폼 -->
+          <form
+            id="profileForm"
+            class="profile-form"
+            th:action="@{/member/profile}"
+            th:object="${member}"
+            method="post"
+            enctype="multipart/form-data"
+          >
+            <!-- 이메일 (읽기 전용) -->
+            <div class="form-row">
+              <label class="form-label">이메일</label>
+              <div class="readonly-text" th:text="*{email}">
+                user@example.com
+              </div>
+            </div>
+
+            <!-- 비밀번호 변경 -->
+            <div class="form-row">
+              <label class="form-label" for="password">새 비밀번호</label>
+              <input
+                id="password"
+                type="password"
+                class="input"
+                name="password"
+                placeholder="변경하지 않으려면 비워 두세요."
+              />
+              <p class="form-hint">
+                8자 이상, 영문/숫자를 섞어서 사용하는 것을 권장합니다.
+              </p>
+            </div>
+
+            <!-- 닉네임 수정 -->
+            <div class="form-row">
+              <label class="form-label" for="nickname">닉네임</label>
+              <input
+                id="nickname"
+                type="text"
+                class="input"
+                th:field="*{nickname}"
+                placeholder="커뮤니티에서 사용할 닉네임을 입력하세요."
+                required
+              />
+              <p class="form-hint">
+                다른 사람을 오해하게 할 수 있는 닉네임(운영자, 관리자 등)은
+                사용할 수 없습니다.
+              </p>
+            </div>
+
+            <div class="profile-footer">
+              <a th:href="@{/}">
+                <button type="button" class="btn-secondary">취소</button>
+              </a>
+              <button type="submit" class="btn-primary">저장하기</button>
+            </div>
+          </form>
+        </section>
+      </main>
+
+      <!-- 오른쪽 사이드바 -->
+      <aside class="right" aria-label="로그인 및 사이드">
+        <div class="card">
+          <a class="btn primary" th:href="@{/login}">로그인</a>
+          <a class="btn ghost" th:href="@{/new}">회원가입</a>
+        </div>
+        <div class="card">
+          <img
+            class="hero"
+            src="/image/banner.png"
+            alt="곰과 사파리 가이드 일러스트"
+          />
+        </div>
+      </aside>
+    </div>
+
+    <!-- 푸터 공통 -->
+    <div th:replace="fragments/footer :: siteFooter"></div>
+  </body>
 </html>

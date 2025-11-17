@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
   <head>
     <meta charset="utf-8" />
-    <title th:text="${boardType} + ' 게시판 - 곰사육사 커뮤니티'">게시판</title>
+    <title>글쓰기 - 곰사육사 커뮤니티</title>
 
     <style>
       /* ---------- Design tokens ---------- */
@@ -38,7 +38,7 @@
           Roboto, Arial, sans-serif;
       }
 
-      /* header */
+      /* header (공통) */
       header {
         position: sticky;
         top: 0;
@@ -115,7 +115,7 @@
         width: 100%;
         max-width: 1200px;
         margin: 40px auto;
-        padding: 0px 24px;
+        padding: 0 24px;
         display: grid;
         grid-template-columns: 200px minmax(0, 1.8fr) 220px;
         gap: 18px;
@@ -151,132 +151,117 @@
         background: #eef0fd;
       }
 
-      /* 가운데 게시판 영역: 이전 4섹션 전체 영역 사용 */
-      main.board-page {
-        display: block; /* grid 해제 – 하나가 전체 영역 사용 */
+      /* 글쓰기 카드 */
+      main.post-write-page {
+        display: block;
       }
 
-      .board {
+      .post-write-card {
         background: var(--card);
         border: 1px solid var(--border);
         border-radius: var(--radius);
         box-shadow: var(--shadow);
-        padding: 20px 24px;
+        padding: 22px 26px 26px;
       }
 
-      /* 상단 제목/설명/정렬 버튼 */
-      .board-list-header {
+      .post-write-header {
         display: flex;
         justify-content: space-between;
-        align-items: flex-end;
-        margin-bottom: 12px;
+        align-items: center;
+        margin-bottom: 18px;
       }
-      .board-list-header h2 {
-        margin: 0;
-        font-size: 20px;
+      .post-write-header .board-name {
+        font-size: 18px;
         font-weight: 700;
       }
-      .board-desc {
-        margin: 4px 0 0;
-        font-size: 13px;
-        color: var(--muted);
-      }
-      .sort-btn {
-        border: 1px solid var(--border);
-        background: #fff;
+      .btn-outline {
         border-radius: 999px;
         padding: 6px 14px;
+        border: 1px solid var(--border);
+        background: #fff;
         font-size: 13px;
         cursor: pointer;
       }
-      .board-page .board {
-        width: 100%;
-      }
 
-      /* 표 형태 목록 영역 */
-      .board-table {
-        width: 100%;
-        border-top: 1px solid var(--border);
-        border-bottom: 1px solid var(--border);
-        margin-top: 8px;
-      }
-      .board-row {
-        display: grid;
-        grid-template-columns: 8fr 1.4fr 1.4fr 1.2fr;
-        padding: 10px 4px;
-        font-size: 14px;
-        align-items: center;
-      }
-      .board-row.board-head {
-        font-weight: 600;
-        background: #f9fafb;
-      }
-      .board-row .col-title {
-        text-align: center;
-      }
-
-      .board-row + .board-row {
-        border-top: 1px solid var(--border);
-      }
-      .col-title a {
-        color: var(--text);
-        text-decoration: none;
-      }
-      .col-title a:hover {
-        text-decoration: underline;
-      }
-      .col-views,
-      .col-date {
-        text-align: center;
-      }
-
-      /* 하단 페이지네이션 + 글쓰기 버튼 */
-      .board-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 16px;
-      }
-      .pagination {
-        display: flex;
-        gap: 12px;
-        align-items: center;
+      .post-write-sub {
+        margin: 0 0 12px;
         font-size: 13px;
         color: var(--muted);
-        margin: 0 auto;
-      }
-      .page-link {
-        text-decoration: none;
-        color: var(--muted);
-        padding: 4px 8px;
-        border-radius: 999px;
       }
 
-      .page-link.active {
-        background: var(--accent);
-        color: #fff;
+      /* form 요소 스타일 */
+      .post-form {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .form-row {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .form-label {
+        font-size: 14px;
         font-weight: 600;
       }
 
-      .page-link:hover {
-        text-decoration: underline;
+      .form-hint {
+        font-size: 12px;
+        color: var(--muted);
       }
-      .btn-write {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 96px;
-        height: 40px;
-        padding: 0 18px;
+
+      .input,
+      .select,
+      .textarea {
+        width: 100%;
         border-radius: 10px;
+        border: 1px solid var(--border);
+        padding: 10px 12px;
+        font-family: inherit;
+        font-size: 14px;
+        outline: none;
+        background: #fff;
+      }
+      .input:focus,
+      .select:focus,
+      .textarea:focus {
+        border-color: var(--accent);
+      }
+
+      .textarea {
+        min-height: 220px;
+        resize: vertical;
+      }
+
+      .post-write-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .btn-secondary {
+        border-radius: 999px;
+        padding: 8px 18px;
+        border: 1px solid var(--border);
+        background: #fff;
+        font-size: 14px;
+        cursor: pointer;
+      }
+
+      .btn-primary {
+        border-radius: 999px;
+        padding: 8px 24px;
         border: none;
         background: var(--accent);
         color: #fff;
         font-size: 14px;
         font-weight: 600;
-        text-decoration: none;
+        cursor: pointer;
       }
-      .btn-write:hover {
+      .btn-primary:hover {
         background: var(--accent-600);
       }
 
@@ -330,7 +315,7 @@
         border: 1px solid var(--border);
       }
 
-      /* footer */
+      /* footer (공통) */
       footer {
         margin-top: 28px;
         background: var(--primary-600);
@@ -407,98 +392,72 @@
         </nav>
       </aside>
 
-      <!-- 가운데 메인 게시판 -->
-      <main class="board-page">
-        <section class="board board-list">
-          <!-- 상단 제목/설명/정렬버튼 -->
-          <div class="board-list-header">
-            <div th:switch="${boardType}">
-              <h2 th:case="'free'">모아보기</h2>
+      <!-- 가운데: 글쓰기 카드 -->
+      <main class="post-write-page">
+        <section class="post-write-card">
+          <div class="post-write-header">
+            <div>
+              <div class="board-name" th:text="${boardName}">자유게시판</div>
+            </div>
+            <a th:href="@{/board/free}">
+              <button type="button" class="btn-outline">목록으로</button>
+            </a>
+          </div>
 
-              <p class="board-desc" th:case="'free'">
-                전체 게시글을 이곳에서 모두 보여줍니다.
+          <p class="post-write-sub">
+            새로운 게시글을 작성해 주세요. 다른 수강생들에게 도움이 될 만한
+            정보와 경험을 나누면 더 좋아요.
+          </p>
+
+          <!-- 글쓰기 폼 -->
+          <form class="post-form" th:action="@{/post/new}" method="post">
+            <!-- 필요하면 boardType hidden 으로 전달 -->
+            <input type="hidden" name="boardType" th:value="${boardType}" />
+
+            <div class="form-row">
+              <label class="form-label" for="title">제목</label>
+              <input
+                id="title"
+                name="title"
+                type="text"
+                class="input"
+                placeholder="[잡담] 게시글 제목을 입력하세요."
+                required
+              />
+              <p class="form-hint">
+                말머리([질문], [잡담], [정보] 등)를 함께 적어 주시면 다른 분들이
+                글을 찾기 쉬워요.
               </p>
             </div>
 
-            <button type="button" class="sort-btn">등록일순</button>
-          </div>
-
-          <!-- 목록 영역 (가로4컬럼 구조) -->
-          <div class="board-table">
-            <div class="board-row board-head">
-              <div class="col-title">게시글 제목</div>
-              <div class="col-nick">닉네임</div>
-              <div class="col-views">조회수</div>
-              <div class="col-date">날짜</div>
+            <div class="form-row">
+              <label class="form-label" for="contents">내용</label>
+              <textarea
+                id="contents"
+                name="contents"
+                class="textarea"
+                placeholder="게시글 내용을 입력하세요."
+                required
+              ></textarea>
+              <p class="form-hint">
+                코드나 에러 로그를 올릴 때는 민감한 정보(계정, 토큰, 키 등)가
+                포함되어 있지 않은지 꼭 확인해 주세요.
+              </p>
             </div>
 
-            <!-- 실제 데이터 출력 부분 -->
-            <div class="board-row" th:each="post : ${posts}">
-              <div class="col-title">
-                <a
-                  th:href="@{/post/{id}(id=${post.id})}"
-                  th:text="${post.title}"
-                >
-                  [잡담] 글 제목…
-                </a>
-              </div>
-              <div class="col-nick" th:text="${post.nickname}">닉네임</div>
-              <div class="col-views" th:text="${post.viewCount}">30</div>
-              <div
-                class="col-date"
-                th:text="${#temporals.format(post.createdAt, 'MM/dd')}"
-              >
-                11/01
-              </div>
-            </div>
+            <!-- 필요 시 파일 첨부 영역도 여기에 추가 가능 -->
 
-            <!-- 글이 없을 때 -->
-            <div class="board-row empty" th:if="${#lists.isEmpty(posts)}">
-              <div class="col-title">등록된 게시글이 없습니다.</div>
-              <div class="col-nick"></div>
-              <div class="col-views"></div>
-              <div class="col-date"></div>
-            </div>
-          </div>
-
-          <!-- 하단 페이지네이션 + 글쓰기 버튼 -->
-          <div class="board-footer">
-            <div class="pagination">
-              <!-- 이전 -->
-              <a
-                class="page-link"
-                th:if="${page.hasPrevious()}"
-                th:href="@{/board/free(page=${page.number - 1}, size=${page.size})}"
-              >
-                이전
+            <div class="post-write-footer">
+              <a th:href="@{/board/free}">
+                <button type="button" class="btn-secondary">취소</button>
               </a>
-              <span class="pages">
-                <!-- 0 ~ totalPages-1 까지 돌면서 번호 출력 -->
-                <a
-                  th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
-                  th:href="@{/board/free(page=${i}, size=${page.size})}"
-                  th:text="${i + 1}"
-                  class="page-link"
-                  th:classappend="${i} == ${page.number} ? ' active'"
-                >
-                </a>
-              </span>
-              <!-- 다음 -->
-              <a
-                class="page-link"
-                th:if="${page.hasNext()}"
-                th:href="@{/board/free(page=${page.number + 1}, size=${page.size})}"
-              >
-                다음
-              </a>
+              <button type="submit" class="btn-primary">등록</button>
             </div>
-
-            <a class="btn-write" th:href="@{/post/new}">글쓰기</a>
-          </div>
+          </form>
         </section>
       </main>
 
-      <!-- 오른쪽 사이드바 그대로 사용 -->
+      <!-- 오른쪽 사이드바 -->
       <aside class="right" aria-label="로그인 및 사이드">
         <div class="card">
           <a class="btn primary" th:href="@{/login}">로그인</a>

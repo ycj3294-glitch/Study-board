@@ -1,10 +1,601 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-<h2>검색 페이지</h2>
-</body>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <title th:text="'검색 결과 - ' + ${q} + ' - 곰사육사 커뮤니티'">
+      검색 결과
+    </title>
+
+    <style>
+      /* ---------- Design tokens ---------- */
+      :root {
+        --bg: #f4f6fb;
+        --card: #ffffff;
+        --border: #e6e8ef;
+        --text: #101828;
+        --muted: #667085;
+        --primary: #6f7ddf;
+        --primary-600: #5f6dcd;
+        --accent: #0d6efd;
+        --accent-600: #0b5ed7;
+        --radius: 14px;
+        --shadow: 0 16px 40px rgba(16, 24, 40, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+      body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        background: var(--bg);
+        color: var(--text);
+        font: 16px/1.6 "Noto Sans KR", system-ui, -apple-system, Segoe UI,
+          Roboto, Arial, sans-serif;
+      }
+
+      /* header (공통) */
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: linear-gradient(0deg, var(--primary-600), var(--primary));
+        color: #fff;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      }
+      .header-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 10px 16px;
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        gap: 12px;
+        align-items: center;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+      }
+      .logo-img {
+        width: 34px;
+        height: auto;
+        object-fit: contain;
+      }
+      .brand h1 {
+        margin: 0;
+        font-size: 18px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .top-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+      .pill {
+        background: transparent;
+        border: none;
+        color: #fff;
+        padding: 0 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .pill:hover {
+        text-decoration: underline;
+      }
+      .search {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #fff;
+        border-radius: 999px;
+        padding: 6px 10px;
+        min-width: 240px;
+      }
+      .search input {
+        border: 0;
+        outline: 0;
+        width: 220px;
+        font-size: 14px;
+        color: var(--text);
+      }
+
+      /* layout */
+      .container {
+        flex: 1;
+        width: 100%;
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 24px;
+        display: grid;
+        grid-template-columns: 200px minmax(0, 1.8fr) 220px;
+        gap: 18px;
+      }
+
+      /* left nav */
+      aside.nav {
+        position: sticky;
+        top: 72px;
+        align-self: start;
+      }
+      .menu {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 12px;
+        box-shadow: var(--shadow);
+      }
+      .menu a {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 12px 14px;
+        margin: 6px 0;
+        text-decoration: none;
+        color: var(--text);
+        background: #f8f9fe;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        font-weight: 600;
+      }
+      .menu a:hover {
+        background: #eef0fd;
+      }
+
+      /* 메인: 검색 결과 카드 */
+      main.search-page {
+        display: block;
+      }
+
+      .search-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 22px 26px 26px;
+      }
+
+      .search-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 16px;
+      }
+      .search-title-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .search-title {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 700;
+      }
+      .search-summary {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .search-summary strong {
+        color: var(--text);
+      }
+
+      /* 필터 탭 (전체 / 게시글 / 댓글) - 옵션 */
+      .search-filters {
+        display: inline-flex;
+        gap: 6px;
+        padding: 4px;
+        border-radius: 999px;
+        background: #f5f5ff;
+      }
+      .filter-pill {
+        padding: 4px 12px;
+        border-radius: 999px;
+        border: none;
+        background: transparent;
+        font-size: 12px;
+        cursor: pointer;
+        color: var(--muted);
+      }
+      .filter-pill.active {
+        background: #fff;
+        color: var(--accent-600);
+        font-weight: 600;
+        box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.2);
+      }
+
+      /* 검색 결과 리스트 */
+      .result-list {
+        margin-top: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .result-item {
+        padding: 12px 0;
+        border-top: 1px solid var(--border);
+      }
+      .result-item:first-child {
+        border-top: 1px solid var(--border);
+      }
+
+      .result-meta-top {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 4px;
+      }
+
+      .badge-type {
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+        background: #eef0fd;
+        color: #4f46e5;
+      }
+
+      .badge-board {
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        background: #f3f4f6;
+        color: var(--muted);
+      }
+
+      .result-title {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 600;
+      }
+      .result-title a {
+        color: var(--text);
+        text-decoration: none;
+      }
+      .result-title a:hover {
+        text-decoration: underline;
+      }
+
+      .result-snippet {
+        margin-top: 4px;
+        font-size: 13px;
+        color: var(--muted);
+        white-space: normal;
+      }
+
+      .result-meta-bottom {
+        margin-top: 4px;
+        font-size: 12px;
+        color: var(--muted);
+        display: flex;
+        gap: 10px;
+      }
+
+      /* 결과 없음 */
+      .result-empty {
+        margin-top: 16px;
+        padding: 14px 12px;
+        border-radius: 10px;
+        background: #f8f9fe;
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      /* 페이지네이션 (검색 결과용) */
+      .search-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 18px;
+      }
+      .pagination {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        font-size: 13px;
+        color: var(--muted);
+        margin: 0 auto;
+      }
+      .page-link {
+        text-decoration: none;
+        color: var(--muted);
+        padding: 4px 8px;
+        border-radius: 999px;
+      }
+      .page-link:hover {
+        text-decoration: underline;
+      }
+      .page-link.active {
+        background: var(--accent);
+        color: #fff;
+        font-weight: 600;
+      }
+
+      /* right sidebar */
+      aside.right {
+        position: sticky;
+        top: 72px;
+        align-self: start;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 16px;
+      }
+      .btn {
+        display: block;
+        width: 100%;
+        text-align: center;
+        text-decoration: none;
+        font-weight: 700;
+        padding: 12px 14px;
+        border-radius: 12px;
+        margin: 8px 0;
+        border: 1px solid transparent;
+      }
+      .btn.primary {
+        background: var(--accent);
+        color: #fff;
+      }
+      .btn.primary:hover {
+        background: var(--accent-600);
+      }
+      .btn.ghost {
+        background: #fff;
+        border-color: var(--border);
+        color: var(--text);
+      }
+      .btn.ghost:hover {
+        background: #f6f7fb;
+      }
+      .hero {
+        border-radius: var(--radius);
+        width: 100%;
+        height: auto;
+        display: block;
+        border: 1px solid var(--border);
+      }
+
+      /* footer */
+      footer {
+        margin-top: 28px;
+        background: var(--primary-600);
+        color: #dfe3ff;
+        border-top: 1px solid rgba(255, 255, 255, 0.15);
+      }
+      .footer-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 14px 16px;
+        display: flex;
+        gap: 24px;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .footer-links {
+        display: flex;
+        gap: 28px;
+        flex-wrap: wrap;
+      }
+      .footer-links a {
+        color: #fff;
+        text-decoration: none;
+        opacity: 0.95;
+      }
+      .footer-links a:hover {
+        text-decoration: underline;
+      }
+
+      /* responsive */
+      @media (max-width: 1100px) {
+        .container {
+          grid-template-columns: 220px 1fr;
+        }
+        aside.right {
+          grid-column: 1 / -1;
+          order: 3;
+          position: static;
+        }
+      }
+      @media (max-width: 780px) {
+        .header-inner {
+          grid-template-columns: 1fr auto;
+        }
+        .top-actions {
+          display: none;
+        }
+        .search {
+          grid-column: 1 / -1;
+        }
+        .container {
+          grid-template-columns: 1fr;
+        }
+        aside.nav {
+          position: static;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- 헤더 공통 -->
+    <div th:replace="fragments/header :: siteHeader"></div>
+
+    <div class="container">
+      <!-- 왼쪽 메뉴 -->
+      <aside class="nav" aria-label="보드 메뉴">
+        <nav class="menu">
+          <a th:href="@{/board/notice}">공지사항</a>
+          <a th:href="@{/board/free}">자유게시판</a>
+          <a th:href="@{/board/code}">코드게시판</a>
+          <a th:href="@{/board/study}">스터디게시판</a>
+        </nav>
+      </aside>
+
+      <!-- 가운데: 검색 결과 -->
+      <main class="search-page">
+        <section class="search-card">
+          <div class="search-header">
+            <div class="search-title-wrap">
+              <h2 class="search-title">검색 결과</h2>
+              <p class="search-summary">
+                검색어 <strong th:text="'“' + ${q} + '”'">“파이썬”</strong> 에
+                대한 결과가 <strong th:text="${totalCount}">0</strong>개
+                있습니다.
+              </p>
+            </div>
+
+            <!-- 필터 탭 (필요 시 쿼리스트링으로 타입 넘기기) -->
+            <div class="search-filters">
+              <a th:href="@{/search(q=${q})}">
+                <button
+                  type="button"
+                  class="filter-pill"
+                  th:classappend="${type} == null ? ' active' : ''"
+                >
+                  전체
+                </button>
+              </a>
+              <a th:href="@{/search(q=${q}, type='post')}">
+                <button
+                  type="button"
+                  class="filter-pill"
+                  th:classappend="${type} == 'post' ? ' active' : ''"
+                >
+                  게시글
+                </button>
+              </a>
+              <a th:href="@{/search(q=${q}, type='comment')}">
+                <button
+                  type="button"
+                  class="filter-pill"
+                  th:classappend="${type} == 'comment' ? ' active' : ''"
+                >
+                  댓글
+                </button>
+              </a>
+            </div>
+          </div>
+
+          <!-- 결과 리스트 -->
+          <div class="result-list" th:if="${!#lists.isEmpty(results)}">
+            <!-- SearchResult DTO 예시 필드:
+                 type: 'POST' or 'COMMENT'
+                 boardName, boardType
+                 postId, commentId
+                 title, snippet
+                 nickname, regDate, viewCount
+            -->
+            <article class="result-item" th:each="r : ${results}">
+              <div class="result-meta-top">
+                <span
+                  class="badge-type"
+                  th:text="${r.type == 'COMMENT' ? '댓글' : '게시글'}"
+                  >게시글</span
+                >
+                <span class="badge-board" th:text="${r.boardName}">
+                  자유게시판
+                </span>
+                <span
+                  th:text="${#temporals.format(r.regDate, 'yyyy.MM.dd HH:mm')}"
+                >
+                  2025.11.01 12:00
+                </span>
+              </div>
+
+              <h3 class="result-title">
+                <!-- 댓글이면: 해당 게시글 상세로 이동 -->
+                <a th:href="@{/post/{id}(id=${r.postId})}" th:text="${r.title}">
+                  [잡담] 게시글 제목입니다.
+                </a>
+              </h3>
+
+              <p class="result-snippet" th:text="${r.snippet}">
+                검색어가 포함된 제목/본문/댓글 일부분을 보여줍니다.
+              </p>
+
+              <div class="result-meta-bottom">
+                <span th:text="'작성자 ' + ${r.nickname}">작성자 닉네임</span>
+                <span th:if="${r.viewCount != null}"
+                  >조회
+                  <span th:text="${r.viewCount}">30</span>
+                </span>
+              </div>
+            </article>
+          </div>
+
+          <!-- 결과 없음 -->
+          <div class="result-empty" th:if="${#lists.isEmpty(results)}">
+            아직 검색 결과가 없습니다. 검색어를 다르게 입력해 보거나, 게시판
+            목록에서 직접 글을 찾아보세요.
+          </div>
+
+          <!-- 페이지네이션 (page 객체가 있다고 가정) -->
+          <div class="search-footer" th:if="${page != null}">
+            <div class="pagination">
+              <a
+                class="page-link"
+                th:if="${page.hasPrevious()}"
+                th:href="@{/search(q=${q}, type=${type}, page=${page.number - 1})}"
+                >이전</a
+              >
+
+              <span th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}">
+                <a
+                  class="page-link"
+                  th:classappend="${i} == ${page.number} ? ' active' : ''"
+                  th:href="@{/search(q=${q}, type=${type}, page=${i})}"
+                  th:text="${i + 1}"
+                ></a>
+              </span>
+
+              <a
+                class="page-link"
+                th:if="${page.hasNext()}"
+                th:href="@{/search(q=${q}, type=${type}, page=${page.number + 1})}"
+                >다음</a
+              >
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- 오른쪽 사이드바 -->
+      <aside class="right" aria-label="로그인 및 사이드">
+        <div class="card">
+          <a class="btn primary" th:href="@{/login}">로그인</a>
+          <a class="btn ghost" th:href="@{/new}">회원가입</a>
+        </div>
+        <div class="card">
+          <img
+            class="hero"
+            src="/image/banner.png"
+            alt="곰과 사파리 가이드 일러스트"
+          />
+        </div>
+      </aside>
+    </div>
+
+    <!-- 푸터 공통 -->
+    <div th:replace="fragments/footer :: siteFooter"></div>
+  </body>
 </html>
