@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.ArrayList;
@@ -70,10 +71,25 @@ public class BoardController {
         model.addAttribute("comment", comment);
         return "board/detail"; // detail.html 템플릿으로 이동
     }
-
+    // 게시글 작성 페이지로 이동
+    @GetMapping("/")
+    public String movepost() {
+        return "board/post";
+    }
     // 게시글 작성
+    @PostMapping("/")
+
+    // 게시글 수정 페이지로 이동
+    @GetMapping("/")
+    public String moveupdate() {
+     return "board/post";
+    }
+
     // 게시글 수정
+//    @PostMapping("/")
+//    public String
     // 게시글 삭제
+
 
 
 }

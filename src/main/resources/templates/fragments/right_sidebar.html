@@ -7,17 +7,38 @@
 <body>
 <!-- right sidebar -->
 <aside class="right" aria-label="로그인 및 사이드" th:fragment="right_menu">
-    <div class="card">
-        <a class="btn primary" th:href="@{/login}">로그인</a>
-        <a class="btn ghost" th:href="@{/login/signup}">회원가입</a>
-    </div>
-    <div class="card">
-        <img
-                class="hero"
-                src="/image/banner.png"
-                alt="곰과 사파리 가이드 일러스트 대체 이미지"
-        />
-    </div>
+
+        <!-- 로그인 한 경우 -->
+        <div class="card user-panel" sec:authorize="isAuthenticated()">
+            <div class="user-greeting">
+            <span th:text="${member != null} ? ${member.nickname} + '님, 반가워요.' : ''">
+            </span>
+            </div>
+
+            <div class="user-actions">
+                <a class="user-btn" th:href="@{/member/profile}">회원 정보</a>
+
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit" class="user-btn">로그아웃</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 로그인 안 한 경우 (기존 그대로) -->
+        <div class="card" sec:authorize="!isAuthenticated()">
+            <a class="btn primary" th:href="@{/login}">로그인</a>
+            <a class="btn ghost" th:href="@{/new}">회원가입</a>
+        </div>
+
+        <!-- 배너는 공통으로 표시 -->
+        <div class="card">
+            <img
+                    class="hero"
+                    src="/image/banner.png"
+                    alt="곰과 사파리 가이드 일러스트"
+            />
+        </div>
+
 </aside>
 </body>
 </html>

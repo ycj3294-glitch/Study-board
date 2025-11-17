@@ -1,11 +1,584 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
   <head>
-    <meta charset="UTF-8" />
-    <title>게시판 페이지</title>
+    <meta charset="utf-8" />
+    <title th:text="${boardType} + ' 게시판 - 곰사육사 커뮤니티'">게시판</title>
+
+    <style>
+      /* ---------- Design tokens ---------- */
+      :root {
+        --bg: #f4f6fb;
+        --card: #ffffff;
+        --border: #e6e8ef;
+        --text: #101828;
+        --muted: #667085;
+        --primary: #6f7ddf;
+        --primary-600: #5f6dcd;
+        --accent: #0d6efd;
+        --accent-600: #0b5ed7;
+        --radius: 14px;
+        --shadow: 0 16px 40px rgba(16, 24, 40, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+      body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        background: var(--bg);
+        color: var(--text);
+        font: 16px/1.6 "Noto Sans KR", system-ui, -apple-system, Segoe UI,
+          Roboto, Arial, sans-serif;
+      }
+
+      /* header */
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: linear-gradient(0deg, var(--primary-600), var(--primary));
+        color: #fff;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      }
+      .header-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 10px 16px;
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        gap: 12px;
+        align-items: center;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+      }
+      .logo-img {
+        width: 34px;
+        height: auto;
+        object-fit: contain;
+      }
+      .brand h1 {
+        margin: 0;
+        font-size: 18px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .top-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+      .pill {
+        background: transparent;
+        border: none;
+        color: #fff;
+        padding: 0 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .pill:hover {
+        text-decoration: underline;
+      }
+      .search {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #fff;
+        border-radius: 999px;
+        padding: 6px 10px;
+        min-width: 240px;
+      }
+      .search input {
+        border: 0;
+        outline: 0;
+        width: 220px;
+        font-size: 14px;
+        color: var(--text);
+      }
+
+      /* layout */
+      .container {
+        flex: 1;
+        width: 100%;
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0px 24px;
+        display: grid;
+        grid-template-columns: 200px minmax(0, 1.8fr) 220px;
+        gap: 18px;
+      }
+
+      /* left nav */
+      aside.nav {
+        position: sticky;
+        top: 72px;
+        align-self: start;
+      }
+      .menu {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 12px;
+        box-shadow: var(--shadow);
+      }
+      .menu a {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 12px 14px;
+        margin: 6px 0;
+        text-decoration: none;
+        color: var(--text);
+        background: #f8f9fe;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        font-weight: 600;
+      }
+      .menu a:hover {
+        background: #eef0fd;
+      }
+
+      /* 가운데 게시판 영역: 이전 4섹션 전체 영역 사용 */
+      main.board-page {
+        display: block; /* grid 해제 – 하나가 전체 영역 사용 */
+      }
+
+      .board {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 20px 24px;
+      }
+
+      /* 상단 제목/설명/정렬 버튼 */
+      .board-list-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 12px;
+      }
+      .board-list-header h2 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 700;
+      }
+      .board-desc {
+        margin: 4px 0 0;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .sort-btn {
+        border: 1px solid var(--border);
+        background: #fff;
+        border-radius: 999px;
+        padding: 6px 14px;
+        font-size: 13px;
+        cursor: pointer;
+      }
+      .board-page .board {
+        width: 100%;
+      }
+
+      /* 표 형태 목록 영역 */
+      .board-table {
+        width: 100%;
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+        margin-top: 8px;
+      }
+      .board-row {
+        display: grid;
+        grid-template-columns: 8fr 1.4fr 1.4fr 1.2fr;
+        padding: 10px 4px;
+        font-size: 14px;
+        align-items: center;
+      }
+      .board-row.board-head {
+        font-weight: 600;
+        background: #f9fafb;
+      }
+      .board-row .col-title {
+        text-align: center;
+      }
+
+      .board-row + .board-row {
+        border-top: 1px solid var(--border);
+      }
+      .col-title a {
+        color: var(--text);
+        text-decoration: none;
+      }
+      .col-title a:hover {
+        text-decoration: underline;
+      }
+      .col-views,
+      .col-date {
+        text-align: center;
+      }
+
+      /* 하단 페이지네이션 + 글쓰기 버튼 */
+      .board-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 16px;
+      }
+      .pagination {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        font-size: 13px;
+        color: var(--muted);
+        margin: 0 auto;
+      }
+      .page-link {
+        text-decoration: none;
+        color: var(--muted);
+        padding: 4px 8px;
+        border-radius: 999px;
+      }
+
+      .page-link.active {
+        background: var(--accent);
+        color: #fff;
+        font-weight: 600;
+      }
+
+      .page-link:hover {
+        text-decoration: underline;
+      }
+      .btn-write {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 96px;
+        height: 40px;
+        padding: 0 18px;
+        border-radius: 10px;
+        border: none;
+        background: var(--accent);
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+      }
+      .btn-write:hover {
+        background: var(--accent-600);
+      }
+
+      /* right sidebar */
+      aside.right {
+        position: sticky;
+        top: 72px;
+        align-self: start;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 16px;
+      }
+      .btn {
+        display: block;
+        width: 100%;
+        text-align: center;
+        text-decoration: none;
+        font-weight: 700;
+        padding: 12px 14px;
+        border-radius: 12px;
+        margin: 8px 0;
+        border: 1px solid transparent;
+      }
+      .btn.primary {
+        background: var(--accent);
+        color: #fff;
+      }
+      .btn.primary:hover {
+        background: var(--accent-600);
+      }
+      .btn.ghost {
+        background: #fff;
+        border-color: var(--border);
+        color: var(--text);
+      }
+      .btn.ghost:hover {
+        background: #f6f7fb;
+      }
+      .hero {
+        border-radius: var(--radius);
+        width: 100%;
+        height: auto;
+        display: block;
+        border: 1px solid var(--border);
+      }
+
+      /* 로그인 사용자 사이드바 패널 */
+      .user-panel {
+        padding: 18px 16px 20px;
+      }
+
+      .user-greeting {
+        width: 100%;
+        padding: 14px 16px;
+        border-radius: 10px;
+        background: #d9e0da;
+        text-align: center;
+        font-size: 16px;
+        font-weight: 600;
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
+      }
+
+      .user-actions {
+        margin-top: 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .user-btn {
+        display: block;
+        width: 100%;
+        text-align: center;
+        padding: 12px 0;
+        border-radius: 10px;
+        border: none;
+        background: var(--accent);
+        color: #fff;
+        font-size: 15px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        box-shadow: 0 10px 20px rgba(37, 99, 235, 0.35);
+      }
+
+      .user-btn:hover {
+        background: var(--accent-600);
+      }
+
+      /* footer */
+      footer {
+        margin-top: 28px;
+        background: var(--primary-600);
+        color: #dfe3ff;
+        border-top: 1px solid rgba(255, 255, 255, 0.15);
+      }
+      .footer-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 14px 16px;
+        display: flex;
+        gap: 24px;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .footer-links {
+        display: flex;
+        gap: 28px;
+        flex-wrap: wrap;
+      }
+      .footer-links a {
+        color: #fff;
+        text-decoration: none;
+        opacity: 0.95;
+      }
+      .footer-links a:hover {
+        text-decoration: underline;
+      }
+
+      /* responsive */
+      @media (max-width: 1100px) {
+        .container {
+          grid-template-columns: 220px 1fr;
+        }
+        aside.right {
+          grid-column: 1 / -1;
+          order: 3;
+          position: static;
+        }
+      }
+      @media (max-width: 780px) {
+        .header-inner {
+          grid-template-columns: 1fr auto;
+        }
+        .top-actions {
+          display: none;
+        }
+        .search {
+          grid-column: 1 / -1;
+        }
+        .container {
+          grid-template-columns: 1fr;
+        }
+        aside.nav {
+          position: static;
+        }
+      }
+    </style>
   </head>
+
   <body>
-  <div th:replace="fragments/header :: siteHeader"></div>
-    <h1>게시판 페이지 이동 성공</h1>
+    <!-- 헤더 공통 -->
+    <div th:replace="fragments/header :: siteHeader"></div>
+
+    <div class="container">
+      <!-- 왼쪽 메뉴 -->
+      <aside class="nav" aria-label="보드 메뉴">
+        <nav class="menu">
+          <a th:href="@{/board/notice}">공지사항</a>
+          <a th:href="@{/board/free}">자유게시판</a>
+          <a th:href="@{/board/code}">코드게시판</a>
+          <a th:href="@{/board/study}">스터디게시판</a>
+        </nav>
+      </aside>
+
+      <!-- 가운데 메인 게시판 -->
+      <main class="board-page">
+        <section class="board board-list">
+          <!-- 상단 제목/설명/정렬버튼 -->
+          <div class="board-list-header">
+            <div th:switch="${boardType}">
+              <h2 th:case="'free'">자유게시판</h2>
+
+              <p class="board-desc" th:case="'free'">
+                수강생들이 자유롭게 글을 올릴 수 있는 게시판 입니다.
+              </p>
+            </div>
+
+            <button type="button" class="sort-btn">등록일순</button>
+          </div>
+
+          <!-- 목록 영역 (가로4컬럼 구조) -->
+          <div class="board-table">
+            <div class="board-row board-head">
+              <div class="col-title">게시글 제목</div>
+              <div class="col-nick">닉네임</div>
+              <div class="col-views">조회수</div>
+              <div class="col-date">날짜</div>
+            </div>
+
+            <!-- 실제 데이터 출력 부분 -->
+            <div class="board-row" th:each="post : ${posts}">
+              <div class="col-title">
+                <a
+                  th:href="@{/post/{id}(id=${post.id})}"
+                  th:text="${post.title}"
+                >
+                  [잡담] 글 제목…
+                </a>
+              </div>
+              <div class="col-nick" th:text="${post.nickname}">닉네임</div>
+              <div class="col-views" th:text="${post.viewCount}">30</div>
+              <div
+                class="col-date"
+                th:text="${#temporals.format(post.createdAt, 'MM/dd')}"
+              >
+                11/01
+              </div>
+            </div>
+
+            <!-- 글이 없을 때 -->
+            <div class="board-row empty" th:if="${#lists.isEmpty(posts)}">
+              <div class="col-title">등록된 게시글이 없습니다.</div>
+              <div class="col-nick"></div>
+              <div class="col-views"></div>
+              <div class="col-date"></div>
+            </div>
+          </div>
+
+          <!-- 하단 페이지네이션 + 글쓰기 버튼 -->
+          <div class="board-footer">
+            <div class="pagination">
+              <!-- 이전 -->
+              <a
+                class="page-link"
+                th:if="${page.hasPrevious()}"
+                th:href="@{/board/free(page=${page.number - 1}, size=${page.size})}"
+              >
+                이전
+              </a>
+              <span class="pages">
+                <!-- 0 ~ totalPages-1 까지 돌면서 번호 출력 -->
+                <a
+                  th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
+                  th:href="@{/board/free(page=${i}, size=${page.size})}"
+                  th:text="${i + 1}"
+                  class="page-link"
+                  th:classappend="${i} == ${page.number} ? ' active'"
+                >
+                </a>
+              </span>
+              <!-- 다음 -->
+              <a
+                class="page-link"
+                th:if="${page.hasNext()}"
+                th:href="@{/board/free(page=${page.number + 1}, size=${page.size})}"
+              >
+                다음
+              </a>
+            </div>
+
+            <a class="btn-write" th:href="@{/post/new}">글쓰기</a>
+          </div>
+        </section>
+      </main>
+
+      <!-- 오른쪽 사이드바 그대로 사용 -->
+      <!-- 오른쪽 사이드바 -->
+      <aside class="right" aria-label="로그인 및 사이드">
+        <!-- 로그인 한 경우 -->
+        <div class="card user-panel" sec:authorize="isAuthenticated()">
+          <div class="user-greeting">
+            <span th:text="${member.nickname} + '님, 반가워요.'">
+              OOO님, 반가워요.
+            </span>
+          </div>
+
+          <div class="user-actions">
+            <a class="user-btn" th:href="@{/member/profile}">회원 정보</a>
+
+            <form th:action="@{/logout}" method="post">
+              <button type="submit" class="user-btn">로그아웃</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- 로그인 안 한 경우 (기존 그대로) -->
+        <div class="card" sec:authorize="!isAuthenticated()">
+          <a class="btn primary" th:href="@{/login}">로그인</a>
+          <a class="btn ghost" th:href="@{/new}">회원가입</a>
+        </div>
+
+        <!-- 배너는 공통으로 표시 -->
+        <div class="card">
+          <img
+            class="hero"
+            src="/image/banner.png"
+            alt="곰과 사파리 가이드 일러스트"
+          />
+        </div>
+      </aside>
+    </div>
+
+    <!-- 푸터 공통 -->
+    <div th:replace="fragments/footer :: siteFooter"></div>
   </body>
 </html>
