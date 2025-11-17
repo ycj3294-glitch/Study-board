@@ -37,7 +37,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public MemberRes login(String email, String pwd) {
         MemberRes member = memberDao.findByEmail(email);
-        return new MemberRes(member.getId(), member.getEmail(), member.getNickname(), member.getRedDate());
+        return new MemberRes(member.getId(), member.getEmail(), member.getNickname(), member.getRedDate(), member.getProfilePath());
     }//패스워드 res에 일부러 안넣었는데 이거 비밀번호 조회가 꼭 필요한가?
 
 
@@ -75,11 +75,21 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public boolean update(long id, String nickname, String pwd) {
+    public boolean update(long id, String nickname, String pwd, String profilePath) {
         try {
-            return memberDao.update(id, nickname, pwd);
-        }catch (DataAccessException e) {
+            return memberDao.update(id, nickname, pwd, profilePath);
+        }catch (Exception e) {
             log.error("회원 정보 수정 중 오류 발생: {}", e.getMessage(), e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean delete(long id) {
+        try {
+            return memberDao.delete(id);
+        }catch (Exception e) {
+            log.error("회원 탈퇴 중 오류 발생: {}", e.getMessage(), e);
             return false;
         }
     }

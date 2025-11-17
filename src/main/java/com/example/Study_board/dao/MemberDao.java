@@ -80,16 +80,26 @@ public class MemberDao {
         return jdbc.query(sql, new MemberRowMapper());
     }
     // 회원 정보 수정 : 닉네임 + 비밀번호
-    public boolean update(Long id, String nickname, String pwd) {
+    public boolean update(Long id, String nickname, String pwd, String profilePath) {
         @Language("SQL")
         String sql = """
         UPDATE STUDY_MEMBER
-        SET NICKNAME = ?, PWD = ?
+        SET NICKNAME = ?, PWD = ?, PROFILEPATH = ?
         WHERE MEMBER_ID = ?
     """;
 
         return jdbc.update(sql, nickname, pwd, id) > 0;
     }
+
+    // 회원 탈퇴
+    public boolean delete(long id) {
+        @Language("SQL")
+                String sql = """
+                DELETE FROM STUDY_MEMBER WHERE MEMBER_ID = ?
+                """;
+        return jdbc.update(sql, id) > 0;
+    }
+
     // Mapper
     static class MemberRowMapper implements RowMapper<MemberRes> {
 
@@ -99,7 +109,8 @@ public class MemberDao {
                     rs.getLong("MEMBER_ID"),
                     rs.getString("EMAIL"),
                     rs.getString("NICKNAME"),
-                    rs.getTimestamp("REG_DATE").toLocalDateTime()
+                    rs.getTimestamp("REG_DATE").toLocalDateTime(),
+                    rs.getString("PROFILE_PATH")
             );
         }
     }
