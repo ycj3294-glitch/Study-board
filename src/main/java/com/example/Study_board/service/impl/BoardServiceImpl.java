@@ -4,6 +4,7 @@ import com.example.Study_board.dao.BoardDao;
 import com.example.Study_board.dao.MemberDao;
 import com.example.Study_board.dto.BoardCreateReq;
 import com.example.Study_board.dto.BoardListRes;
+import com.example.Study_board.dto.SearchListRes;
 import com.example.Study_board.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -107,4 +108,11 @@ public class BoardServiceImpl implements BoardService {
     public List<BoardListRes> findTopLiked(int limit) {
         return boardDao.findTopLiked(limit);
     }
+
+    // 검색 조회
+    @Override
+    public List<SearchListRes> search(String keyword) {
+        return boardDao.search(keyword);
+    }
+
 }

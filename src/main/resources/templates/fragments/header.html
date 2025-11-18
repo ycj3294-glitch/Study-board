@@ -14,10 +14,11 @@
           <span class="pill" onclick="location.href='/header/like'">공감글</span>
           <span class="pill" onclick="location.href='/'">홈으로</span>
         </div>
-       <form action="search">
+       <form action="/search" method="get">
         <label class="search" aria-label="검색">
+
           🔍
-          <input type="search" placeholder="검색어를 입력하세요." />
+          <input type="search" name="keyword" placeholder="검색어를 입력하세요." />
         </label>
        </form>
       </div>

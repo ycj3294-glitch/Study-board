@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
   <head>
     <meta charset="utf-8" />
-    <title th:text="'검색 결과 - ' + ${q} + ' - 곰사육사 커뮤니티'">
+    <title th:text="'검색 결과 - ' + ${p} + ' - 곰사육사 커뮤니티'">
       검색 결과
     </title>
 
@@ -458,8 +458,8 @@
             <div class="search-title-wrap">
               <h2 class="search-title">검색 결과</h2>
               <p class="search-summary">
-                검색어 <strong th:text="'“' + ${q} + '”'">“파이썬”</strong> 에
-                대한 결과가 <strong th:text="${totalCount}">0</strong>개
+                검색어 <strong th:text="'“' + ${p} + '”'">“파이썬”</strong> 에
+                대한 결과가 <strong th:text="${result.size()}">0</strong>개
                 있습니다.
               </p>
             </div>
@@ -497,7 +497,8 @@
           </div>
 
           <!-- 결과 리스트 -->
-          <div class="result-list" th:if="${!#lists.isEmpty(results)}">
+          <div class="result-list" th:if="${!#lists.isEmpty(result)}">
+              <article class="result-item" th:each="r : ${result}"></article>
             <!-- SearchResult DTO 예시 필드:
                  type: 'POST' or 'COMMENT'
                  boardName, boardType
@@ -505,7 +506,7 @@
                  title, snippet
                  nickname, regDate, viewCount
             -->
-            <article class="result-item" th:each="r : ${results}">
+            <article class="result-item" th:each="r : ${result}">
               <div class="result-meta-top">
                 <span
                   class="badge-type"
@@ -544,7 +545,7 @@
           </div>
 
           <!-- 결과 없음 -->
-          <div class="result-empty" th:if="${#lists.isEmpty(results)}">
+          <div class="result-empty" th:if="${#lists.isEmpty(result)}">
             아직 검색 결과가 없습니다. 검색어를 다르게 입력해 보거나, 게시판
             목록에서 직접 글을 찾아보세요.
           </div>

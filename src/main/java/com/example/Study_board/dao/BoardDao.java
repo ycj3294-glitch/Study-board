@@ -3,6 +3,7 @@ package com.example.Study_board.dao;
 import com.example.Study_board.dto.BoardCreateReq;
 import com.example.Study_board.dto.BoardListRes;
 import com.example.Study_board.dto.BoardRes;
+import com.example.Study_board.dto.SearchListRes;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.intellij.lang.annotations.Language;
@@ -166,6 +167,27 @@ public class BoardDao {
         return jdbc.query(sql, new BoardListRowMapper(), limit);
     }
 
+    // 검색기능
+    public List<SearchListRes> search(String keyword) {
+        String sql = """
+SELECT DISTINCT
+    b.BOARD_ID,
+    DBMS_LOB.SUBSTR(b.TITLE, 4000, 1) AS TITLE,
+    DBMS_LOB.SUBSTR(b.CONTENTS, 150, 1) AS SNIPPET,
+    m.NICKNAME,
+    b.REG_DATE
+FROM STUDY_BOARD b
+JOIN STUDY_MEMBER m ON b.MEMBER_ID = m.MEMBER_ID
+LEFT JOIN STUDY_COMMENT c ON b.BOARD_ID = c.BOARD_ID
+WHERE LOWER(DBMS_LOB.SUBSTR(b.TITLE, 4000, 1)) LIKE LOWER('%' || ? || '%')
+   OR LOWER(DBMS_LOB.SUBSTR(b.CONTENTS, 4000, 1)) LIKE LOWER('%' || ? || '%')
+   OR LOWER(DBMS_LOB.SUBSTR(c.CONTENTS, 4000, 1)) LIKE LOWER('%' || ? || '%')
+ORDER BY b.REG_DATE DESC
+    """;
+
+        return jdbc.query(sql, new SearchRowMapper(), keyword, keyword, keyword);
+    }
+
     // list용 mapper
     static class BoardListRowMapper implements RowMapper<BoardListRes> {
         @Override
@@ -182,6 +204,21 @@ public class BoardDao {
             );
         }
     }
+    // 검색기능용 mapper
+    static class SearchRowMapper implements RowMapper<SearchListRes> {
+        @Override
+        public SearchListRes mapRow(ResultSet rs, int rowNum) throws SQLException {
+            SearchListRes dto = new SearchListRes();
+            dto.setBoardId(rs.getLong("BOARD_ID"));
+            dto.setTitle(rs.getString("TITLE"));
+            dto.setSnippet(rs.getString("SNIPPET"));
+            dto.setNickname(rs.getString("NICKNAME"));
+            dto.setRegDate(rs.getTimestamp("REG_DATE").toLocalDateTime());
+            return dto;
+        }
+    }
+
+
     // 상세 보기용 MAPPER
     static class BoardResRowMapper implements RowMapper<BoardRes> {
         @Override

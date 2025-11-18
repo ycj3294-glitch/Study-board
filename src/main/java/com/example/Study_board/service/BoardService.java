@@ -3,6 +3,7 @@ package com.example.Study_board.service;
 import com.example.Study_board.dto.BoardCreateReq;
 import com.example.Study_board.dto.BoardListRes;
 import com.example.Study_board.dto.BoardRes;
+import com.example.Study_board.dto.SearchListRes;
 
 import java.util.List;
 
@@ -22,5 +23,7 @@ public interface BoardService {
     // 공감글 조회
     List<BoardListRes> findTopLiked(int limit);
 
+    // 검색 조회
+    List<SearchListRes> search(String keyword);
 
 }
