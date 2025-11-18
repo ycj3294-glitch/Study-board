@@ -518,30 +518,11 @@
                   전체
                 </button>
               </a>
-              <a th:href="@{/search(q=${q}, type='post')}">
-                <button
-                  type="button"
-                  class="filter-pill"
-                  th:classappend="${type} == 'post' ? ' active' : ''"
-                >
-                  게시글
-                </button>
-              </a>
-              <a th:href="@{/search(q=${q}, type='comment')}">
-                <button
-                  type="button"
-                  class="filter-pill"
-                  th:classappend="${type} == 'comment' ? ' active' : ''"
-                >
-                  댓글
-                </button>
-              </a>
             </div>
           </div>
 
           <!-- 결과 리스트 -->
           <div class="result-list" th:if="${!#lists.isEmpty(result)}">
-              <article class="result-item" th:each="r : ${result}"></article>
             <!-- SearchResult DTO 예시 필드:
                  type: 'POST' or 'COMMENT'
                  boardName, boardType
@@ -551,14 +532,8 @@
             -->
             <article class="result-item" th:each="r : ${result}">
               <div class="result-meta-top">
-                <span
-                  class="badge-type"
-                  th:text="${r.type == 'COMMENT' ? '댓글' : '게시글'}"
-                  >게시글</span
-                >
-                <span class="badge-board" th:text="${r.boardName}">
-                  자유게시판
-                </span>
+                  <span class="badge-type">게시글</span>
+                  <span class="badge-board">검색결과</span>
                 <span
                   th:text="${#temporals.format(r.regDate, 'yyyy.MM.dd HH:mm')}"
                 >
@@ -567,10 +542,9 @@
               </div>
 
               <h3 class="result-title">
-                <!-- 댓글이면: 해당 게시글 상세로 이동 -->
-                <a th:href="@{/post/{id}(id=${r.postId})}" th:text="${r.title}">
-                  [잡담] 게시글 제목입니다.
-                </a>
+                  <a th:href="@{/post/{id}(id=${r.boardId})}" th:text="${r.title}">
+                      게시글 제목
+                  </a>
               </h3>
 
               <p class="result-snippet" th:text="${r.snippet}">
