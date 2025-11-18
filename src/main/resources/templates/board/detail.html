@@ -530,11 +530,11 @@
 
           <!-- 게시글 하단 버튼 (필요 시) -->
           <div class="post-actions">
-            <a th:href="@{/post/edit/{id}(id=${post.id})}">
+            <a th:href="@{/post/edit/{id}(id=${post.board_id})}">
               <button type="button" class="btn-secondary">수정</button>
             </a>
             <form
-              th:action="@{/post/delete/{id}(id=${post.id})}"
+              th:action="@{/post/delete/{id}(id=${post.board_id})}"
               method="post"
               style="margin: 0"
             >
@@ -551,15 +551,15 @@
 
             <!-- 댓글 목록 -->
             <div class="comment-list" th:if="${!#lists.isEmpty(comment)}">
-              <div class="comment-item" th:each="comment : ${comment}">
+              <div class="comment-item" th:each="c : ${comment}">
                 <div class="comment-meta">
-                  <strong th:text="${comment.nickname}">댓글닉네임</strong>
+                  <strong th:text="${c.nickname}">댓글닉네임</strong>
                   <span
-                    th:text="${#temporals.format(comment.reg_date, 'MM/dd HH:mm')}"
+                    th:text="${#temporals.format(c.reg_date, 'MM/dd HH:mm')}"
                     >11/01 12:34</span
                   >
                 </div>
-                <div class="comment-content" th:text="${comment.contents}">
+                <div class="comment-content" th:text="${c.contents}">
                   댓글 내용입니다.
                 </div>
               </div>
@@ -576,7 +576,7 @@
             <!-- 댓글 입력 폼 -->
             <form
               class="comment-form"
-              th:action="@{/post/{id}/comments(id=${post.id})}"
+              th:action="@{/comment/{board_id}(board_id=${post.board_id})}"
               method="post"
             >
               <textarea

@@ -80,21 +80,22 @@ public class MemberController {
     }
 
     // 회원 정보 페이지 표시
-    @GetMapping("/member/info")
+    @GetMapping("/memberinfo")
     public String memberInfo(HttpSession session, Model model) {
         // 로그인된 회원 정보 가져오기
         MemberRes member = (MemberRes) session.getAttribute("loginMember");
         // 로그인이 안되어 있으면 로그인 페이지로 이동
         if (member == null) {
-            return "redirect:/login";
+            return "login/login";
         }
 
         // 회원 정보를 model에 담아 HTML에서 출력하도록 전달
         model.addAttribute("member",member);
 
         // memberinfo.html로 페이지 이동
-        return "memberinfo";
+        return "login/edit";
     }
+
     // 회원 정보 수정
     @PostMapping("/member/update")
     public String updateMember(@RequestParam String nickname, @RequestParam String pwd, @RequestParam(required = false) MultipartFile profileImage, HttpSession session, Model model) {
