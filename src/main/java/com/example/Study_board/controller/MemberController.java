@@ -109,7 +109,7 @@ public class MemberController {
         // 프로필 이미지 저장 처리
         String savedPath = loginmember.getProfilePath();  // 기본 이미지 유지 기본값
         if (profileImage != null && !profileImage.isEmpty()) {
-            String uploadDir = "src/main/resources/static/upload/profile/";
+            String uploadDir = "C:\\Users\\admin\\Desktop\\프로젝트\\image\\";
             File folder = new File(uploadDir);
             if (!folder.exists()) folder.mkdirs();
 
@@ -118,7 +118,7 @@ public class MemberController {
 
             try {
                 profileImage.transferTo(saveFile);
-                savedPath = "/upload/profile/" + fileName; // 웹에서 접근하는 경로
+                 savedPath = "/image/" + fileName; // 웹에서 접근하는 경로
             } catch (Exception e) {
                 e.printStackTrace();
                 model.addAttribute("error", "파일 업로드 중 오류가 발생했습니다.");
@@ -139,13 +139,13 @@ public class MemberController {
 
         if (!success) {
             model.addAttribute("error", "회원 수정 중 문제가 발생했습니다.");
-            return "memberinfo";
+            return "login/edit";
         }
         // DB에서 최신 정보 다시 조회 -> 세션 갱신
         MemberRes updated = memberService.getById(loginmember.getId());
         session.setAttribute("loginMember", updated);
         // 다시 내 정보 페이지로
-        return "redirect:/member/info";
+        return "redirect:/login/memberinfo";
     }
 
     @GetMapping("/member/dele")

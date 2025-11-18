@@ -460,13 +460,13 @@
             <div class="profile-photo">
               <!-- 프로필 이미지가 있을 때 -->
               <img
-                th:if="${member.profileImageUrl != null}"
-                th:src="${member.profileImageUrl}"
+                th:if="${member.profilePath != null}"
+                th:src="${member.profilePath}"
                 alt="프로필 사진"
               />
               <!-- 없을 때 이니셜 표시 -->
               <span
-                th:if="${member.profileImageUrl == null}"
+                th:if="${member.profilePath == null}"
                 th:text="${#strings.substring(member.nickname, 0, 1)}"
                 >곰</span
               >
@@ -481,14 +481,6 @@
 
               <!-- 파일 선택 input 은 숨기고 버튼으로 트리거 -->
               <div>
-                <input
-                  id="profileImageInput"
-                  name="profileImage"
-                  type="file"
-                  accept="image/*"
-                  style="display: none"
-                  form="profileForm"
-                />
                 <button
                   type="button"
                   class="btn-photo"
@@ -504,11 +496,18 @@
           <form
             id="profileForm"
             class="profile-form"
-            th:action="@{/member/profile}"
+            th:action="@{/login/member/update}"
             th:object="${member}"
             method="post"
             enctype="multipart/form-data"
           >
+          <input
+             id="profileImageInput"
+             name="profileImage"
+             type="file"
+             accept="image/*"
+             style="display: none"
+          />
             <!-- 이메일 (읽기 전용) -->
             <div class="form-row">
               <label class="form-label">이메일</label>
@@ -524,7 +523,7 @@
                 id="password"
                 type="password"
                 class="input"
-                name="password"
+                name="pwd"
                 placeholder="변경하지 않으려면 비워 두세요."
               />
               <p class="form-hint">
