@@ -1,44 +1,168 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-<!-- right sidebar -->
-<aside class="right" aria-label="로그인 및 사이드" th:fragment="right_menu">
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      /* ---------- Design tokens ---------- */
+      :root {
+        --bg: #f4f6fb;
+        --card: #ffffff;
+        --border: #e6e8ef;
+        --text: #101828;
+        --muted: #667085;
+        --primary: #6f7ddf;
+        --primary-600: #5f6dcd;
+        --accent: #0d6efd;
+        --accent-600: #0b5ed7;
+        --radius: 14px;
+        --shadow: 0 16px 40px rgba(16, 24, 40, 0.08);
+      }
 
-        <!-- 로그인 한 경우 -->
-        <div class="card user-panel" sec:authorize="isAuthenticated()">
-            <div class="user-greeting">
-            <span th:text="${member != null} ? ${member.nickname} + '님, 반가워요.' : ''">
-            </span>
-            </div>
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+      body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        background: var(--bg);
+        color: var(--text);
+        font: 16px/1.6 "Noto Sans KR", system-ui, -apple-system, Segoe UI,
+          Roboto, Arial, sans-serif;
+      }
 
-            <div class="user-actions">
-                <a class="user-btn" th:href="@{/member/profile}">회원 정보</a>
+      /* right sidebar */
+      aside.right {
+        position: sticky;
+        top: 72px;
+        align-self: start;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 16px;
+      }
+      .btn {
+        display: block;
+        width: 100%;
+        text-align: center;
+        text-decoration: none;
+        font-weight: 700;
+        padding: 12px 14px;
+        border-radius: 12px;
+        margin: 8px 0;
+        border: 1px solid transparent;
+      }
+      .btn.primary {
+        background: var(--accent);
+        color: #fff;
+      }
+      .btn.primary:hover {
+        background: var(--accent-600);
+      }
+      .btn.ghost {
+        background: #fff;
+        border-color: var(--border);
+        color: var(--text);
+      }
+      .btn.ghost:hover {
+        background: #f6f7fb;
+      }
+      .hero {
+        border-radius: var(--radius);
+        width: 100%;
+        height: auto;
+        display: block;
+        border: 1px solid var(--border);
+      }
 
-                <form th:action="@{/logout}" method="post">
-                    <button type="submit" class="user-btn">로그아웃</button>
-                </form>
-            </div>
+      /* 로그인 사용자 사이드바 패널 */
+      .user-panel {
+        padding: 18px 16px 20px;
+      }
+
+      .user-greeting {
+        width: 100%;
+        padding: 14px 16px;
+        border-radius: 10px;
+        background: #d9e0da;
+        text-align: center;
+        font-size: 16px;
+        font-weight: 600;
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
+      }
+
+      .user-actions {
+        margin-top: 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .user-btn {
+        display: block;
+        width: 100%;
+        text-align: center;
+        padding: 12px 0;
+        border-radius: 10px;
+        border: none;
+        background: var(--accent);
+        color: #fff;
+        font-size: 15px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        box-shadow: 0 10px 20px rgba(37, 99, 235, 0.35);
+      }
+
+      .user-btn:hover {
+        background: var(--accent-600);
+      }
+    </style>
+  </head>
+  <body>
+    <aside class="right" aria-label="로그인 및 사이드" th:fragment="right_menu">
+      <!-- 로그인 한 경우 -->
+      <div class="card user-panel" sec:authorize="isAuthenticated()" th:if="${member != null}">
+        <div class="user-greeting">
+            <span th:text="${member != null ? member.nickname + '님, 반가워요.' : ''}"></span>
         </div>
 
-        <!-- 로그인 안 한 경우 (기존 그대로) -->
-        <div class="card" sec:authorize="!isAuthenticated()">
-            <a class="btn primary" th:href="@{/login}">로그인</a>
-            <a class="btn ghost" th:href="@{/new}">회원가입</a>
-        </div>
+        <div class="user-actions">
+          <a class="user-btn" th:href="@{/member/profile}">회원 정보</a>
 
-        <!-- 배너는 공통으로 표시 -->
-        <div class="card">
-            <img
-                    class="hero"
-                    src="/image/banner.png"
-                    alt="곰과 사파리 가이드 일러스트"
-            />
+          <form th:action="@{/login/logout}" method="post">
+            <button type="submit" class="user-btn">로그아웃</button>
+          </form>
         </div>
+      </div>
 
-</aside>
-</body>
+      <!-- 로그인 안 한 경우 (기존 그대로) -->
+      <div class="card" sec:authorize="!isAuthenticated()">
+        <a class="btn primary" th:href="@{/login}">로그인</a>
+        <a class="btn ghost" th:href="@{/new}">회원가입</a>
+      </div>
+
+      <!-- 배너는 공통으로 표시 -->
+      <div class="card">
+        <img
+          class="hero"
+          src="/image/banner.png"
+          alt="곰과 사파리 가이드 일러스트"
+        />
+      </div>
+    </aside>
+  </body>
 </html>

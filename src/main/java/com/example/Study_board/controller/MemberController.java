@@ -45,6 +45,13 @@ public class MemberController {
         return "redirect:/";
     }
 
+    // 로그아웃 버튼 기능
+    @PostMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate(); // 저장된 세션 정보를 무효화 시킴
+        return "redirect:/";
+    }
+
     // 회원가입 페이지 이동
     @GetMapping("/signup")
     public String signupPage() {
