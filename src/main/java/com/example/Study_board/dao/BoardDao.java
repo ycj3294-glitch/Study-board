@@ -175,6 +175,7 @@ SELECT DISTINCT
     DBMS_LOB.SUBSTR(b.TITLE, 4000, 1) AS TITLE,
     DBMS_LOB.SUBSTR(b.CONTENTS, 150, 1) AS SNIPPET,
     m.NICKNAME,
+    b.VIEW_COUNT,
     b.REG_DATE
 FROM STUDY_BOARD b
 JOIN STUDY_MEMBER m ON b.MEMBER_ID = m.MEMBER_ID
@@ -214,6 +215,7 @@ ORDER BY b.REG_DATE DESC
             dto.setSnippet(rs.getString("SNIPPET"));
             dto.setNickname(rs.getString("NICKNAME"));
             dto.setRegDate(rs.getTimestamp("REG_DATE").toLocalDateTime());
+            dto.setViewCount(rs.getLong("VIEW_COUNT"));
             return dto;
         }
     }

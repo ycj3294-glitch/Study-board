@@ -15,4 +15,5 @@ public class SearchListRes {
     private String snippet;
     private String nickname;
     private LocalDateTime regDate;
+    private Long viewCount;
 }
