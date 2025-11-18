@@ -26,8 +26,9 @@ public class CommentController {
         MemberRes member = (MemberRes) session.getAttribute("loginMember");
         // 경로의 board_id 설정
         req.setBoard_id(board_id);
+        req.setMember_id(member.getId());
         commentService.write(req);
-        return "redirect:/detail/" + board_id;
+        return "redirect:/board/detail/" + board_id;
 
     }
     // 댓글 수정
@@ -35,7 +36,7 @@ public class CommentController {
     public String update(@PathVariable long comment_id, CommentCreateReq req) {
         Long board_id = commentService.findByBoardid(comment_id);
         commentService.update(req, comment_id);
-        return "redirect:/detail/" + board_id;
+        return "redirect:/board/detail/" + board_id;
     }
 
     // 댓글 삭제
@@ -43,7 +44,7 @@ public class CommentController {
     public String delete(@PathVariable long comment_id) {
         Long board_id = commentService.findByBoardid(comment_id);
         commentService.delete(comment_id);
-        return "redirect:/detail/" + board_id;
+        return "redirect:/board/detail/" + board_id;
     }
 
 }

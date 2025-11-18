@@ -84,7 +84,7 @@ public class BoardController {
         return "board/detail"; // detail.html 템플릿으로 이동
     }
     // 게시글 작성 페이지로 이동
-    @GetMapping("/")
+    @GetMapping("/new")
     public String movepost() {
         return "board/post";
     }

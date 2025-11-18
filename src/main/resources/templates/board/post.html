@@ -453,9 +453,9 @@
           </p>
 
           <!-- 글쓰기 폼 -->
-          <form class="post-form" th:action="@{/post/new}" method="post">
+          <form class="post-form" th:action="@{/board/new}" method="post">
             <!-- 필요하면 boardType hidden 으로 전달 -->
-            <input type="hidden" name="boardType" th:value="${boardType}" />
+            <input type="hidden" name="board_type" th:value="${boardType}" />
 
             <div class="form-row">
               <label class="form-label" for="title">제목</label>
