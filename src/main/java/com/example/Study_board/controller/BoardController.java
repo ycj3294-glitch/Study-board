@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
 import java.util.ArrayList;
@@ -119,19 +120,58 @@ public class BoardController {
             return "board/post";
         }
     }
+    // 게시글 수정 페이지 이동
+    @GetMapping("/{id}/edit")
+    public String editPage(@PathVariable("id") Long boardId,
+                           HttpSession session,
+                           Model model) {
 
+        Long loginMemberId = (Long) session.getAttribute("loginMember");
 
-    // 게시글 수정 페이지로 이동
-    @GetMapping("/")
-    public String moveupdate() {
-     return "board/post";
+        // 기존에 있는 메서드 사용 (findById 창조하지 않음)
+        BoardRes board = boardDao.findByBoardID(boardId);
+        if (board == null) {
+            return "error/404";
+        }
+
+        // 작성자 검증
+        if (!loginMemberId.equals(board.getMember_id())) {
+            return "error/403";
+        }
+
+        model.addAttribute("post", board);
+        return "board/edit";
     }
-
     // 게시글 수정
-//    @PostMapping("/")
-//    public String
+    @PostMapping("/{id}/edit")
+    public String updatePost(@PathVariable("id") Long boardId,
+                             @RequestParam String title,
+                             @RequestParam String contents,
+                             HttpSession session) {
+
+        Long loginMemberId = (Long) session.getAttribute("loginMember");
+
+        boolean updated = boardService.update(boardId, loginMemberId, title, contents);
+
+        if (!updated) {
+            return "error/403";  // 권한 없거나 실패
+        }
+
+        return "redirect:/board/detail/" + boardId;
+    }
     // 게시글 삭제
+    @PostMapping("/{id}/delete")
+    public String deletePost(@PathVariable("id") Long boardId,
+                             HttpSession session) {
 
+        Long loginMemberId = (Long) session.getAttribute("loginMember");
 
+        boolean deleted = boardService.delete(boardId, loginMemberId);
 
+        if (!deleted) {
+            return "error/403";
+        }
+
+        return "redirect:/board/";
+    }
 }
