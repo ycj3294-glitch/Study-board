@@ -449,7 +449,12 @@
           <!-- 상단 제목/설명/정렬버튼 -->
           <div class="board-list-header">
             <div th:switch="${boardType}">
-              <h2 th:case="'free'">자유게시판</h2>
+                <h2 th:case="'board1'">공지사항</h2>
+                <h2 th:case="'board2'">자유게시판</h2>
+                <h2 th:case="'board3'">코드게시판</h2>
+                <h2 th:case="'board4'">스터디게시판</h2>
+                <h2 th:case="*">게시판</h2>
+
 
               <p class="board-desc" th:case="'free'">
                 수강생들이 자유롭게 글을 올릴 수 있는 게시판 입니다.
