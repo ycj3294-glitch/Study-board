@@ -1,10 +1,7 @@
 package com.example.Study_board.controller;
 
 import com.example.Study_board.dao.BoardDao;
-import com.example.Study_board.dto.BoardListRes;
-import com.example.Study_board.dto.BoardRes;
-import com.example.Study_board.dto.CommentRes;
-import com.example.Study_board.dto.MemberRes;
+import com.example.Study_board.dto.*;
 import com.example.Study_board.service.BoardService;
 import com.example.Study_board.service.CommentService;
 import org.springframework.data.domain.PageRequest;
@@ -54,6 +51,9 @@ public class BoardController {
         model.addAttribute("posts", subList);
         // 페이지네이션용 page 객체
         model.addAttribute("page", boardPage);
+        // 해당게시판 타입 모델로 저장
+        model.addAttribute("boardType", boardType);
+
         return "board/list";
     }
 
@@ -83,13 +83,43 @@ public class BoardController {
         model.addAttribute("comment", comment);
         return "board/detail"; // detail.html 템플릿으로 이동
     }
+
     // 게시글 작성 페이지로 이동
-    @GetMapping("/new")
-    public String movepost() {
+    @GetMapping("/{board_type}/new")
+    public String moveboard(@PathVariable String board_type, Model model) {
+
+        model.addAttribute("boardType", board_type);
+
+        String boardName = switch (board_type) {
+            case "board1" -> "공지사항";
+            case "board2"   -> "자유게시판";
+            case "board3"   -> "코드게시판";
+            case "board4"  -> "스터디게시판";
+            default       -> "게시판";
+        };
+        model.addAttribute("boardName", boardName);
         return "board/post";
     }
+
+
     // 게시글 작성
-    @PostMapping("/")
+    @PostMapping("/{board_type}/new")
+    public String crateboard(@PathVariable String board_type, BoardCreateReq req, HttpSession session, Model model) {
+        MemberRes member = (MemberRes) session.getAttribute("loginMember");
+        if(member == null) {
+            return "redirect:/login/login";
+        }
+        try {
+            req.setBoard_type(board_type);
+            req.setMember_id (member.getId()); // 화면에서 정보를 입력받을 수 없기 때문에 세션정보에서 추출해서 넣어 줌
+            Long board_id = boardService.board(req);
+            return "redirect:/board/" + req.getBoard_type();
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("error", e.getMessage());
+            return "board/post";
+        }
+    }
+
 
     // 게시글 수정 페이지로 이동
     @GetMapping("/")

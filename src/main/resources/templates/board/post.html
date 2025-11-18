@@ -426,14 +426,7 @@
 
     <div class="container">
       <!-- 왼쪽 메뉴 -->
-      <aside class="nav" aria-label="보드 메뉴">
-        <nav class="menu">
-          <a th:href="@{/board/notice}">공지사항</a>
-          <a th:href="@{/board/free}">자유게시판</a>
-          <a th:href="@{/board/code}">코드게시판</a>
-          <a th:href="@{/board/study}">스터디게시판</a>
-        </nav>
-      </aside>
+        <div th:replace="fragments/left_menu :: left_Menu"></div>
 
       <!-- 가운데: 글쓰기 카드 -->
       <main class="post-write-page">
@@ -442,7 +435,7 @@
             <div>
               <div class="board-name" th:text="${boardName}">자유게시판</div>
             </div>
-            <a th:href="@{/board/free}">
+            <a th:href="@{/board/{boardType}(boardType=${boardType})}">
               <button type="button" class="btn-outline">목록으로</button>
             </a>
           </div>
@@ -453,7 +446,7 @@
           </p>
 
           <!-- 글쓰기 폼 -->
-          <form class="post-form" th:action="@{/board/new}" method="post">
+          <form class="post-form" th:action="@{/board/{boardType}/new(boardType=${boardType})}" method="post">
             <!-- 필요하면 boardType hidden 으로 전달 -->
             <input type="hidden" name="board_type" th:value="${boardType}" />
 
@@ -491,7 +484,7 @@
             <!-- 필요 시 파일 첨부 영역도 여기에 추가 가능 -->
 
             <div class="post-write-footer">
-              <a th:href="@{/board/free}">
+              <a th:href="@{/board/{boardType}(boardType=${boardType})}">
                 <button type="button" class="btn-secondary">취소</button>
               </a>
               <button type="submit" class="btn-primary">등록</button>

@@ -472,17 +472,18 @@
             <div class="board-row" th:each="post : ${posts}">
               <div class="col-title">
                 <a
-                  th:href="@{/post/{id}(id=${post.id})}"
-                  th:text="${post.title}"
+                        th:href="@{/board/detail/{id}(id=${post.board_id})}"
+
+                        th:text="${post.title}"
                 >
                   [잡담] 글 제목…
                 </a>
               </div>
               <div class="col-nick" th:text="${post.nickname}">닉네임</div>
-              <div class="col-views" th:text="${post.viewCount}">30</div>
+              <div class="col-views" th:text="${post.view_count}">30</div>
               <div
                 class="col-date"
-                th:text="${#temporals.format(post.createdAt, 'MM/dd')}"
+                th:text="${#temporals.format(post.reg_date, 'MM/dd')}"
               >
                 11/01
               </div>
@@ -529,7 +530,7 @@
               </a>
             </div>
 
-            <a class="btn-write" th:href="@{/board/new}">글쓰기</a>
+            <a class="btn-write" th:href="@{/board/{boardType}/new(boardType=${boardType})}">글쓰기</a>
           </div>
         </section>
       </main>

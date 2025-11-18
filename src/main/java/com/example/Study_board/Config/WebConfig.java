@@ -12,6 +12,8 @@ public class WebConfig implements WebMvcConfigurer {
 
         // 실제 저장된 폴더: C:\Users\admin\Desktop\프로젝트\image\
         registry.addResourceHandler("/image/**")
-                .addResourceLocations("file:///C:/Users/admin/Desktop/프로젝트/image/");
+                .addResourceLocations(
+                        "classpath:/static/image/",
+                        "file:///C:/Users/admin/Desktop/프로젝트/image/");
     }
 }
