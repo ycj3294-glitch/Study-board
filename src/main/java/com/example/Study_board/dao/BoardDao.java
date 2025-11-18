@@ -207,8 +207,8 @@ ORDER BY b.REG_DATE DESC
             return new BoardListRes(
                     rs.getLong("BOARD_ID"),
                     rs.getLong("MEMBER_ID"),
-                    rs.getString("TITLE"),
                     rs.getString("NICKNAME"),
+                    rs.getString("TITLE"),
                     rs.getLong("VIEW_COUNT"),
                     rs.getLong("LIKE_COUNT"),
                     rs.getLong("REPORT_COUNT"),
