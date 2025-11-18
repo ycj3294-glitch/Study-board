@@ -136,7 +136,8 @@
     <aside class="right" aria-label="로그인 및 사이드" th:fragment="right_menu">
       <!-- 로그인 한 경우 -->
       <div class="card user-panel" sec:authorize="isAuthenticated()" th:if="${member != null}">
-        <div class="user-greeting">
+<!--       왜 안돼-->
+          <div class="user-greeting">
             <span th:text="${member != null ? member.nickname + '님, 반가워요.' : ''}"></span>
         </div>
 

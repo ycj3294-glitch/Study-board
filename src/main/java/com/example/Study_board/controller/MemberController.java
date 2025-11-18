@@ -79,7 +79,7 @@ public class MemberController {
         return "login/list";
     }
 
-    // 회원 정보 페이지 표시
+    // 회원 정보 페이지 표시(주소 변경)
     @GetMapping("/memberinfo")
     public String memberInfo(HttpSession session, Model model) {
         // 로그인된 회원 정보 가져오기
