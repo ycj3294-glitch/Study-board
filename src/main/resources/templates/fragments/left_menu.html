@@ -1,17 +1,87 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
+  <head>
     <title>Fragments</title>
-</head>
-<body>
-<!-- left menu -->
-<aside class="nav" aria-label="게시판 선택" th:fragment="left_Menu">
-    <nav class="menu">
+  </head>
+  <style>
+    /* ---------- Design tokens ---------- */
+    :root {
+      --bg: #f4f6fb;
+      --card: #ffffff;
+      --border: #e6e8ef;
+      --text: #101828;
+      --muted: #667085;
+      --primary: #6f7ddf;
+      --primary-600: #5f6dcd;
+      --accent: #0d6efd;
+      --accent-600: #0b5ed7;
+      --radius: 14px;
+      --shadow: 0 16px 40px rgba(16, 24, 40, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 16px/1.6 "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto,
+        Arial, sans-serif;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: 200px minmax(0, 1.8fr) 220px;
+      gap: 18px;
+      width: 100%;
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 24px;
+    }
+
+    /* left nav */
+    aside.nav {
+      position: sticky;
+      top: 72px;
+      align-self: start;
+    }
+    .menu {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px;
+      box-shadow: var(--shadow);
+    }
+    .menu a {
+      display: flex; /* 가로/세로 중앙 정렬 가능 */
+      justify-content: center; /* 가로 중앙 */
+      align-items: center; /* 세로 중앙 */
+
+      padding: 12px 14px;
+      margin: 6px 0;
+      text-decoration: none;
+      color: var(--text);
+      background: #f8f9fe;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-weight: 600;
+    }
+
+    .menu a:hover {
+      background: #eef0fd;
+    }
+  </style>
+  <body>
+    <!-- left menu -->
+    <aside class="nav" aria-label="게시판 선택" th:fragment="left_Menu">
+      <nav class="menu">
         <a th:href="@{/board/board1}">공지사항</a>
         <a th:href="@{/board/board2}">자유게시판</a>
         <a th:href="@{/board/board3}">코드게시판</a>
         <a th:href="@{/board/board4}">스터디게시판</a>
-    </nav>
-</aside>
-</body>
+      </nav>
+    </aside>
+  </body>
 </html>
