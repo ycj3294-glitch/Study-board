@@ -152,7 +152,7 @@
       <!-- 로그인 안 한 경우 표시되고(기존 그대로) 로그인 하면 안보이게 -->
       <div class="card" sec:authorize="!isAuthenticated()" th:if="${member == null}">
         <a class="btn primary" th:href="@{/login}">로그인</a>
-        <a class="btn ghost" th:href="@{/new}">회원가입</a>
+        <a class="btn ghost" th:href="@{/login/signup}">회원가입</a>
       </div>
 
       <!-- 배너는 공통으로 표시 -->
