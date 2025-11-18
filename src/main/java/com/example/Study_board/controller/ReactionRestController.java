@@ -20,7 +20,7 @@ public class ReactionRestController {
 
     @PostMapping
     public ResponseEntity<Long> recordReaction(@RequestBody ReactionCreateReq req) {
-        log.info("회원 가입 요청 : {}", req);
+        log.info("입력값: {}", req);
         return  ResponseEntity.ok(reactionService.recordReaction(req));
     }
 
