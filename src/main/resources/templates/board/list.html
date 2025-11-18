@@ -510,7 +510,7 @@
               <!-- 이전 -->
               <a
                 class="page-link"
-                th:if="${page.hasPrevious()}"
+                th:if="${page != null and page.hasPrevious()}"
                 th:href="@{/board/free(page=${page.number - 1}, size=${page.size})}"
               >
                 이전
@@ -529,7 +529,7 @@
               <!-- 다음 -->
               <a
                 class="page-link"
-                th:if="${page.hasNext()}"
+                th:if="${page != null and page.hasNext()}"
                 th:href="@{/board/free(page=${page.number + 1}, size=${page.size})}"
               >
                 다음
@@ -543,39 +543,7 @@
 
       <!-- 오른쪽 사이드바 그대로 사용 -->
       <!-- 오른쪽 사이드바 -->
-      <aside class="right" aria-label="로그인 및 사이드">
-        <!-- 로그인 한 경우 -->
-        <div class="card user-panel" sec:authorize="isAuthenticated()">
-          <div class="user-greeting">
-            <span th:text="${member.nickname} + '님, 반가워요.'">
-              OOO님, 반가워요.
-            </span>
-          </div>
-
-          <div class="user-actions">
-            <a class="user-btn" th:href="@{/member/profile}">회원 정보</a>
-
-            <form th:action="@{/logout}" method="post">
-              <button type="submit" class="user-btn">로그아웃</button>
-            </form>
-          </div>
-        </div>
-
-        <!-- 로그인 안 한 경우 (기존 그대로) -->
-        <div class="card" sec:authorize="!isAuthenticated()">
-          <a class="btn primary" th:href="@{/login}">로그인</a>
-          <a class="btn ghost" th:href="@{/new}">회원가입</a>
-        </div>
-
-        <!-- 배너는 공통으로 표시 -->
-        <div class="card">
-          <img
-            class="hero"
-            src="/image/banner.png"
-            alt="곰과 사파리 가이드 일러스트"
-          />
-        </div>
-      </aside>
+        <div th:replace="~{fragments/right_sidebar :: right_menu}"></div>
     </div>
 
     <!-- 푸터 공통 -->
