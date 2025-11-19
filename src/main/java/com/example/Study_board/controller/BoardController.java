@@ -76,6 +76,8 @@ public class BoardController {
         }
         // 게시글 정보를 모델링
         model.addAttribute("post", post);
+        // 사용자 정보를 모델링
+        model.addAttribute("loginMember", loginMember);
 
         // 해당 게시글 코멘트 리스트 정보를 가져옴
         List<CommentRes> comment = commentService.listByBoardid(id);
@@ -86,6 +88,16 @@ public class BoardController {
 
         // 코멘트 정보를 모델링
         model.addAttribute("comment", comment);
+
+        // ★ 로그인한 사용자 ID와 각 댓글 작성자 ID 로그 찍기
+        System.out.println("로그인 사용자 ID: " + loginMember.getId());
+        for (CommentRes c : comment) {
+            System.out.println("댓글 ID: " + c.getBoard_id() + " / 작성자 ID: " + c.getMember_id());
+            System.out.println("loginMember.id == c.member_id ? " + (loginMember.getId() == c.getMember_id()));
+
+        }
+
+
         return "board/detail"; // detail.html 템플릿으로 이동
     }
 

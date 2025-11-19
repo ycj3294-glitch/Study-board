@@ -638,11 +638,11 @@
             </span>
             <span>
               공감
-              <span th:text="${post.view_count}">10</span>
+              <span th:text="${post.like_count}">10</span>
             </span>
             <span>
               신고
-              <span th:text="${post.view_count}">1</span>
+              <span th:text="${post.report_count}">1</span>
             </span>
           </div>
 
@@ -734,10 +734,10 @@
                 </div>
 
                 <!-- 댓글 수정/삭제: 작성자 본인일 때만 -->
-                <div
-                  class="owner-actions"
-                  th:if="${loginMember != null and loginMember.id == c.member_id}"
-                >
+                  <div
+                          class="owner-actions"
+                          th:if="${loginMember != null and loginMember.id != null and loginMember.id.equals(c.member_id)}"
+                  >
                   <a th:href="@{/comment/edit/{id}(id=${c.comment_id})}">
                     <button type="button" class="btn-action">수정</button>
                   </a>

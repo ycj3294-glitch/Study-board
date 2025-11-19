@@ -41,6 +41,7 @@ public class CommentDao {
         @Language("SQL")
         String sql = """        
              SELECT
+             c.COMMENT_ID,
              c.BOARD_ID,
              c.MEMBER_ID,
              m.NICKNAME,
@@ -103,6 +104,7 @@ public class CommentDao {
         @Override
         public CommentRes mapRow(ResultSet rs, int rowNum) throws SQLException {
             return new CommentRes(
+                    rs.getLong("COMMENT_ID"),
                     rs.getLong("BOARD_ID"),
                     rs.getLong("MEMBER_ID"),
                     rs.getString("NICKNAME"),

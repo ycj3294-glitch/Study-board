@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @ToString
 
 public class CommentRes {
+    private Long comment_id;
     private Long board_id;
     private Long member_id;
     private String nickname;
