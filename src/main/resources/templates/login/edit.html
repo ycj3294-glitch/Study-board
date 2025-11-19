@@ -363,6 +363,49 @@
         border: 1px solid var(--border);
       }
 
+      /* 로그인 사용자 사이드바 패널 */
+      .user-panel {
+        padding: 18px 16px 20px;
+      }
+
+      .user-greeting {
+        width: 100%;
+        padding: 14px 16px;
+        border-radius: 10px;
+        background: #d9e0da;
+        text-align: center;
+        font-size: 16px;
+        font-weight: 600;
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
+      }
+
+      .user-actions {
+        margin-top: 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .user-btn {
+        display: block;
+        width: 100%;
+        text-align: center;
+        padding: 12px 0;
+        border-radius: 10px;
+        border: none;
+        background: var(--accent);
+        color: #fff;
+        font-size: 15px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        box-shadow: 0 10px 20px rgba(37, 99, 235, 0.35);
+      }
+
+      .user-btn:hover {
+        background: var(--accent-600);
+      }
+
       /* footer */
       footer {
         margin-top: 28px;
@@ -431,14 +474,7 @@
 
     <div class="container">
       <!-- 왼쪽 메뉴 -->
-      <aside class="nav" aria-label="보드 메뉴">
-        <nav class="menu">
-          <a th:href="@{/board/notice}">공지사항</a>
-          <a th:href="@{/board/free}">자유게시판</a>
-          <a th:href="@{/board/code}">코드게시판</a>
-          <a th:href="@{/board/study}">스터디게시판</a>
-        </nav>
-      </aside>
+        <div th:replace="fragments/left_menu :: left_Menu"></div>
 
       <!-- 가운데: 회원 정보 편집 -->
       <main class="profile-page">
@@ -559,19 +595,7 @@
       </main>
 
       <!-- 오른쪽 사이드바 -->
-      <aside class="right" aria-label="로그인 및 사이드">
-        <div class="card">
-          <a class="btn primary" th:href="@{/login}">로그인</a>
-          <a class="btn ghost" th:href="@{/new}">회원가입</a>
-        </div>
-        <div class="card">
-          <img
-            class="hero"
-            src="/image/banner.png"
-            alt="곰과 사파리 가이드 일러스트"
-          />
-        </div>
-      </aside>
+        <div th:replace="~{fragments/right_sidebar :: right_menu}"></div>
     </div>
 
     <!-- 푸터 공통 -->

@@ -64,7 +64,7 @@ public class HeaderController {
     // 홈으로 이동(html a 링크 조작으로 가능)
 
 
-    // 검색 기능
+    // 검색 기능(search controller에서 구현)
     @GetMapping("/search/{question}")
     public String search(@PathVariable String question, Model model) {
         // 검색문구에 따른 결과를 불러옴
