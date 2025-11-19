@@ -446,7 +446,7 @@
           </p>
 
           <!-- 글쓰기 폼 -->
-          <form class="post-form" th:action="@{/board/{boardType}/new(boardType=${boardType})}" method="post">
+          <form class="post-form" th:action="@{/board/{id}/edit(id=${post.board_id})}" th:object="${post}" method="post">
             <!-- 필요하면 boardType hidden 으로 전달 -->
             <input type="hidden" name="board_type" th:value="${boardType}" />
 
@@ -454,9 +454,9 @@
               <label class="form-label" for="title">제목</label>
               <input
                 id="title"
-                name="title"
                 type="text"
                 class="input"
+                th:field="*{title}"
                 placeholder="[잡담] 게시글 제목을 입력하세요."
                 required
               />
@@ -470,8 +470,8 @@
               <label class="form-label" for="contents">내용</label>
               <textarea
                 id="contents"
-                name="contents"
                 class="textarea"
+                th:field="*{content}"
                 placeholder="게시글 내용을 입력하세요."
                 required
               ></textarea>

@@ -447,6 +447,131 @@
         text-decoration: underline;
       }
 
+      /* 게시글/댓글 공감·신고 숫자/버튼 공통 스타일 */
+      .reaction-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 12px;
+        gap: 12px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .reaction-counts {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .reaction-counts span {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .reaction-counts .like::before {
+        content: "👍";
+        font-size: 14px;
+      }
+
+      .reaction-counts .report::before {
+        content: "⚠";
+        font-size: 14px;
+      }
+
+      /* 버튼 영역 */
+      .reaction-buttons {
+        display: flex;
+        gap: 6px;
+      }
+
+      .btn-reaction {
+        border-radius: 999px;
+        padding: 4px 10px;
+        border: 1px solid var(--border);
+        background: #fff;
+        font-size: 12px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .btn-reaction.like-btn::before {
+        content: "👍";
+        font-size: 13px;
+      }
+
+      .btn-reaction.report-btn::before {
+        content: "⚠";
+        font-size: 13px;
+      }
+
+      .btn-reaction:hover {
+        background: #f3f4ff;
+      }
+
+      /* 댓글용 조금 더 작게 */
+      .comment-reaction-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 6px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .comment-reaction-row .reaction-counts {
+        gap: 8px;
+      }
+
+      .comment-reaction-row .btn-reaction {
+        font-size: 11px;
+        padding: 3px 8px;
+      }
+
+      .comment-owner-actions {
+        margin-top: 4px;
+        display: flex;
+        gap: 4px;
+      }
+
+      /* 게시글/댓글 공통: 수정·삭제 버튼 영역 */
+      .owner-actions {
+        margin-top: 8px;
+        display: flex;
+        justify-content: flex-end;
+        gap: 6px;
+      }
+
+      /* 게시글/댓글 공통: 수정·삭제 버튼 스타일 */
+      .btn-action {
+        border-radius: 999px;
+        padding: 6px 12px;
+        border: 1px solid var(--border);
+        background: #fff;
+        font-size: 12px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .btn-action:hover {
+        background: #f3f4ff;
+      }
+
+      /* 삭제 버튼만 색 살짝 다르게 하고 싶으면 (선택) */
+      .btn-action.delete {
+        border-color: #f97373;
+        color: #b91c1c;
+      }
+
+      .btn-action.delete:hover {
+        background: #fef2f2;
+      }
+
       /* responsive */
       @media (max-width: 1100px) {
         .container {
@@ -484,7 +609,7 @@
 
     <div class="container">
       <!-- 왼쪽 메뉴 (그대로) -->
-        <div th:replace="~{fragments/left_menu :: left_Menu}"></div>
+      <div th:replace="~{fragments/left_menu :: left_Menu}"></div>
 
       <!-- 가운데: 게시글 상세 + 댓글 -->
       <main class="post-page">
@@ -528,8 +653,49 @@
             게시글 내용이 들어갑니다.
           </div>
 
+          <!-- 게시글 공감/신고 영역 -->
+          <div class="reaction-row">
+            <!-- 왼쪽: 숫자 표시 -->
+            <div class="reaction-counts">
+              <span class="like">
+                공감
+                <span th:text="${post.like_count}">10</span>
+              </span>
+              <span class="report">
+                신고
+                <span th:text="${post.report_count}">1</span>
+              </span>
+            </div>
+
+            <!-- 오른쪽: 버튼 (POST 요청) -->
+            <div class="reaction-buttons">
+              <form
+                th:action="@{/post/{id}/empathy(id=${post.board_id})}"
+                method="post"
+                style="margin: 0"
+              >
+                <button type="submit" class="btn-reaction like-btn">
+                  공감하기
+                </button>
+              </form>
+
+              <form
+                th:action="@{/post/{id}/report(id=${post.board_id})}"
+                method="post"
+                style="margin: 0"
+              >
+                <button type="submit" class="btn-reaction report-btn">
+                  신고하기
+                </button>
+              </form>
+            </div>
+          </div>
+
           <!-- 게시글 하단 버튼 (필요 시) -->
-          <div class="post-actions">
+          <div
+            class="owner-actions"
+            th:if="${loginMember != null and loginMember.id == post.member_id}"
+          >
             <a th:href="@{/board/{id}/edit(id=${post.board_id})}">
               <button type="button" class="btn-secondary">수정</button>
             </a>
@@ -552,15 +718,77 @@
             <!-- 댓글 목록 -->
             <div class="comment-list" th:if="${!#lists.isEmpty(comment)}">
               <div class="comment-item" th:each="c : ${comment}">
+                <!-- 댓글 메타 -->
                 <div class="comment-meta">
                   <strong th:text="${c.nickname}">댓글닉네임</strong>
                   <span
                     th:text="${#temporals.format(c.reg_date, 'MM/dd HH:mm')}"
-                    >11/01 12:34</span
                   >
+                    11/01 12:34
+                  </span>
                 </div>
+
+                <!-- 댓글 내용 -->
                 <div class="comment-content" th:text="${c.contents}">
                   댓글 내용입니다.
+                </div>
+
+                <!-- 댓글 수정/삭제: 작성자 본인일 때만 -->
+                <div
+                  class="owner-actions"
+                  th:if="${loginMember != null and loginMember.id == c.member_id}"
+                >
+                  <a th:href="@{/comment/edit/{id}(id=${c.comment_id})}">
+                    <button type="button" class="btn-action">수정</button>
+                  </a>
+
+                  <form
+                    th:action="@{/comment/delete/{id}(id=${c.comment_id})}"
+                    method="post"
+                    style="margin: 0"
+                  >
+                    <button type="submit" class="btn-action delete">
+                      삭제
+                    </button>
+                  </form>
+                </div>
+
+                <!-- 댓글 공감/신고 영역 -->
+                <div class="comment-reaction-row">
+                  <!-- 숫자 -->
+                  <div class="reaction-counts">
+                    <span class="like">
+                      공감
+                      <span th:text="${c.like_count}">0</span>
+                    </span>
+                    <span class="report">
+                      신고
+                      <span th:text="${c.report_count}">0</span>
+                    </span>
+                  </div>
+
+                  <!-- 버튼 -->
+                  <div class="reaction-buttons">
+                    <form
+                      th:action="@{/comment/{id}/empathy(id=${c.comment_id})}"
+                      method="post"
+                      style="margin: 0"
+                    >
+                      <button type="submit" class="btn-reaction like-btn">
+                        공감
+                      </button>
+                    </form>
+
+                    <form
+                      th:action="@{/comment/{id}/report(id=${c.comment_id})}"
+                      method="post"
+                      style="margin: 0"
+                    >
+                      <button type="submit" class="btn-reaction report-btn">
+                        신고
+                      </button>
+                    </form>
+                  </div>
                 </div>
               </div>
             </div>
@@ -593,7 +821,7 @@
       </main>
 
       <!-- 오른쪽 사이드바 (그대로) -->
-        <div th:replace="~{fragments/right_sidebar :: right_menu}"></div>
+      <div th:replace="~{fragments/right_sidebar :: right_menu}"></div>
     </div>
 
     <!-- 푸터 공통 -->

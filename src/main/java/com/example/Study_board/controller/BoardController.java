@@ -142,7 +142,6 @@ public class BoardController {
         if (!(loginMember.getId()==board.getMember_id())) {
             return "error/403";
         }
-
         model.addAttribute("post", board);
         return "board/edit";
     }
