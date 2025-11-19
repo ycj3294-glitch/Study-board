@@ -16,16 +16,16 @@ public class MainController {
     public String home(Model model) {
 
         model.addAttribute("noticeList",
-                boardService.getLatestPosts("notice", 7));
+                boardService.getLatestPosts("board1", 7));
 
         model.addAttribute("freeList",
-                boardService.getLatestPosts("free", 7));
+                boardService.getLatestPosts("board2", 7));
 
         model.addAttribute("codeList",
-                boardService.getLatestPosts("code", 7));
+                boardService.getLatestPosts("board3", 7));
 
         model.addAttribute("studyList",
-                boardService.getLatestPosts("study", 7));
+                boardService.getLatestPosts("board4", 7));
 
         return "communitytest";
     }
