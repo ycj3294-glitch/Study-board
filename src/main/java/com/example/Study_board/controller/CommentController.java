@@ -32,7 +32,7 @@ public class CommentController {
 
     }
     // 댓글 수정
-    @PutMapping("/{comment_id}")
+    @PostMapping("edit/{comment_id}")
     public String update(@PathVariable long comment_id, CommentCreateReq req) {
         Long board_id = commentService.findByBoardid(comment_id);
         commentService.update(req, comment_id);
@@ -40,7 +40,7 @@ public class CommentController {
     }
 
     // 댓글 삭제
-    @DeleteMapping("/{comment_id}")
+    @PostMapping("/delete/{comment_id}")
     public String delete(@PathVariable long comment_id) {
         Long board_id = commentService.findByBoardid(comment_id);
         commentService.delete(comment_id);

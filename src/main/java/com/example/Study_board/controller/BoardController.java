@@ -164,9 +164,9 @@ public class BoardController {
                              @RequestParam String contents,
                              HttpSession session) {
 
-        Long loginMemberId = (Long) session.getAttribute("loginMember");
+        MemberRes loginMember = (MemberRes) session.getAttribute("loginMember");
 
-        boolean updated = boardService.update(boardId, loginMemberId, title, contents);
+        boolean updated = boardService.update(boardId, loginMember.getId(), title, contents);
 
         if (!updated) {
             return "error/403";  // 권한 없거나 실패
