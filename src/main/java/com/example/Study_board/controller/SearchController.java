@@ -24,7 +24,7 @@ import java.util.List;
 public class SearchController {
     private final BoardService boardService;
 
-
+    // 검색 기능
     @GetMapping
     public String search(@RequestParam String keyword, Model model) {
         List<SearchListRes> result = boardService.search(keyword);
