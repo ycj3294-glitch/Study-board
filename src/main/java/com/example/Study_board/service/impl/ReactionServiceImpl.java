@@ -22,4 +22,5 @@ public class ReactionServiceImpl implements ReactionService {
         }
         return reactionDao.recordReaction(req);
     }
+
 }

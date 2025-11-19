@@ -13,3 +13,4 @@ public class ReactionCreateReq {
     private Long target_id;
     private String action;
 }
+
