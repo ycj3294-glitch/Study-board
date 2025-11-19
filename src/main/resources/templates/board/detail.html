@@ -668,27 +668,21 @@
             </div>
 
             <!-- 오른쪽: 버튼 (POST 요청) -->
-            <div class="reaction-buttons">
-              <form
-                th:action="@{/post/{id}/empathy(id=${post.board_id})}"
-                method="post"
-                style="margin: 0"
-              >
-                <button type="submit" class="btn-reaction like-btn">
-                  공감하기
-                </button>
-              </form>
+              <div class="reaction-buttons">
+                  <form th:action="@{/reaction/like}" method="post" style="margin:0">
+                      <input type="hidden" name="target_id" th:value="${post.board_id}" />
+                      <input type="hidden" name="target_type" value="BOARD" />
+                      <input type="hidden" name="action" value="LIKE" />
+                      <button type="submit" class="btn-reaction like-btn">공감하기</button>
+                  </form>
 
-              <form
-                th:action="@{/post/{id}/report(id=${post.board_id})}"
-                method="post"
-                style="margin: 0"
-              >
-                <button type="submit" class="btn-reaction report-btn">
-                  신고하기
-                </button>
-              </form>
-            </div>
+                  <form th:action="@{/reaction/report}" method="post" style="margin:0">
+                      <input type="hidden" name="target_id" th:value="${post.board_id}" />
+                      <input type="hidden" name="target_type" value="BOARD" />
+                      <input type="hidden" name="action" value="REPORT" />
+                      <button type="submit" class="btn-reaction report-btn">신고하기</button>
+                  </form>
+              </div>
           </div>
 
           <!-- 게시글 하단 버튼 (필요 시) -->
@@ -744,11 +738,17 @@
 
                         <!-- 버튼 -->
                         <div class="reaction-buttons">
-                            <form th:action="@{/comment/{id}/empathy(id=${c.comment_id})}" method="post" style="margin: 0">
+                            <form th:action="@{/reaction/like}" method="post" style="margin: 0">
+                                <input type="hidden" name="target_id" th:value="${c.comment_id}" />
+                                <input type="hidden" name="target_type" value="COMMENT" />
+                                <input type="hidden" name="action" value="LIKE" />
                                 <button type="submit" class="btn-reaction like-btn">공감</button>
                             </form>
 
-                            <form th:action="@{/comment/{id}/report(id=${c.comment_id})}" method="post" style="margin: 0">
+                            <form th:action="@{/reaction/report}" method="post" style="margin: 0">
+                                <input type="hidden" name="target_id" th:value="${c.comment_id}" />
+                                <input type="hidden" name="target_type" value="COMMENT" />
+                                <input type="hidden" name="action" value="REPORT" />
                                 <button type="submit" class="btn-reaction report-btn">신고</button>
                             </form>
                         </div>

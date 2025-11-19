@@ -13,45 +13,52 @@ import org.springframework.stereotype.Repository;
 
 public class ReactionDao {
     private final JdbcTemplate jdbc;
-    // 특정 회원의 기존 리액션 체크
+    // 리액션 기록
     public Long recordReaction(ReactionCreateReq req) {
 
-        // 1) 먼저 중복 확인
+        // 1) 중복 체크 (액션 포함)
         String checkSql = """
-        SELECT COUNT(*) 
-        FROM REACTION
-        WHERE MEMBER_ID = ?
-          AND TARGET_TYPE = ?
-          AND TARGET_ID = ?
-    """;
+            SELECT COUNT(*) 
+            FROM REACTION
+            WHERE MEMBER_ID = ?
+              AND TARGET_TYPE = ?
+              AND TARGET_ID = ?
+              AND ACTION = ?
+        """;
 
         Integer count = jdbc.queryForObject(checkSql, Integer.class,
-                req.getMember_id(),
-                req.getTarget_type(),
-                req.getTarget_id()
-        );
-
-        if (count != null && count > 0) {
-            // 이미 공감/신고를 한 경우
-            return -1L;
-        }
-
-        // 2) 중복이 아니라면 INSERT 실행
-        String insertSql = """
-        INSERT INTO REACTION 
-        (RE_ID, MEMBER_ID, TARGET_TYPE, TARGET_ID, ACTION)
-        VALUES (SEQ_REACTION.NEXTVAL, ?, ?, ?, ?)
-    """;
-
-        jdbc.update(insertSql,
                 req.getMember_id(),
                 req.getTarget_type(),
                 req.getTarget_id(),
                 req.getAction()
         );
 
-        // 3) 방금 입력된 REACTION ID 반환
-        return jdbc.queryForObject("SELECT SEQ_REACTION.CURRVAL FROM DUAL", Long.class);
-    }
+        if (count != null && count > 0) {
+            log.info("이미 해당 액션 존재: memberId={}, targetType={}, targetId={}, action={}",
+                    req.getMember_id(), req.getTarget_type(), req.getTarget_id(), req.getAction());
+            return -1L; // 이미 해당 액션 존재
+        }
 
+        // 2) INSERT 실행
+        String insertSql = """
+            INSERT INTO REACTION (REACTION_ID, MEMBER_ID, TARGET_TYPE, TARGET_ID, ACTION)
+            VALUES (SEQ_STUDY_REACTION.NEXTVAL, ?, ?, ?, ?)
+        """;
+
+        int rows = jdbc.update(insertSql,
+                req.getMember_id(),
+                req.getTarget_type(),
+                req.getTarget_id(),
+                req.getAction()
+        );
+
+        log.info("REACTION INSERT 완료: rowsAffected={}, memberId={}, targetType={}, targetId={}, action={}",
+                rows, req.getMember_id(), req.getTarget_type(), req.getTarget_id(), req.getAction());
+
+        // 3) 방금 입력된 REACTION_ID 반환
+        Long reactionId = jdbc.queryForObject("SELECT SEQ_STUDY_REACTION.CURRVAL FROM DUAL", Long.class);
+        log.debug("생성된 REACTION_ID: {}", reactionId);
+
+        return reactionId;
+    }
 }
