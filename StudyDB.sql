@@ -342,4 +342,141 @@ WHERE ROWNUM <= 10;
 select * from Study_board;
 select * from Study_member;
 
+-- 공지사항 입력
+BEGIN
+    FOR i IN 1..10 LOOP
+        INSERT INTO STUDY_BOARD (BOARD_ID, BOARD_TYPE, MEMBER_ID, TITLE, CONTENTS, REG_DATE, VIEW_COUNT)
+        VALUES (
+            SEQ_STUDY_BOARD.nextval,
+            'board1',
+            1, -- 1번 회원 고정
+            '[필독 공지] 서비스 시스템 점검 및 업데이트 안내 (' || TO_CHAR(i) || '/10)',
+            '안녕하세요. 보다 안정적인 서비스를 제공하기 위해 **' || TO_CHAR(i) || '월 15일 02시부터 05시까지** 시스템 정기 점검을 실시합니다. 해당 시간 동안 서비스 이용이 일시 중단될 예정이오니 양해 부탁드립니다. 주요 업데이트 내용은 검색 기능 최적화입니다.',
+            SYSTIMESTAMP - INTERVAL '10' DAY + (i * INTERVAL '1' HOUR),
+            TRUNC(DBMS_RANDOM.VALUE(100, 500))
+        );
+    END LOOP;
+END;
 
+-- 자유게시판 입력
+BEGIN
+    FOR i IN 1..20 LOOP
+        INSERT INTO STUDY_BOARD (BOARD_ID, BOARD_TYPE, MEMBER_ID, TITLE, CONTENTS, REG_DATE, VIEW_COUNT)
+        VALUES (
+            SEQ_STUDY_BOARD.nextval,
+            'board2', -- 게시판 타입: board2
+            MOD(i - 1, 30) + 1, -- 1부터 30까지 순환하는 회원 ID
+            '[잡담] 주니어 개발자 1년차, 번아웃이 온 것 같아요... 조언 부탁드립니다. (글 ' || TO_CHAR(i) || '/30)',
+            '최근 프로젝트 마감이 겹치면서 업무 강도가 너무 높아졌습니다. 처음에는 의욕이 넘쳤는데 요즘은 출근하는 것 자체가 힘드네요. 선배님들은 이런 번아웃을 어떻게 극복하셨는지 궁금합니다. 특히 재택근무 환경에서 멘탈 관리 팁이 있을까요?',
+            SYSTIMESTAMP - INTERVAL '15' DAY + (i * INTERVAL '4' HOUR), -- 15일 전부터 시작, 4시간 간격
+            TRUNC(DBMS_RANDOM.VALUE(500, 1500))
+        );
+    END LOOP;
+END;
+
+-- 코드 게시판 입력
+BEGIN
+    FOR i IN 1..15 LOOP
+        INSERT INTO STUDY_BOARD (BOARD_ID, BOARD_TYPE, MEMBER_ID, TITLE, CONTENTS, REG_DATE, VIEW_COUNT)
+        VALUES (
+            SEQ_STUDY_BOARD.nextval,
+            'board3', -- 게시판 타입: board3
+            MOD(i - 1, 10) + 1, -- 1부터 10까지 순환하도록 수정
+            '[에러] [JAVA] NullPointerException 디버깅 관련 질문드립니다 (' || TO_CHAR(i) || '/15)',
+            '스프링 부트 환경에서 REST API를 개발 중입니다. 특정 서비스 로직에서 NullPointerException이 발생하는데, 어디서부터 체크해야 할지 감이 안 잡힙니다. 파라미터 체크는 다 한 것 같은데... 혹시 놓치고 있는 부분이 있을까요? 코드 스니펫 첨부합니다.',
+            SYSTIMESTAMP - INTERVAL '7' DAY + (i * INTERVAL '10' HOUR), -- 7일 전부터 시작, 10시간 간격
+            TRUNC(DBMS_RANDOM.VALUE(80, 450))
+        );
+    END LOOP;
+END;
+
+-- 스터디게시판 입력
+BEGIN
+    FOR i IN 1..20 LOOP
+           INSERT INTO STUDY_BOARD (BOARD_ID, BOARD_TYPE, MEMBER_ID, TITLE, CONTENTS, REG_DATE, VIEW_COUNT)
+
+        VALUES (
+            SEQ_STUDY_BOARD.nextval,
+            'board4',
+            MOD(i - 1, 20) + 1, -- 1부터 20까지 순환
+            '[스터디 모집] Spring Boot, React 기반 풀스택 프로젝트 진행하실 분 구합니다! (' || TO_CHAR(i) || '차 모집)',
+            '실무 경험을 쌓기 위한 6개월 과정의 웹 서비스 구축 스터디 팀원을 모집합니다. 매주 주말 온라인으로 진행하며, Git 사용과 코드 리뷰를 철저히 진행할 예정입니다. 지원 시 포트폴리오 첨부 바랍니다.',
+            SYSTIMESTAMP - INTERVAL '5' DAY + (i * INTERVAL '2' HOUR),
+            TRUNC(DBMS_RANDOM.VALUE(50, 300))
+        );
+    END LOOP;
+END;
+
+DECLARE
+    -- board1을 제외한 모든 게시글 ID를 가져오는 커서 선언
+    CURSOR c_board_ids IS
+        SELECT BOARD_ID, BOARD_TYPE
+        FROM STUDY_BOARD
+        WHERE BOARD_TYPE IN ('board2', 'board3', 'board4');
+
+    -- 댓글 작성자 MEMBER_ID 순환을 위한 변수
+    v_member_id NUMBER := 1;
+    v_max_member_id NUMBER := 10; -- 존재하는 최대 회원 ID (1~10 안전)
+BEGIN
+    -- 커서를 열고 각 게시글에 대해 코멘트 2개씩 삽입
+    FOR board_rec IN c_board_ids LOOP
+
+        -- ============================================================
+        -- [첫 번째 코멘트 삽입]
+        -- ============================================================
+        INSERT INTO STUDY_COMMENT (COMMENT_ID, BOARD_ID, MEMBER_ID, CONTENTS, REG_DATE)
+        VALUES (
+            SEQ_STUDY_COMMENT.nextval,
+            board_rec.BOARD_ID,
+            v_member_id,
+            '좋은 정보 감사합니다! ' || board_rec.BOARD_TYPE || ' 게시판 내용이 저에게 큰 도움이 될 것 같습니다. 자주 방문할게요!',
+            SYSTIMESTAMP -- 현재 시각으로 설정
+        );
+
+        -- MEMBER_ID 업데이트 (1부터 10까지 순환)
+        v_member_id := MOD(v_member_id, v_max_member_id) + 1;
+
+        -- ============================================================
+        -- [두 번째 코멘트 삽입]
+        -- ============================================================
+        INSERT INTO STUDY_COMMENT (COMMENT_ID, BOARD_ID, MEMBER_ID, CONTENTS, REG_DATE)
+        VALUES (
+            SEQ_STUDY_COMMENT.nextval,
+            board_rec.BOARD_ID,
+            v_member_id,
+            '저도 이 부분 궁금했는데 명쾌하게 해결됐네요. 혹시 추가 질문을 드려도 될까요?',
+            SYSTIMESTAMP + INTERVAL '1' MINUTE -- 첫 번째 코멘트보다 1분 늦게 작성된 것으로 설정
+        );
+
+        -- MEMBER_ID 업데이트 (1부터 10까지 순환)
+        v_member_id := MOD(v_member_id, v_max_member_id) + 1;
+
+    END LOOP;
+END;
+
+-- MEMBER 입력
+INSERT INTO STUDY_MEMBER (EMAIL, PWD, NICKNAME, REG_DATE, PROFILE_PATH) VALUES('dev.pro@coding.com', 'pwd123!', '프로개발자', SYSTIMESTAMP - INTERVAL '20' DAY, '/profile/default_01.jpg');
+INSERT INTO STUDY_MEMBER (EMAIL, PWD, NICKNAME, REG_DATE, PROFILE_PATH) VALUES('newbie.js@study.net', 'pwd123!', '자바스크립트_초보', SYSTIMESTAMP - INTERVAL '15' DAY, '/profile/default_02.jpg');
+INSERT INTO STUDY_MEMBER (EMAIL, PWD, NICKNAME, REG_DATE, PROFILE_PATH) VALUES('db_master@oracle.com', 'pwd123!', '데이터마스터', SYSTIMESTAMP - INTERVAL '40' DAY, '/profile/default_03.jpg');
+INSERT INTO STUDY_MEMBER (EMAIL, PWD, NICKNAME, REG_DATE, PROFILE_PATH) VALUES('spring.boot@tech.kr', 'pwd123!', '스프링부트_러버', SYSTIMESTAMP - INTERVAL '5' DAY, '/profile/default_04.jpg');
+INSERT INTO STUDY_MEMBER (EMAIL, PWD, NICKNAME, REG_DATE, PROFILE_PATH) VALUES('react_king@frontend.io', 'pwd123!', '리액트_왕자', SYSTIMESTAMP - INTERVAL '10' DAY, '/profile/default_05.jpg');
+INSERT INTO STUDY_MEMBER (EMAIL, PWD, NICKNAME, REG_DATE, PROFILE_PATH) VALUES('algo.solver@math.com', 'pwd123!', '알고리즘_해결사', SYSTIMESTAMP - INTERVAL '50' DAY, '/profile/default_06.jpg');
+INSERT INTO STUDY_MEMBER (EMAIL, PWD, NICKNAME, REG_DATE, PROFILE_PATH) VALUES('design.ui@web.com', 'pwd123!', 'UI_디자이너_K', SYSTIMESTAMP - INTERVAL '3' DAY, '/profile/default_07.jpg');
+INSERT INTO STUDY_MEMBER (EMAIL, PWD, NICKNAME, REG_DATE, PROFILE_PATH) VALUES('serverless@cloud.net', 'pwd123!', '클라우드_서버리스', SYSTIMESTAMP - INTERVAL '12' DAY, '/profile/default_08.jpg');
+INSERT INTO STUDY_MEMBER (EMAIL, PWD, NICKNAME, REG_DATE, PROFILE_PATH) VALUES('python.data@analyst.org', 'pwd123!', '파이썬_데이터', SYSTIMESTAMP - INTERVAL '7' DAY, '/profile/default_09.jpg');
+INSERT INTO STUDY_MEMBER (EMAIL, PWD, NICKNAME, REG_DATE, PROFILE_PATH) VALUES('security.expert@safe.kr', 'pwd123!', '보안전문가_01', SYSTIMESTAMP - INTERVAL '25' DAY, '/profile/default_10.jpg');
+INSERT INTO STUDY_MEMBER (EMAIL, PWD, NICKNAME, REG_DATE, PROFILE_PATH) VALUES('fullstacker@dev.com', 'pwd123!', '풀스택_지망생', SYSTIMESTAMP - INTERVAL '18' DAY, '/profile/default_11.jpg');
+INSERT INTO STUDY_MEMBER (EMAIL, PWD, NICKNAME, REG_DATE, PROFILE_PATH) VALUES('career.change@start.com', 'pwd123!', '이직_준비중', SYSTIMESTAMP - INTERVAL '60' DAY, '/profile/default_12.jpg');
+INSERT INTO STUDY_MEMBER (EMAIL, PWD, NICKNAME, REG_DATE, PROFILE_PATH) VALUES('kotlin.dev@android.co', 'pwd123!', '코틀린_안드로이드', SYSTIMESTAMP - INTERVAL '22' DAY, '/profile/default_13.jpg');
+INSERT INTO STUDY_MEMBER (EMAIL, PWD, NICKNAME, REG_DATE, PROFILE_PATH) VALUES('linux.shell@ops.net', 'pwd123!', '리눅스_쉘마스터', SYSTIMESTAMP - INTERVAL '8' DAY, '/profile/default_14.jpg');
+INSERT INTO STUDY_MEMBER (EMAIL, PWD, NICKNAME, REG_DATE, PROFILE_PATH) VALUES('go.lang@study.com', 'pwd123!', '고랭_입문자', SYSTIMESTAMP - INTERVAL '14' DAY, '/profile/default_15.jpg');
+INSERT INTO STUDY_MEMBER (EMAIL, PWD, NICKNAME, REG_DATE, PROFILE_PATH) VALUES('vuejs.fan@web.com', 'pwd123!', '뷰_팬', SYSTIMESTAMP - INTERVAL '19' DAY, '/profile/default_16.jpg');
+INSERT INTO STUDY_MEMBER (EMAIL, PWD, NICKNAME, REG_DATE, PROFILE_PATH) VALUES('ci.cd@automation.org', 'pwd123!', '자동화_데브옵스', SYSTIMESTAMP - INTERVAL '28' DAY, '/profile/default_17.jpg');
+INSERT INTO STUDY_MEMBER (EMAIL, PWD, NICKNAME, REG_DATE, PROFILE_PATH) VALUES('ai.ml@future.com', 'pwd123!', 'AI_머신러닝', SYSTIMESTAMP - INTERVAL '35' DAY, '/profile/default_18.jpg');
+INSERT INTO STUDY_MEMBER (EMAIL, PWD, NICKNAME, REG_DATE, PROFILE_PATH) VALUES('beginner_coder@study.kr', 'pwd123!', '코딩은_어려워', SYSTIMESTAMP - INTERVAL '9' DAY, '/profile/default_19.jpg');
+INSERT INTO STUDY_MEMBER (EMAIL, PWD, NICKNAME, REG_DATE, PROFILE_PATH) VALUES('mentor.guide@expert.com', 'pwd123!', '멘토_가이드', SYSTIMESTAMP - INTERVAL '45' DAY, '/profile/default_20.jpg');
+
+COMMIT;
+
+SELECT * FROM STUDY_BOARD
+WHERE BOARD_TYPE = 'board2';
