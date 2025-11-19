@@ -33,7 +33,7 @@ public class CommentDao {
     // 코멘트 삭제
     public boolean delete(Long id){
         @Language("SQL")
-                String sql = "DELETE FROM STUDY_COMMENT WHERE COMMENT_IDA =?";
+                String sql = "DELETE FROM STUDY_COMMENT WHERE COMMENT_ID =?";
         return jdbc.update(sql,id) > 0;
     }
     //board id 검색(리스트 반환, 게시글 조회시 표시되는 해당 글의 코멘트 리스트)
