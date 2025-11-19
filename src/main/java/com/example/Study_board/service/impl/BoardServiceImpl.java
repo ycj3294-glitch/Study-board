@@ -95,6 +95,11 @@ public class BoardServiceImpl implements BoardService {
         }
     }
 
+    // 게시글 조회수 증가
+    @Override
+    public void increaseViewCount(Long id) {
+        boardDao.increaseViewCount(id);
+    }
 
     // 게시판글 조회
     @Override

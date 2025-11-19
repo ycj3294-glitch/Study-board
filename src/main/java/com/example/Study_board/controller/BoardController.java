@@ -64,6 +64,10 @@ public class BoardController {
         // 로그인 여부 확인
         MemberRes loginMember = (MemberRes) session.getAttribute("loginMember");
         if (loginMember == null) return "redirect:/login";
+
+        // 조회수 증가 먼저 실행
+        boardService.increaseViewCount(id);
+
         // 해당 게시글 정보 가져옴
         BoardRes post = boardDao.findByBoardID(id);
         if (post == null) {

@@ -18,6 +18,9 @@ public interface BoardService {
     // 게시글 삭제
     boolean delete(Long board_id,  Long member_id);
 
+    // 게시글 조회수 증가
+    void increaseViewCount(Long id);
+
     // 게시판글 조회
     List<BoardListRes> getLatestPosts(String boardType, int limit);
 
