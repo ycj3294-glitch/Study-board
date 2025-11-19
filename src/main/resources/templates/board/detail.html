@@ -530,7 +530,7 @@
 
           <!-- 게시글 하단 버튼 (필요 시) -->
           <div class="post-actions">
-            <a th:href="@{/post/edit/{id}(id=${post.board_id})}">
+            <a th:href="@{/board/{id}/edit(id=${post.board_id})}">
               <button type="button" class="btn-secondary">수정</button>
             </a>
             <form

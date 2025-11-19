@@ -498,39 +498,37 @@
           </div>
 
           <!-- 하단 페이지네이션 + 글쓰기 버튼 -->
-          <div class="board-footer">
-            <div class="pagination">
-              <!-- 이전 -->
-              <a
-                class="page-link"
-                th:if="${page.hasPrevious()}"
-                th:href="@{/board/free(page=${page.number - 1}, size=${page.size})}"
-              >
-                이전
-              </a>
-              <span class="pages">
+            <div class="board-footer">
+                <div class="pagination">
+                    <!-- 이전 -->
+                    <a
+                            class="page-link"
+                            th:if="${page != null and page.hasPrevious()}"
+                            th:href="@{/header/like, page=${page.number - 1}, size=${page.size}}"
+                    >
+                        이전
+                    </a>
+                    <span class="pages">
                 <!-- 0 ~ totalPages-1 까지 돌면서 번호 출력 -->
                 <a
-                  th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
-                  th:href="@{/board/free(page=${i}, size=${page.size})}"
-                  th:text="${i + 1}"
-                  class="page-link"
-                  th:classappend="${i} == ${page.number} ? ' active'"
+                        th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
+                        th:href="@{/header/like, page=${i}, size=${page.size}}"
+                        th:text="${i + 1}"
+                        class="page-link"
+                        th:classappend="${i} == ${page.number} ? ' active'"
                 >
                 </a>
               </span>
-              <!-- 다음 -->
-              <a
-                class="page-link"
-                th:if="${page.hasNext()}"
-                th:href="@{/board/free(page=${page.number + 1}, size=${page.size})}"
-              >
-                다음
-              </a>
+                    <!-- 다음 -->
+                    <a
+                            class="page-link"
+                            th:if="${page != null and page.hasNext()}"
+                            th:href="@{/header/like, page=${page.number + 1}, size=${page.size}}"
+                    >
+                        다음
+                    </a>
+                </div>
             </div>
-
-            <a class="btn-write" th:href="@{/post/new}">글쓰기</a>
-          </div>
         </section>
       </main>
 
