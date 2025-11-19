@@ -4,6 +4,7 @@ import com.example.Study_board.dao.BoardDao;
 import com.example.Study_board.dao.MemberDao;
 import com.example.Study_board.dto.BoardCreateReq;
 import com.example.Study_board.dto.BoardListRes;
+import com.example.Study_board.dto.BoardRes;
 import com.example.Study_board.dto.SearchListRes;
 import com.example.Study_board.service.BoardService;
 import lombok.RequiredArgsConstructor;
@@ -101,7 +102,7 @@ public class BoardServiceImpl implements BoardService {
         boardDao.increaseViewCount(id);
     }
 
-    // 게시판글 조회
+    // 메인에 쓸 게시판글 조회
     @Override
     public List<BoardListRes> getLatestPosts(String boardType, int limit) {
         return boardDao.findLatestByType(boardType, limit);
@@ -124,4 +125,9 @@ public class BoardServiceImpl implements BoardService {
         return boardDao.search(keyword);
     }
 
+    // BOARD_ID로 게시글 조회
+    @Override
+    public BoardRes getboardRes(Long board_id) {
+        return boardDao.findByBoardID(board_id);
+    }
 }

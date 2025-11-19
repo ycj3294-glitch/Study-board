@@ -32,4 +32,6 @@ public interface BoardService {
     // 검색 조회
     List<SearchListRes> search(String keyword);
 
+    // board_id로 게시글 정보 조회
+    public BoardRes getboardRes(Long board_id);
 }

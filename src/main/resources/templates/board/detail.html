@@ -617,7 +617,7 @@
           <!-- 상단: 게시판 이름 + 목록으로 -->
           <div class="post-header-top">
             <div class="board-name" th:text="${boardName}">자유게시판</div>
-            <a th:href="@{/board/free}">
+            <a th:href="@{/board/{type}(type=${boardType})}">
               <button type="button" class="btn-outline">목록으로</button>
             </a>
           </div>
@@ -700,7 +700,7 @@
               <button type="button" class="btn-secondary">수정</button>
             </a>
             <form
-              th:action="@{/post/delete/{id}(id=${post.board_id})}"
+              th:action="@{/board/{id}/delete(id=${post.board_id})}"
               method="post"
               style="margin: 0"
             >
@@ -764,6 +764,23 @@
                 </div>
             </div>
             <!-- ====== 댓글 목록 끝 ====== -->
+            <!-- 댓글 작성 폼 -->
+            <div class="comment-section">
+                <div class="comment-header">
+                    <h3>댓글 작성</h3>
+                    <span th:if="${loginMember == null}">로그인 후 작성 가능합니다</span>
+                </div>
+
+                <form th:action="@{/comment/{board_id}(board_id=${post.board_id})}"
+                      method="post" class="comment-form"
+                      th:if="${loginMember != null}">
+                    <textarea name="contents" placeholder="댓글을 입력하세요..." required></textarea>
+                    <div class="comment-form-footer">
+                        <button type="submit" class="btn-comment">작성</button>
+                    </div>
+                </form>
+            </div>
+
         </section>
       </main>
 

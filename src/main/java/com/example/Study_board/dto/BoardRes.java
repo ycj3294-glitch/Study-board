@@ -21,4 +21,5 @@ public class BoardRes {
     private Long like_count;
     private Long report_count;
     private LocalDateTime reg_date;
+    private String board_type;
 }

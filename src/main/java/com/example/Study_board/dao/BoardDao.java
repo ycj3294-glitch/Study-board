@@ -34,13 +34,14 @@ public class BoardDao {
                     b.VIEW_COUNT,
                     NVL(SUM(CASE WHEN r.ACTION = 'LIKE' THEN 1 ELSE 0 END), 0) AS LIKE_COUNT,
                     NVL(SUM(CASE WHEN r.ACTION = 'REPORT' THEN 1 ELSE 0 END), 0) AS REPORT_COUNT,
-                    b.REG_DATE
+                    b.REG_DATE,
+                    b.BOARD_TYPE
                 FROM STUDY_BOARD b
                 JOIN STUDY_MEMBER m ON b.MEMBER_ID = m.MEMBER_ID
                 LEFT JOIN REACTION r ON r.TARGET_TYPE = 'BOARD' AND r.TARGET_ID = b.BOARD_ID
                 WHERE b.BOARD_TYPE = ?
                 GROUP BY
-                    b.BOARD_ID, b.MEMBER_ID, m.NICKNAME, b.TITLE, b.VIEW_COUNT, b.REG_DATE
+                    b.BOARD_ID, b.MEMBER_ID, m.NICKNAME, b.TITLE, b.VIEW_COUNT, b.REG_DATE, b.BOARD_TYPE
                 ORDER BY b.REG_DATE DESC
                 """;
         List<BoardListRes> list = jdbc.query(sql, new BoardListRowMapper(), board_type);
@@ -82,35 +83,37 @@ public class BoardDao {
     // 게시글 조회
     public BoardRes findByBoardID(Long board_id) {
         @Language("SQL")
-        String sql = """
-        SELECT
-            t.BOARD_ID       AS BOARD_ID,
-            t.MEMBER_ID      AS MEMBER_ID,
-            t.NICKNAME       AS NICKNAME,
-            t.TITLE          AS TITLE,
-            t.VIEW_COUNT     AS VIEW_COUNT,
-            t.LIKE_COUNT     AS LIKE_COUNT,
-            t.REPORT_COUNT   AS REPORT_COUNT,
-            t.REG_DATE       AS REG_DATE,
-            b.CONTENTS       AS CONTENTS
-        FROM (
-            SELECT
-                b.BOARD_ID,
-                b.MEMBER_ID,
-                m.NICKNAME,
-                b.TITLE,
-                b.VIEW_COUNT,
-                NVL(SUM(CASE WHEN r.ACTION = 'LIKE' THEN 1 ELSE 0 END), 0) AS LIKE_COUNT,
-                NVL(SUM(CASE WHEN r.ACTION = 'REPORT' THEN 1 ELSE 0 END), 0) AS REPORT_COUNT,
-                b.REG_DATE
-            FROM STUDY_BOARD b
-            JOIN STUDY_MEMBER m ON b.MEMBER_ID = m.MEMBER_ID
-            LEFT JOIN REACTION r
-                ON r.TARGET_TYPE='BOARD' AND r.TARGET_ID=b.BOARD_ID
-            WHERE b.BOARD_ID = ?
-            GROUP BY b.BOARD_ID, b.MEMBER_ID, m.NICKNAME, b.TITLE, b.VIEW_COUNT, b.REG_DATE
-        ) t
-        JOIN STUDY_BOARD b ON b.BOARD_ID = t.BOARD_ID        
+        String sql = """        
+                SELECT
+                  t.BOARD_ID       AS BOARD_ID,
+                  t.MEMBER_ID      AS MEMBER_ID,
+                  t.NICKNAME       AS NICKNAME,
+                  t.TITLE          AS TITLE,
+                  t.VIEW_COUNT     AS VIEW_COUNT,
+                  t.LIKE_COUNT     AS LIKE_COUNT,
+                  t.REPORT_COUNT   AS REPORT_COUNT,
+                  t.REG_DATE       AS REG_DATE,
+                  t.BOARD_TYPE     AS BOARD_TYPE, --추가
+                  b.CONTENTS       AS CONTENTS
+                FROM (
+                     SELECT
+                         b.BOARD_ID,
+                         b.MEMBER_ID,
+                         m.NICKNAME,
+                         b.TITLE,
+                         b.VIEW_COUNT,
+                         b.BOARD_TYPE,  -- 추가
+                         NVL(SUM(CASE WHEN r.ACTION = 'LIKE' THEN 1 ELSE 0 END), 0) AS LIKE_COUNT,
+                         NVL(SUM(CASE WHEN r.ACTION = 'REPORT' THEN 1 ELSE 0 END), 0) AS REPORT_COUNT,
+                         b.REG_DATE
+                     FROM STUDY_BOARD b
+                     JOIN STUDY_MEMBER m ON b.MEMBER_ID = m.MEMBER_ID
+                     LEFT JOIN REACTION r
+                         ON r.TARGET_TYPE='BOARD' AND r.TARGET_ID=b.BOARD_ID
+                     WHERE b.BOARD_ID = ?
+                     GROUP BY b.BOARD_ID, b.MEMBER_ID, m.NICKNAME, b.TITLE, b.VIEW_COUNT, b.BOARD_TYPE, b.REG_DATE
+                ) t
+                JOIN STUDY_BOARD b ON b.BOARD_ID = t.BOARD_ID
         """;
         List<BoardRes> list = jdbc.query(sql, new BoardResRowMapper(), board_id);
         return list.isEmpty() ? null : list.get(0);
@@ -129,12 +132,12 @@ public class BoardDao {
 
     // 게시글 조회수 증가
     public void increaseViewCount(Long boardId) {
+        @Language("SQL")
         String sql = """
         UPDATE STUDY_BOARD
         SET VIEW_COUNT = VIEW_COUNT + 1
         WHERE BOARD_ID = ?
-    """;
-
+        """;
         jdbc.update(sql, boardId);
     }
 
@@ -196,30 +199,30 @@ public class BoardDao {
 
     // 게시판별 최근 글 7개 조회
     public List<BoardListRes> findLatestByType(String boardType, int limit) {
-
+        @Language("SQL")
         String sql = """
-    SELECT *
-    FROM (
-        SELECT
-            b.BOARD_ID,
-            b.MEMBER_ID,
-            m.NICKNAME,
-            b.TITLE,
-            b.VIEW_COUNT,
-            NVL(SUM(CASE WHEN r.ACTION = 'LIKE' THEN 1 ELSE 0 END), 0) AS LIKE_COUNT,
-            NVL(SUM(CASE WHEN r.ACTION = 'REPORT' THEN 1 ELSE 0 END), 0) AS REPORT_COUNT,
-            b.REG_DATE
-        FROM STUDY_BOARD b
-        JOIN STUDY_MEMBER m ON b.MEMBER_ID = m.MEMBER_ID
-        LEFT JOIN REACTION r 
-            ON r.TARGET_TYPE = 'BOARD'
-            AND r.TARGET_ID = b.BOARD_ID
-        WHERE b.BOARD_TYPE = ?
-        GROUP BY b.BOARD_ID, b.MEMBER_ID, m.NICKNAME, b.TITLE, b.VIEW_COUNT, b.REG_DATE
-        ORDER BY b.REG_DATE DESC
-    )
-    WHERE ROWNUM <= ?
-""";
+        SELECT *
+        FROM (
+            SELECT
+                b.BOARD_ID,
+                b.MEMBER_ID,
+                m.NICKNAME,
+                b.TITLE,
+                b.VIEW_COUNT,
+                NVL(SUM(CASE WHEN r.ACTION = 'LIKE' THEN 1 ELSE 0 END), 0) AS LIKE_COUNT,
+                NVL(SUM(CASE WHEN r.ACTION = 'REPORT' THEN 1 ELSE 0 END), 0) AS REPORT_COUNT,
+                b.REG_DATE
+            FROM STUDY_BOARD b
+            JOIN STUDY_MEMBER m ON b.MEMBER_ID = m.MEMBER_ID
+            LEFT JOIN REACTION r 
+                ON r.TARGET_TYPE = 'BOARD'
+                AND r.TARGET_ID = b.BOARD_ID
+            WHERE b.BOARD_TYPE = ?
+            GROUP BY b.BOARD_ID, b.MEMBER_ID, m.NICKNAME, b.TITLE, b.VIEW_COUNT, b.REG_DATE
+            ORDER BY b.REG_DATE DESC
+        )
+        WHERE ROWNUM <= ?
+        """;
 
         return jdbc.query(sql, (rs, rowNum) -> new BoardListRes(
                 rs.getLong("BOARD_ID"),
@@ -307,7 +310,8 @@ ORDER BY b.REG_DATE DESC
                     rs.getLong("VIEW_COUNT"),
                     rs.getLong("LIKE_COUNT"),
                     rs.getLong("REPORT_COUNT"),
-                    rs.getTimestamp("REG_DATE").toLocalDateTime()
+                    rs.getTimestamp("REG_DATE").toLocalDateTime(),
+                    rs.getString("BOARD_TYPE")
             );
         }
     }

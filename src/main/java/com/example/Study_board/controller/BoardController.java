@@ -76,8 +76,19 @@ public class BoardController {
         }
         // 게시글 정보를 모델링
         model.addAttribute("post", post);
+        // 게시글 타입을 모델링
+        model.addAttribute("boardType", post.getBoard_type());
         // 사용자 정보를 모델링
         model.addAttribute("loginMember", loginMember);
+        // BOARD_TYPE에 따른 BOARD_NAME 설정
+        String boardName = switch (post.getBoard_type()) {
+            case "BOARD1" -> "공지사항";
+            case "BOARD2" -> "자유게시판";
+            case "BOARD3" -> "코드게시판";
+            case "BOARD4" -> "스터디게시판";
+            default -> "게시판";
+        };
+        model.addAttribute("boardName", boardName);
 
         // 해당 게시글 코멘트 리스트 정보를 가져옴
         List<CommentRes> comment = commentService.listByBoardid(id);
@@ -179,14 +190,19 @@ public class BoardController {
     public String deletePost(@PathVariable("id") Long boardId,
                              HttpSession session) {
 
-        Long loginMemberId = (Long) session.getAttribute("loginMember");
+        MemberRes loginMember = (MemberRes) session.getAttribute("loginMember");
 
-        boolean deleted = boardService.delete(boardId, loginMemberId);
+        // 게시글id로 board_Type 조회
+        BoardRes post = boardService.getboardRes(boardId);
+        if (post == null) {
+            return "error/404";
+        }
+        boolean deleted = boardService.delete(boardId, loginMember.getId());
 
         if (!deleted) {
             return "error/403";
         }
 
-        return "redirect:/board/";
+        return "redirect:/board/" + post.getBoard_type();
     }
 }
