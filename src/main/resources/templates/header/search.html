@@ -485,14 +485,7 @@
 
     <div class="container">
       <!-- 왼쪽 메뉴 -->
-      <aside class="nav" aria-label="보드 메뉴">
-        <nav class="menu">
-          <a th:href="@{/board/notice}">공지사항</a>
-          <a th:href="@{/board/free}">자유게시판</a>
-          <a th:href="@{/board/code}">코드게시판</a>
-          <a th:href="@{/board/study}">스터디게시판</a>
-        </nav>
-      </aside>
+        <div th:replace="fragments/left_menu :: left_Menu"></div>
 
       <!-- 가운데: 검색 결과 -->
       <main class="search-page">
