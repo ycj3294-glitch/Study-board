@@ -82,10 +82,10 @@ public class BoardController {
         model.addAttribute("loginMember", loginMember);
         // BOARD_TYPE에 따른 BOARD_NAME 설정
         String boardName = switch (post.getBoard_type()) {
-            case "BOARD1" -> "공지사항";
-            case "BOARD2" -> "자유게시판";
-            case "BOARD3" -> "코드게시판";
-            case "BOARD4" -> "스터디게시판";
+            case "board1" -> "공지사항";
+            case "board2" -> "자유게시판";
+            case "board3" -> "코드게시판";
+            case "board4" -> "스터디게시판";
             default -> "게시판";
         };
         model.addAttribute("boardName", boardName);
