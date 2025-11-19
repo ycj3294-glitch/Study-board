@@ -371,184 +371,55 @@
       <!-- main boards -->
       <main>
         <!-- 공지사항 -->
-        <section class="board" aria-labelledby="notice-title">
-          <h2 id="notice-title">공지사항</h2>
-          <ul class="postlist">
-            <li>
-              <a href="#"
-                ><span class="tag">[단독]</span> 게시판 생성 드디어 오픈!!!</a
-              >
-            </li>
-            <li>
-              <a href="#"
-                ><span class="tag">[축하]</span> 게시판 활성화를 기대합니다.</a
-              >
-            </li>
-            <li>
-              <a href="#"
-                ><span class="tag">[잡담]</span> 오늘 주식이 왜
-                폭망인가요?!!!</a
-              >
-            </li>
-            <li>
-              <a href="#"
-                ><span class="tag">[잡담]</span> 게시판 DB 만드는거 도와줄
-                사람?</a
-              >
-            </li>
-            <li>
-              <a href="#"
-                ><span class="tag">[잡담]</span> 곰말고 다른 캐릭터 사용해요.</a
-              >
-            </li>
-            <li>
-              <a href="#"
-                ><span class="tag">[잡담]</span> 동굴님, 코드 나눔 합시다!!!</a
-              >
-            </li>
-            <li>
-              <a href="#"
-                ><span class="tag">[잡담]</span> 첫찌피티가 자바 공부에 도움
-                <span class="em">Good!</span></a
-              >
-            </li>
-          </ul>
-        </section>
+          <section class="board">
+              <h2>공지사항</h2>
+              <ul class="postlist">
+                  <li th:each="post : ${noticeList}">
+                      <a th:href="@{'/post/' + ${post.boardId}}">
+                          <span class="tag">[공지]</span>
+                          <span th:text="${post.title}"></span>
+                      </a>
+                  </li>
+              </ul>
+          </section>
 
         <!-- 자유게시판 -->
-        <section class="board" aria-labelledby="free-title">
-          <h2 id="free-title">자유게시판</h2>
-          <ul class="postlist">
-            <li>
-              <a href="#"
-                ><span class="tag">[단독]</span> 게시판 생성 드디어 오픈!!!</a
-              >
-            </li>
-            <li>
-              <a href="#"
-                ><span class="tag">[축하]</span> 게시판 활성화를 기대합니다.</a
-              >
-            </li>
-            <li>
-              <a href="#"
-                ><span class="tag">[잡담]</span> 오늘 주식이 왜
-                폭망인가요?!!!</a
-              >
-            </li>
-            <li>
-              <a href="#"
-                ><span class="tag">[잡담]</span> 게시판 DB 만드는거 도와줄
-                사람?</a
-              >
-            </li>
-            <li>
-              <a href="#"
-                ><span class="tag">[잡담]</span> 곰말고 다른 캐릭터 사용해요.</a
-              >
-            </li>
-            <li>
-              <a href="#"
-                ><span class="tag">[잡담]</span> 동굴님, 코드 나눔 합시다!!!</a
-              >
-            </li>
-            <li>
-              <a href="#"
-                ><span class="tag">[잡담]</span> 첫찌피티가 자바 공부에 도움
-                <span class="em">Good!</span></a
-              >
-            </li>
-          </ul>
-        </section>
+          <section class="board">
+              <h2>자유게시판</h2>
+              <ul class="postlist">
+                  <li th:each="post : ${freeList}">
+                      <a th:href="@{'/post/' + ${post.boardId}}">
+                          <span class="tag">[자유]</span>
+                          <span th:text="${post.title}"></span>
+                      </a>
+                  </li>
+              </ul>
+          </section>
 
         <!-- 코드게시판 -->
-        <section class="board" aria-labelledby="free-title">
-          <h2 id="free-title">코드게시판</h2>
-          <ul class="postlist">
-            <li>
-              <a href="#"
-                ><span class="tag">[단독]</span> 게시판 생성 드디어 오픈!!!</a
-              >
-            </li>
-            <li>
-              <a href="#"
-                ><span class="tag">[축하]</span> 게시판 활성화를 기대합니다.</a
-              >
-            </li>
-            <li>
-              <a href="#"
-                ><span class="tag">[잡담]</span> 오늘 주식이 왜
-                폭망인가요?!!!</a
-              >
-            </li>
-            <li>
-              <a href="#"
-                ><span class="tag">[잡담]</span> 게시판 DB 만드는거 도와줄
-                사람?</a
-              >
-            </li>
-            <li>
-              <a href="#"
-                ><span class="tag">[잡담]</span> 곰말고 다른 캐릭터 사용해요.</a
-              >
-            </li>
-            <li>
-              <a href="#"
-                ><span class="tag">[잡담]</span> 동굴님, 코드 나눔 합시다!!!</a
-              >
-            </li>
-            <li>
-              <a href="#"
-                ><span class="tag">[잡담]</span> 첫찌피티가 자바 공부에 도움
-                <span class="em">Good!</span></a
-              >
-            </li>
-          </ul>
-        </section>
-
-        <!-- 스터디게시판 -->
-        <section class="board" aria-labelledby="free-title">
-          <h2 id="free-title">스터디게시판</h2>
-          <ul class="postlist">
-            <li>
-              <a href="#"
-                ><span class="tag">[단독]</span> 게시판 생성 드디어 오픈!!!</a
-              >
-            </li>
-            <li>
-              <a href="#"
-                ><span class="tag">[축하]</span> 게시판 활성화를 기대합니다.</a
-              >
-            </li>
-            <li>
-              <a href="#"
-                ><span class="tag">[잡담]</span> 오늘 주식이 왜
-                폭망인가요?!!!</a
-              >
-            </li>
-            <li>
-              <a href="#"
-                ><span class="tag">[잡담]</span> 게시판 DB 만드는거 도와줄
-                사람?</a
-              >
-            </li>
-            <li>
-              <a href="#"
-                ><span class="tag">[잡담]</span> 곰말고 다른 캐릭터 사용해요.</a
-              >
-            </li>
-            <li>
-              <a href="#"
-                ><span class="tag">[잡담]</span> 동굴님, 코드 나눔 합시다!!!</a
-              >
-            </li>
-            <li>
-              <a href="#"
-                ><span class="tag">[잡담]</span> 첫찌피티가 자바 공부에 도움
-                <span class="em">Good!</span></a
-              >
-            </li>
-          </ul>
-        </section>
+          <section class="board">
+              <h2>코드게시판</h2>
+              <ul class="postlist">
+                  <li th:each="post : ${codeList}">
+                      <a th:href="@{'/post/' + ${post.boardId}}">
+                          <span class="tag">[코드]</span>
+                          <span th:text="${post.title}"></span>
+                      </a>
+                  </li>
+              </ul>
+          </section>
+          <!-- 스터디게시판 -->
+          <section class="board">
+              <h2>스터디게시판</h2>
+              <ul class="postlist">
+                  <li th:each="post : ${studyList}">
+                      <a th:href="@{'/post/' + ${post.boardId}}">
+                          <span class="tag">[스터디]</span>
+                          <span th:text="${post.title}"></span>
+                      </a>
+                  </li>
+              </ul>
+          </section>
       </main>
 
       <!-- right sidebar -->

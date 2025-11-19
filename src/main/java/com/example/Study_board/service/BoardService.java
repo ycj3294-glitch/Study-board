@@ -18,6 +18,9 @@ public interface BoardService {
     // 게시글 삭제
     boolean delete(Long board_id,  Long member_id);
 
+    // 게시판글 조회
+    List<BoardListRes> getLatestPosts(String boardType, int limit);
+
     // 게시글 전체 조회
     List<BoardListRes> findAll();
     // 공감글 조회

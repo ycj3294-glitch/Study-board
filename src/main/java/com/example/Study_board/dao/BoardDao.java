@@ -177,6 +177,45 @@ public class BoardDao {
 
         return jdbc.query(sql, new BoardListRowMapper(), limit);
     }
+    // 게시판별 최근 글 7개 조회
+    public List<BoardListRes> findLatestByType(String boardType, int limit) {
+
+        String sql = """
+    SELECT *
+    FROM (
+        SELECT
+            b.BOARD_ID,
+            b.MEMBER_ID,
+            m.NICKNAME,
+            b.TITLE,
+            b.VIEW_COUNT,
+            NVL(SUM(CASE WHEN r.ACTION = 'LIKE' THEN 1 ELSE 0 END), 0) AS LIKE_COUNT,
+            NVL(SUM(CASE WHEN r.ACTION = 'REPORT' THEN 1 ELSE 0 END), 0) AS REPORT_COUNT,
+            b.REG_DATE
+        FROM STUDY_BOARD b
+        JOIN STUDY_MEMBER m ON b.MEMBER_ID = m.MEMBER_ID
+        LEFT JOIN REACTION r 
+            ON r.TARGET_TYPE = 'BOARD'
+            AND r.TARGET_ID = b.BOARD_ID
+        WHERE b.BOARD_TYPE = ?
+        GROUP BY b.BOARD_ID, b.MEMBER_ID, m.NICKNAME, b.TITLE, b.VIEW_COUNT, b.REG_DATE
+        ORDER BY b.REG_DATE DESC
+    )
+    WHERE ROWNUM <= ?
+""";
+
+        return jdbc.query(sql, (rs, rowNum) -> new BoardListRes(
+                rs.getLong("BOARD_ID"),
+                rs.getLong("MEMBER_ID"),
+                rs.getString("NICKNAME"),
+                rs.getString("TITLE"),
+                rs.getLong("VIEW_COUNT"),
+                rs.getLong("LIKE_COUNT"),
+                rs.getLong("REPORT_COUNT"),
+                rs.getTimestamp("REG_DATE").toLocalDateTime()
+        ), boardType, limit);
+    }
+
 
     // 검색기능
     public List<SearchListRes> search(String keyword) {

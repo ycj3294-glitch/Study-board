@@ -96,7 +96,11 @@ public class BoardServiceImpl implements BoardService {
     }
 
 
-
+    // 게시판글 조회
+    @Override
+    public List<BoardListRes> getLatestPosts(String boardType, int limit) {
+        return boardDao.findLatestByType(boardType, limit);
+    }
     // 게시글 전체 조회
     @Override
     public List<BoardListRes> findAll() {
