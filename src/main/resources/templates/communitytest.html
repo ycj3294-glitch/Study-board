@@ -375,7 +375,7 @@
               <h2>공지사항</h2>
               <ul class="postlist">
                   <li th:each="post : ${noticeList}">
-                      <a th:href="@{'/board/detail' + ${post.board_id}}">
+                      <a th:href="@{'/board/detail/' + ${post.board_id}}">
                           <span th:text="${post.title}"></span>
                       </a>
                   </li>
