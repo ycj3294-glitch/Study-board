@@ -35,18 +35,18 @@ public class BoardController {
 
     // 각 게시판 이동
     @GetMapping("/{boardType}")  // 게시글 목록 가져 오기
-    public String boardlist(@PathVariable String boardType, @RequestParam(defaultValue = "0") int pageNum, @RequestParam(defaultValue = "10") int size, HttpSession session, Model model) {
+    public String boardlist(@PathVariable String boardType, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, HttpSession session, Model model) {
         // 로그인 여부 확인 var은 타입 추론을 해서 자동으로 형을 찾아 줌
         MemberRes loginMember = (MemberRes) session.getAttribute("loginMember");
         if (loginMember == null) return "redirect:/login";  // 세션이 없으면 로그인 페이지로 이동
         // 게시판에 표시될 게시글 리스트
         List<BoardListRes> list = boardService.list(boardType);
         // 보여줄 페이지 데이터
-        int start = Math.min(pageNum * size, list.size());
+        int start = Math.min(page * size, list.size());
         int end = Math.min(start + size, list.size());
         List<BoardListRes> subList = list.subList(start, end);
 
-        Page<BoardListRes> boardPage = new PageImpl<>(subList, PageRequest.of(pageNum, size), list.size());
+        Page<BoardListRes> boardPage = new PageImpl<>(subList, PageRequest.of(page, size), list.size());
 
         // 화면에 표시될 게시글 리스트(10개씩 나눈거)
         model.addAttribute("posts", subList);
