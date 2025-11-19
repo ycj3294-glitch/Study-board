@@ -5,433 +5,463 @@
     <title th:text="${boardType} + ' 게시판 - 곰사육사 커뮤니티'">게시판</title>
 
     <style>
-      /* ---------- Design tokens ---------- */
-      :root {
-        --bg: #f4f6fb;
-        --card: #ffffff;
-        --border: #e6e8ef;
-        --text: #101828;
-        --muted: #667085;
-        --primary: #6f7ddf;
-        --primary-600: #5f6dcd;
-        --accent: #0d6efd;
-        --accent-600: #0b5ed7;
-        --radius: 14px;
-        --shadow: 0 16px 40px rgba(16, 24, 40, 0.08);
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-      html,
-      body {
-        height: 100%;
-        margin: 0;
-      }
-      body {
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-        background: var(--bg);
-        color: var(--text);
-        font: 16px/1.6 "Noto Sans KR", system-ui, -apple-system, Segoe UI,
-          Roboto, Arial, sans-serif;
-      }
-
-      /* header */
-      header {
-        position: sticky;
-        top: 0;
-        z-index: 20;
-        background: linear-gradient(0deg, var(--primary-600), var(--primary));
-        color: #fff;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-      }
-      .header-inner {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 10px 16px;
-        display: grid;
-        grid-template-columns: 1fr auto auto;
-        gap: 12px;
-        align-items: center;
-      }
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        min-width: 0;
-      }
-      .logo-img {
-        width: 34px;
-        height: auto;
-        object-fit: contain;
-      }
-      .brand h1 {
-        margin: 0;
-        font-size: 18px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .top-actions {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        justify-content: flex-end;
-      }
-      .pill {
-        background: transparent;
-        border: none;
-        color: #fff;
-        padding: 0 8px;
-        font-size: 14px;
-        font-weight: 600;
-        cursor: pointer;
-      }
-      .pill:hover {
-        text-decoration: underline;
-      }
-      .search {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        background: #fff;
-        border-radius: 999px;
-        padding: 6px 10px;
-        min-width: 240px;
-      }
-      .search input {
-        border: 0;
-        outline: 0;
-        width: 220px;
-        font-size: 14px;
-        color: var(--text);
-      }
-
-      /* layout */
-      .container {
-        flex: 1;
-        width: 100%;
-        max-width: 1200px;
-        margin: 40px auto;
-        padding: 0px 24px;
-        display: grid;
-        grid-template-columns: 200px minmax(0, 1.8fr) 220px;
-        gap: 18px;
-      }
-
-      /* left nav */
-      aside.nav {
-        position: sticky;
-        top: 72px;
-        align-self: start;
-      }
-      .menu {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        padding: 12px;
-        box-shadow: var(--shadow);
-      }
-      .menu a {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 12px 14px;
-        margin: 6px 0;
-        text-decoration: none;
-        color: var(--text);
-        background: #f8f9fe;
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        font-weight: 600;
-      }
-      .menu a:hover {
-        background: #eef0fd;
-      }
-
-      /* 가운데 게시판 영역: 이전 4섹션 전체 영역 사용 */
-      main.board-page {
-        display: block; /* grid 해제 – 하나가 전체 영역 사용 */
-      }
-
-      .board {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        padding: 20px 24px;
-      }
-
-      /* 상단 제목/설명/정렬 버튼 */
-      .board-list-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-end;
-        margin-bottom: 12px;
-      }
-      .board-list-header h2 {
-        margin: 0;
-        font-size: 20px;
-        font-weight: 700;
-      }
-      .board-desc {
-        margin: 4px 0 0;
-        font-size: 13px;
-        color: var(--muted);
-      }
-      .sort-btn {
-        border: 1px solid var(--border);
-        background: #fff;
-        border-radius: 999px;
-        padding: 6px 14px;
-        font-size: 13px;
-        cursor: pointer;
-      }
-      .board-page .board {
-        width: 100%;
-      }
-
-      /* 표 형태 목록 영역 */
-      .board-table {
-        width: 100%;
-        border-top: 1px solid var(--border);
-        border-bottom: 1px solid var(--border);
-        margin-top: 8px;
-      }
-      .board-row {
-        display: grid;
-        grid-template-columns: 8fr 1.4fr 1.4fr 1.2fr;
-        padding: 10px 4px;
-        font-size: 14px;
-        align-items: center;
-      }
-      .board-row.board-head {
-        font-weight: 600;
-        background: #f9fafb;
-      }
-      .board-row .col-title {
-        text-align: center;
-      }
-
-      .board-row + .board-row {
-        border-top: 1px solid var(--border);
-      }
-      .col-title a {
-        color: var(--text);
-        text-decoration: none;
-      }
-      .col-title a:hover {
-        text-decoration: underline;
-      }
-      .col-views,
-      .col-date {
-        text-align: center;
-      }
-
-      /* 하단 페이지네이션 + 글쓰기 버튼 */
-      .board-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 16px;
-      }
-      .pagination {
-        display: flex;
-        gap: 12px;
-        align-items: center;
-        font-size: 13px;
-        color: var(--muted);
-        margin: 0 auto;
-      }
-      .page-link {
-        text-decoration: none;
-        color: var(--muted);
-        padding: 4px 8px;
-        border-radius: 999px;
-      }
-
-      .page-link.active {
-        background: var(--accent);
-        color: #fff;
-        font-weight: 600;
-      }
-
-      .page-link:hover {
-        text-decoration: underline;
-      }
-      .btn-write {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 96px;
-        height: 40px;
-        padding: 0 18px;
-        border-radius: 10px;
-        border: none;
-        background: var(--accent);
-        color: #fff;
-        font-size: 14px;
-        font-weight: 600;
-        text-decoration: none;
-      }
-      .btn-write:hover {
-        background: var(--accent-600);
-      }
-
-       /* right sidebar */
-      aside.right {
-        position: sticky;
-        top: 72px;
-        align-self: start;
-        display: flex;
-        flex-direction: column;
-        gap: 18px;
-      }
-      .card {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        padding: 16px;
-      }
-      .btn {
-        display: block;
-        width: 100%;
-        text-align: center;
-        text-decoration: none;
-        font-weight: 700;
-        padding: 12px 14px;
-        border-radius: 12px;
-        margin: 8px 0;
-        border: 1px solid transparent;
-      }
-      .btn.primary {
-        background: var(--accent);
-        color: #fff;
-      }
-      .btn.primary:hover {
-        background: var(--accent-600);
-      }
-      .btn.ghost {
-        background: #fff;
-        border-color: var(--border);
-        color: var(--text);
-      }
-      .btn.ghost:hover {
-        background: #f6f7fb;
-      }
-      .hero {
-        border-radius: var(--radius);
-        width: 100%;
-        height: auto;
-        display: block;
-        border: 1px solid var(--border);
-      }
-
-      /* 로그인 사용자 사이드바 패널 */
-      .user-panel {
-        padding: 18px 16px 20px;
-      }
-
-      .user-greeting {
-        width: 100%;
-        padding: 14px 16px;
-        border-radius: 10px;
-        background: #d9e0da;
-        text-align: center;
-        font-size: 16px;
-        font-weight: 600;
-        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
-      }
-
-      .user-actions {
-        margin-top: 18px;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-      }
-
-      .user-btn {
-        display: block;
-        width: 100%;
-        text-align: center;
-        padding: 12px 0;
-        border-radius: 10px;
-        border: none;
-        background: var(--accent);
-        color: #fff;
-        font-size: 15px;
-        font-weight: 600;
-        text-decoration: none;
-        cursor: pointer;
-        box-shadow: 0 10px 20px rgba(37, 99, 235, 0.35);
-      }
-
-      .user-btn:hover {
-        background: var(--accent-600);
-      }
-
-      /* footer */
-      footer {
-        margin-top: 28px;
-        background: var(--primary-600);
-        color: #dfe3ff;
-        border-top: 1px solid rgba(255, 255, 255, 0.15);
-      }
-      .footer-inner {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 14px 16px;
-        display: flex;
-        gap: 24px;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-      }
-      .footer-links {
-        display: flex;
-        gap: 28px;
-        flex-wrap: wrap;
-      }
-      .footer-links a {
-        color: #fff;
-        text-decoration: none;
-        opacity: 0.95;
-      }
-      .footer-links a:hover {
-        text-decoration: underline;
-      }
-
-      /* responsive */
-      @media (max-width: 1100px) {
-        .container {
-          grid-template-columns: 220px 1fr;
+        /* ---------- Design tokens ---------- */
+        :root {
+          --bg: #f4f6fb;
+          --card: #ffffff;
+          --border: #e6e8ef;
+          --text: #101828;
+          --muted: #667085;
+          --primary: #6f7ddf;
+          --primary-600: #5f6dcd;
+          --accent: #0d6efd;
+          --accent-600: #0b5ed7;
+          --radius: 14px;
+          --shadow: 0 16px 40px rgba(16, 24, 40, 0.08);
         }
-        aside.right {
-          grid-column: 1 / -1;
-          order: 3;
-          position: static;
+
+        * {
+          box-sizing: border-box;
         }
-      }
-      @media (max-width: 780px) {
+        html,
+        body {
+          height: 100%;
+          margin: 0;
+        }
+        body {
+          display: flex;
+          flex-direction: column;
+          min-height: 100vh;
+          background: var(--bg);
+          color: var(--text);
+          font: 16px/1.6 "Noto Sans KR", system-ui, -apple-system, Segoe UI,
+            Roboto, Arial, sans-serif;
+        }
+
+        /* header */
+        header {
+          position: sticky;
+          top: 0;
+          z-index: 20;
+          background: linear-gradient(0deg, var(--primary-600), var(--primary));
+          color: #fff;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        }
         .header-inner {
-          grid-template-columns: 1fr auto;
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 10px 16px;
+          display: grid;
+          grid-template-columns: 1fr auto auto;
+          gap: 12px;
+          align-items: center;
+        }
+        .brand {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          min-width: 0;
+        }
+        .logo-img {
+          width: 34px;
+          height: auto;
+          object-fit: contain;
+        }
+        .brand h1 {
+          margin: 0;
+          font-size: 18px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
         .top-actions {
-          display: none;
+          display: flex;
+          gap: 8px;
+          flex-wrap: wrap;
+          justify-content: flex-end;
+        }
+        .pill {
+          background: transparent;
+          border: none;
+          color: #fff;
+          padding: 0 8px;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+        }
+        .pill:hover {
+          text-decoration: underline;
         }
         .search {
-          grid-column: 1 / -1;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          background: #fff;
+          border-radius: 999px;
+          padding: 6px 10px;
+          min-width: 240px;
         }
+        .search input {
+          border: 0;
+          outline: 0;
+          width: 220px;
+          font-size: 14px;
+          color: var(--text);
+        }
+
+        /* layout */
         .container {
-          grid-template-columns: 1fr;
+          flex: 1;
+          width: 100%;
+          max-width: 1200px;
+          margin: 40px auto;
+          padding: 0px 24px;
+          display: grid;
+          grid-template-columns: 200px minmax(0, 1.8fr) 220px;
+          gap: 18px;
         }
+
+        /* left nav */
         aside.nav {
-          position: static;
+          position: sticky;
+          top: 72px;
+          align-self: start;
         }
-      }
+        .menu {
+          background: var(--card);
+          border: 1px solid var(--border);
+          border-radius: var(--radius);
+          padding: 12px;
+          box-shadow: var(--shadow);
+        }
+        .menu a {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          padding: 12px 14px;
+          margin: 6px 0;
+          text-decoration: none;
+          color: var(--text);
+          background: #f8f9fe;
+          border: 1px solid var(--border);
+          border-radius: 12px;
+          font-weight: 600;
+        }
+        .menu a:hover {
+          background: #eef0fd;
+        }
+
+        /* 가운데 게시판 영역: 이전 4섹션 전체 영역 사용 */
+        main.board-page {
+          display: block; /* grid 해제 – 하나가 전체 영역 사용 */
+        }
+
+        .board {
+          background: var(--card);
+          border: 1px solid var(--border);
+          border-radius: var(--radius);
+          box-shadow: var(--shadow);
+          padding: 20px 24px;
+        }
+
+        /* 상단 제목/설명/정렬 버튼 */
+        .board-list-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+          margin-bottom: 12px;
+        }
+        .board-list-header h2 {
+          margin: 0;
+          font-size: 20px;
+          font-weight: 700;
+        }
+        .board-desc {
+          margin: 4px 0 0;
+          font-size: 13px;
+          color: var(--muted);
+        }
+        .sort-btn {
+          border: 1px solid var(--border);
+          background: #fff;
+          border-radius: 999px;
+          padding: 6px 14px;
+          font-size: 13px;
+          cursor: pointer;
+        }
+        .board-page .board {
+          width: 100%;
+        }
+
+        /* 표 형태 목록 영역 */
+        .board-table {
+          width: 100%;
+          border-top: 1px solid var(--border);
+          border-bottom: 1px solid var(--border);
+          margin-top: 8px;
+        }
+        .board-row {
+          display: grid;
+          grid-template-columns: 8fr 1.4fr 1.4fr 1.2fr;
+          padding: 10px 4px;
+          font-size: 14px;
+          align-items: center;
+        }
+        .board-row.board-head {
+          font-weight: 600;
+          background: #f9fafb;
+        }
+
+        .board-row + .board-row {
+          border-top: 1px solid var(--border);
+        }
+        .col-title a {
+          color: var(--text);
+          text-decoration: none;
+        }
+        .col-title a:hover {
+          text-decoration: underline;
+        }
+        .col-views,
+        .col-date {
+          text-align: center;
+        }
+
+        /* 제목만 가운데 */
+        .col-title .title-text {
+          font-weight: 600;
+        }
+
+        /* 공감/신고는 왼쪽 정렬 */
+        .col-title .post-meta {
+          margin-top: 4px;
+          font-size: 12px;
+          color: var(--muted);
+          display: flex;
+          gap: 8px;
+          justify-content: flex-start; /* ← 오른쪽이면 flex-end, 왼쪽이면 flex-start */
+        }
+
+        /* 하단 페이지네이션 + 글쓰기 버튼 */
+        .board-footer {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-top: 16px;
+        }
+        .pagination {
+          display: flex;
+          gap: 12px;
+          align-items: center;
+          font-size: 13px;
+          color: var(--muted);
+          margin: 0 auto;
+        }
+        .page-link {
+          text-decoration: none;
+          color: var(--muted);
+          padding: 4px 8px;
+          border-radius: 999px;
+        }
+
+        .page-link.active {
+          background: var(--accent);
+          color: #fff;
+          font-weight: 600;
+        }
+
+        .page-link:hover {
+          text-decoration: underline;
+        }
+        .btn-write {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-width: 96px;
+          height: 40px;
+          padding: 0 18px;
+          border-radius: 10px;
+          border: none;
+          background: var(--accent);
+          color: #fff;
+          font-size: 14px;
+          font-weight: 600;
+          text-decoration: none;
+        }
+        .btn-write:hover {
+          background: var(--accent-600);
+        }
+
+        /* right sidebar */
+        aside.right {
+          position: sticky;
+          top: 72px;
+          align-self: start;
+          display: flex;
+          flex-direction: column;
+          gap: 18px;
+        }
+        .card {
+          background: var(--card);
+          border: 1px solid var(--border);
+          border-radius: var(--radius);
+          box-shadow: var(--shadow);
+          padding: 16px;
+        }
+        .btn {
+          display: block;
+          width: 100%;
+          text-align: center;
+          text-decoration: none;
+          font-weight: 700;
+          padding: 12px 14px;
+          border-radius: 12px;
+          margin: 8px 0;
+          border: 1px solid transparent;
+        }
+        .btn.primary {
+          background: var(--accent);
+          color: #fff;
+        }
+        .btn.primary:hover {
+          background: var(--accent-600);
+        }
+        .btn.ghost {
+          background: #fff;
+          border-color: var(--border);
+          color: var(--text);
+        }
+        .btn.ghost:hover {
+          background: #f6f7fb;
+        }
+        .hero {
+          border-radius: var(--radius);
+          width: 100%;
+          height: auto;
+          display: block;
+          border: 1px solid var(--border);
+        }
+
+        /* 로그인 사용자 사이드바 패널 */
+        .user-panel {
+          padding: 18px 16px 20px;
+        }
+
+        .user-greeting {
+          width: 100%;
+          padding: 14px 16px;
+          border-radius: 10px;
+          background: #d9e0da;
+          text-align: center;
+          font-size: 16px;
+          font-weight: 600;
+          box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
+        }
+
+        .user-actions {
+          margin-top: 18px;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .user-btn {
+          display: block;
+          width: 100%;
+          text-align: center;
+          padding: 12px 0;
+          border-radius: 10px;
+          border: none;
+          background: var(--accent);
+          color: #fff;
+          font-size: 15px;
+          font-weight: 600;
+          text-decoration: none;
+          cursor: pointer;
+          box-shadow: 0 10px 20px rgba(37, 99, 235, 0.35);
+        }
+
+        .user-btn:hover {
+          background: var(--accent-600);
+        }
+
+        /* footer */
+        footer {
+          margin-top: 28px;
+          background: var(--primary-600);
+          color: #dfe3ff;
+          border-top: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .footer-inner {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 14px 16px;
+          display: flex;
+          gap: 24px;
+          justify-content: space-between;
+          align-items: center;
+          flex-wrap: wrap;
+        }
+        .footer-links {
+          display: flex;
+          gap: 28px;
+          flex-wrap: wrap;
+        }
+        .footer-links a {
+          color: #fff;
+          text-decoration: none;
+          opacity: 0.95;
+        }
+        .footer-links a:hover {
+          text-decoration: underline;
+        }
+
+        /* 제목 아래 공감/신고 숫자 표시 */
+        .post-meta {
+          margin-top: 4px;
+          font-size: 12px;
+          color: var(--muted);
+          display: flex;
+          gap: 10px;
+          justify-content: flex-start;
+        }
+
+        .post-like::before {
+          content: "👍 ";
+        }
+
+        .post-report::before {
+          content: "⚠ ";
+        }
+
+        /* responsive */
+        @media (max-width: 1100px) {
+          .container {
+            grid-template-columns: 220px 1fr;
+          }
+          aside.right {
+            grid-column: 1 / -1;
+            order: 3;
+            position: static;
+          }
+        }
+        @media (max-width: 780px) {
+          .header-inner {
+            grid-template-columns: 1fr auto;
+          }
+          .top-actions {
+            display: none;
+          }
+          .search {
+            grid-column: 1 / -1;
+          }
+          .container {
+            grid-template-columns: 1fr;
+          }
+          aside.nav {
+            position: static;
+          }
+        }
     </style>
   </head>
 
@@ -471,12 +501,22 @@
             <!-- 실제 데이터 출력 부분 -->
             <div class="board-row" th:each="post : ${posts}">
               <div class="col-title">
-                <a
-                  th:href="@{/board/detail/{id}(id=${post.board_id})}"
-                  th:text="${post.title}"
-                >
-                  [잡담] 글 제목…
-                </a>
+                  <div class="title-text">
+                      <a
+                              th:href="@{/board/detail/{id}(id=${post.board_id})}"
+                              th:text="${post.title}"
+                      >
+                      </a>
+                  </div>
+
+                  <div class="post-meta">
+                  <span class="post-like">
+                    공감 <span th:text="${post.like_count}">0</span>
+                  </span>
+                      <span class="post-report">
+                    신고 <span th:text="${post.report_count}">0</span>
+                  </span>
+                  </div>
               </div>
               <div class="col-nick" th:text="${post.nickname}">닉네임</div>
               <div class="col-views" th:text="${post.view_count}">30</div>
