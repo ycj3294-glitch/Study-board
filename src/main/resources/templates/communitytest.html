@@ -375,8 +375,7 @@
               <h2>공지사항</h2>
               <ul class="postlist">
                   <li th:each="post : ${noticeList}">
-                      <a th:href="@{'/post/' + ${post.boardId}}">
-                          <span class="tag">[공지]</span>
+                      <a th:href="@{'/board/detail' + ${post.board_id}}">
                           <span th:text="${post.title}"></span>
                       </a>
                   </li>
@@ -388,8 +387,7 @@
               <h2>자유게시판</h2>
               <ul class="postlist">
                   <li th:each="post : ${freeList}">
-                      <a th:href="@{'/post/' + ${post.boardId}}">
-                          <span class="tag">[자유]</span>
+                      <a th:href="@{'/board/detail/' + ${post.board_id}}">
                           <span th:text="${post.title}"></span>
                       </a>
                   </li>
@@ -401,8 +399,7 @@
               <h2>코드게시판</h2>
               <ul class="postlist">
                   <li th:each="post : ${codeList}">
-                      <a th:href="@{'/post/' + ${post.boardId}}">
-                          <span class="tag">[코드]</span>
+                      <a th:href="@{'/board/detail/' + ${post.board_id}}">
                           <span th:text="${post.title}"></span>
                       </a>
                   </li>
@@ -413,8 +410,7 @@
               <h2>스터디게시판</h2>
               <ul class="postlist">
                   <li th:each="post : ${studyList}">
-                      <a th:href="@{'/post/' + ${post.boardId}}">
-                          <span class="tag">[스터디]</span>
+                      <a th:href="@{'/board/detail/' + ${post.board_id}}">
                           <span th:text="${post.title}"></span>
                       </a>
                   </li>

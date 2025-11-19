@@ -126,7 +126,7 @@ public class BoardController {
                            HttpSession session,
                            Model model) {
 
-        Long loginMemberId = (Long) session.getAttribute("loginMember");
+        MemberRes loginMember = (MemberRes) session.getAttribute("loginMember");
 
         // 기존에 있는 메서드 사용 (findById 창조하지 않음)
         BoardRes board = boardDao.findByBoardID(boardId);
@@ -135,7 +135,7 @@ public class BoardController {
         }
 
         // 작성자 검증
-        if (!loginMemberId.equals(board.getMember_id())) {
+        if (!(loginMember.getId()==board.getMember_id())) {
             return "error/403";
         }
 

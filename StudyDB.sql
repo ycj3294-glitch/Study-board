@@ -319,5 +319,27 @@ FROM (
 )
 WHERE ROWNUM <= 10;
 
+SELECT * FROM (
+    SELECT 
+        b.BOARD_ID,
+        b.MEMBER_ID,
+        b.BOARD_TYPE,
+        m.NICKNAME,
+        b.TITLE,
+        NVL(SUM(CASE WHEN r.ACTION = 'LIKE' THEN 1 ELSE 0 END), 0) AS LIKE_COUNT,
+        b.VIEW_COUNT,
+        NVL(b.REPORT_COUNT, 0) AS REPORT_COUNT,
+        b.REG_DATE
+    FROM STUDY_BOARD b
+    JOIN STUDY_MEMBER m ON b.MEMBER_ID = m.MEMBER_ID
+    LEFT JOIN REACTION r ON r.TARGET_TYPE='BOARD' AND r.TARGET_ID=b.BOARD_ID
+    GROUP BY b.BOARD_ID, b.MEMBER_ID, b.BOARD_TYPE, m.NICKNAME, b.TITLE,
+             b.VIEW_COUNT, b.REPORT_COUNT, b.REG_DATE
+    ORDER BY LIKE_COUNT DESC
+)
+WHERE ROWNUM <= 10;
+
+select * from Study_board;
+select * from Study_member;
 
 
