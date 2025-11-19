@@ -563,26 +563,27 @@
           <!-- 페이지네이션 (page 객체가 있다고 가정) -->
           <div class="search-footer" th:if="${page != null}">
             <div class="pagination">
+            <!--이전-->
               <a
                 class="page-link"
                 th:if="${page.hasPrevious()}"
-                th:href="@{/search(q=${q}, type=${type}, page=${page.number - 1})}"
+                th:href="@{/search(keyword=${p}, page=${page.number - 1}, size=${page.size})}"
                 >이전</a
               >
-
+            <!--페이지 번호-->
               <span th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}">
                 <a
                   class="page-link"
                   th:classappend="${i} == ${page.number} ? ' active' : ''"
-                  th:href="@{/search(q=${q}, type=${type}, page=${i})}"
+                  th:href="@{/search(keyword=${p}, page=${i}, size=${page.size})}"
                   th:text="${i + 1}"
                 ></a>
               </span>
-
+            <!--다음-->
               <a
                 class="page-link"
                 th:if="${page.hasNext()}"
-                th:href="@{/search(q=${q}, type=${type}, page=${page.number + 1})}"
+                th:href="@{/search(keyword=${p}, page=${page.number + 1}, size=${page.size})}"
                 >다음</a
               >
             </div>
