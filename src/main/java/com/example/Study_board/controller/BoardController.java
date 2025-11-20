@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
@@ -132,7 +133,7 @@ public class BoardController {
 
     // 게시글 작성
     @PostMapping("/{board_type}/new")
-    public String crateboard(@PathVariable String board_type, BoardCreateReq req, HttpSession session, Model model) {
+    public String crateboard(@PathVariable String board_type, BoardCreateReq req, @RequestParam(value = "imageFile", required = false) MultipartFile imageFile, HttpSession session, Model model) {
         MemberRes member = (MemberRes) session.getAttribute("loginMember");
         if(member == null) {
             return "redirect:/login/login";
@@ -140,7 +141,7 @@ public class BoardController {
         try {
             req.setBoard_type(board_type);
             req.setMember_id (member.getId()); // 화면에서 정보를 입력받을 수 없기 때문에 세션정보에서 추출해서 넣어 줌
-            Long board_id = boardService.board(req);
+            Long board_id = boardService.board(req, imageFile);
             return "redirect:/board/" + req.getBoard_type();
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
@@ -171,19 +172,42 @@ public class BoardController {
     // 게시글 수정
     @PostMapping("/{id}/edit")
     public String updatePost(@PathVariable("id") Long boardId,
-                             @RequestParam String title,
-                             @RequestParam String contents,
+                             @RequestParam String title, // 폼의 name="title"
+                             @RequestParam String contents, // 폼의 name="contents"
+                             // MultipartFile: 파일 데이터. required=false로 파일이 없어도 에러나지 않게 함
+                             @RequestParam(value = "newImageFile", required = false) MultipartFile newImageFile,
+                             // boolean: 체크박스. 기본값은 false로 설정
+                             @RequestParam(value = "deleteImage", defaultValue = "false") boolean deleteImage,
                              HttpSession session) {
 
+        // 1. 로그인 회원 정보 가져오기
         MemberRes loginMember = (MemberRes) session.getAttribute("loginMember");
 
-        boolean updated = boardService.update(boardId, loginMember.getId(), title, contents);
-
-        if (!updated) {
-            return "error/403";  // 권한 없거나 실패
+        if (loginMember == null) {
+            // 로그인 상태가 아니면 접근 거부 또는 로그인 페이지로 리다이렉트
+            return "redirect:/member/login";
         }
 
-        return "redirect:/board/detail/" + boardId;
+        // 2. Service 호출 시 파일 및 삭제 플래그를 함께 전달
+        boolean updated = boardService.update(
+                boardId,
+                loginMember.getId(), // 수정 권한 확인용 member_id
+                title,
+                contents,
+                newImageFile, // 새로 업로드된 파일
+                deleteImage   // 기존 파일 삭제 요청 플래그
+        );
+
+        // 3. 결과 처리 및 리다이렉트
+        if (updated) {
+            log.info("게시글 수정 성공: {}", boardId);
+            // 수정 성공 시 상세 페이지로 리다이렉트
+            return "redirect:/board/detail/" + boardId;
+        } else {
+            // 수정 실패 (권한 없음, DB 오류 등)
+            log.warn("게시글 수정 실패: {}", boardId);
+            return "error/403"; // 권한 없음 또는 일반적인 에러 페이지
+        }
     }
     // 게시글 삭제
     @PostMapping("/{id}/delete")

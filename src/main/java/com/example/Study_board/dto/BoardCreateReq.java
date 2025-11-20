@@ -14,4 +14,5 @@ public class BoardCreateReq {
     private Long member_id;
     private String title;
     private String contents;
+    private String image_Url;
 }

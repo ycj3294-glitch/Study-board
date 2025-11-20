@@ -652,6 +652,12 @@
           <div class="post-content" th:text="${post.contents}">
             게시글 내용이 들어갑니다.
           </div>
+            <div th:if="${post.imageUrl}" class="post-image-area">
+                <img th:src="${post.imageUrl}"
+                     alt="첨부 이미지"
+                     class="post-image"
+                     style="max-width: 100%; height: auto; margin-top: 15px; margin-bottom: 15px; border-radius: 4px;"/>
+            </div>
 
           <!-- 게시글 공감/신고 영역 -->
           <div class="reaction-row">

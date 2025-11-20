@@ -80,7 +80,7 @@ public class BoardDao {
         return jdbc.query(sql, new BoardListRowMapper());
     }
 
-    // 게시글 조회
+    // 게시글 상세조회
     public BoardRes findByBoardID(Long board_id) {
         @Language("SQL")
         String sql = """        
@@ -94,7 +94,8 @@ public class BoardDao {
                   t.REPORT_COUNT   AS REPORT_COUNT,
                   t.REG_DATE       AS REG_DATE,
                   t.BOARD_TYPE     AS BOARD_TYPE, --추가
-                  b.CONTENTS       AS CONTENTS
+                  b.CONTENTS       AS CONTENTS,
+                  b.IMAGE_URL      AS IMAGE_URL
                 FROM (
                      SELECT
                          b.BOARD_ID,
@@ -123,10 +124,10 @@ public class BoardDao {
     public Long save(BoardCreateReq b) {
         @Language("SQL")
         String sql = """
-        INSERT INTO STUDY_BOARD (BOARD_ID, BOARD_TYPE, MEMBER_ID, TITLE, CONTENTS) 
-        VALUES(SEQ_STUDY_BOARD.nextval, ?, ?, ?, ?)
+        INSERT INTO STUDY_BOARD (BOARD_ID, BOARD_TYPE, MEMBER_ID, TITLE, CONTENTS, IMAGE_URL) 
+        VALUES(SEQ_STUDY_BOARD.nextval, ?, ?, ?, ?, ?)
         """;
-        jdbc.update(sql, b.getBoard_type(), b.getMember_id(), b.getTitle(), b.getContents());
+        jdbc.update(sql, b.getBoard_type(), b.getMember_id(), b.getTitle(), b.getContents(), b.getImage_Url());
         return jdbc.queryForObject("SELECT SEQ_STUDY_BOARD.CURRVAL FROM dual", Long.class);
     }
 
@@ -142,10 +143,10 @@ public class BoardDao {
     }
 
     // 게시글 수정
-    public boolean update(Long board_id, String title, String contents) {
+    public boolean update(Long board_id, String title, String contents, String image_url) {
         @Language("SQL")
-        String sql = "UPDATE STUDY_BOARD SET  TITLE = ?, CONTENTS = ?, REG_DATE = SYSTIMESTAMP WHERE BOARD_ID = ?";
-        return jdbc.update(sql, title, contents, board_id) > 0;
+        String sql = "UPDATE STUDY_BOARD SET  TITLE = ?, CONTENTS = ?, IMAGE_URL = ?, REG_DATE = SYSTIMESTAMP WHERE BOARD_ID = ?";
+        return jdbc.update(sql, title, contents, image_url, board_id) > 0;
     }
 
     // 게시글 작성자 조회 (ByBoard_id) => 삭제, 수정 공동으로 사용중
@@ -311,7 +312,8 @@ ORDER BY b.REG_DATE DESC
                     rs.getLong("LIKE_COUNT"),
                     rs.getLong("REPORT_COUNT"),
                     rs.getTimestamp("REG_DATE").toLocalDateTime(),
-                    rs.getString("BOARD_TYPE")
+                    rs.getString("BOARD_TYPE"),
+                    rs.getString("IMAGE_URL")
             );
         }
     }

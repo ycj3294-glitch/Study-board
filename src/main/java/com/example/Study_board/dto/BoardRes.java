@@ -22,4 +22,5 @@ public class BoardRes {
     private Long report_count;
     private LocalDateTime reg_date;
     private String board_type;
+    private String imageUrl;
 }

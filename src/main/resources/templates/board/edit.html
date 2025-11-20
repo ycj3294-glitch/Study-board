@@ -443,7 +443,7 @@
           </p>
 
           <!-- 글쓰기 폼 -->
-          <form class="post-form" th:action="@{/board/{id}/edit(id=${post.board_id})}" th:object="${post}" method="post">
+          <form class="post-form" th:action="@{/board/{id}/edit(id=${post.board_id})}" method="post" enctype="multipart/form-data">
             <!-- 필요하면 boardType hidden 으로 전달 -->
             <input type="hidden" name="board_type" th:value="${boardType}" />
 
@@ -451,9 +451,10 @@
               <label class="form-label" for="title">제목</label>
               <input
                 id="title"
+                name="title"
                 type="text"
                 class="input"
-                th:field="*{title}"
+                th:value="${post.title}"
                 placeholder="[잡담] 게시글 제목을 입력하세요."
                 required
               />
@@ -467,8 +468,9 @@
               <label class="form-label" for="contents">내용</label>
               <textarea
                 id="contents"
+                name="contents"
                 class="textarea"
-                th:field="*{contents}"
+                th:text="${post.contents}"
                 placeholder="게시글 내용을 입력하세요."
                 required
               ></textarea>
@@ -478,7 +480,36 @@
               </p>
             </div>
 
-            <!-- 필요 시 파일 첨부 영역도 여기에 추가 가능 -->
+            <!--파일 첨부 영역-->
+              <div class="form-row image-upload-area">
+                  <label class="form-label">현재 이미지</label>
+
+                  <div th:if="${post.imageUrl}" class="current-image-preview">
+                      <img th:src="${post.imageUrl}" alt="현재 첨부된 이미지" style="max-width: 200px; height: auto; display: block; margin-bottom: 10px;">
+
+                      <div style="display: flex; align-items: center;">
+                          <input type="checkbox" id="deleteImage" name="deleteImage" value="true">
+                          <label for="deleteImage" style="margin-left: 5px;">기존 이미지 삭제</label>
+                      </div>
+                  </div>
+
+                  <div th:unless="${post.imageUrl}" class="no-image-message">
+                      현재 첨부된 이미지가 없습니다.
+                  </div>
+
+                  <label class="form-label" for="newImageFile" style="margin-top: 20px;">새 이미지 첨부/교체</label>
+                  <input
+                          id="newImageFile"
+                          name="newImageFile"
+                          type="file"
+                          class="input"
+                          accept="image/*"
+                  />
+                  <p class="form-hint">
+                      새 이미지를 선택하면 기존 이미지는 자동으로 대체됩니다. '기존 이미지 삭제' 체크 시 이미지가 삭제됩니다.
+                  </p>
+              </div>
+
 
             <div class="post-write-footer">
               <a th:href="@{/board/detail/{id}(id=${post.board_id})}">

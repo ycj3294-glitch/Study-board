@@ -19,10 +19,10 @@ public class BoardRestController {
     private final BoardService boardService;
 
     // 게시글 등록
-    @PostMapping
-    public ResponseEntity<Long> board(@RequestBody BoardCreateReq b) {
-        return ResponseEntity.ok(boardService.board(b));
-    }
+//    @PostMapping
+//    public ResponseEntity<Long> board(@RequestBody BoardCreateReq b) {
+//        return ResponseEntity.ok(boardService.board(b));
+//    }
 
     // 게시글 수정
 //    @PutMapping("/{board_id}")
