@@ -49,6 +49,28 @@ public class BoardController {
 
         Page<BoardListRes> boardPage = new PageImpl<>(subList, PageRequest.of(page, size), list.size());
 
+        // 2. ⭐️ boardType 값을 사용하여 boardName 결정
+        String boardName;
+        switch (boardType) {
+            case "board1":
+                boardName = "공지사항";
+                break;
+            case "board2":
+                boardName = "자유게시판";
+                break;
+            case "board3":
+                boardName = "코드게시판";
+                break;
+            case "board4":
+                boardName = "스터디게시판";
+                break;
+            default:
+                boardName = "알 수 없는 게시판";
+        }
+
+        // 3. ⭐️ boardName을 Model에 담아 View로 전달
+        model.addAttribute("boardName", boardName);
+
         // 화면에 표시될 게시글 리스트(10개씩 나눈거)
         model.addAttribute("posts", subList);
         // 페이지네이션용 page 객체
