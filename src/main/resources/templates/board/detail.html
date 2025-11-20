@@ -793,25 +793,29 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-          document.querySelectorAll('.comment-item').forEach(item => {
-            const editBtn = item.querySelector('.edit-btn');
-            const form = item.querySelector('.edit-comment-form');
-            const contentDiv = item.querySelector('.comment-content');
-            const cancelBtn = item.querySelector('.cancel-btn');
+  document.querySelectorAll('.comment-item').forEach(item => {
+    const editBtn = item.querySelector('.edit-btn');
+    const form = item.querySelector('.edit-comment-form');
+    const contentDiv = item.querySelector('.comment-content');
+    const cancelBtn = item.querySelector('.cancel-btn');
 
-            editBtn.addEventListener('click', function() {
-              form.style.display = 'block'; // 폼 보이기
-              contentDiv.style.display = 'none'; // 기존 댓글 숨기기
-              editBtn.style.display = 'none'; // 수정 버튼 숨기기
-            });
+    // 🟡 요소가 없으면 건너뛰기 → 오류 방지 (핵심)
+    if (!editBtn || !form || !contentDiv || !cancelBtn) return;
 
-            cancelBtn.addEventListener('click', function() {
-              form.style.display = 'none';
-              contentDiv.style.display = 'block';
-              editBtn.style.display = 'inline-flex';
-            });
-          });
-        });
+    editBtn.addEventListener('click', function() {
+      form.style.display = 'block';
+      contentDiv.style.display = 'none';
+      editBtn.style.display = 'none';
+    });
+
+    cancelBtn.addEventListener('click', function() {
+      form.style.display = 'none';
+      contentDiv.style.display = 'block';
+      editBtn.style.display = 'inline-flex';
+    });
+  });
+});
+
     </script>
   </body>
 </html>
