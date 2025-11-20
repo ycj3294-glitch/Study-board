@@ -27,7 +27,7 @@ import java.io.IOException; // IOException 클래스 임포트
 public class BoardServiceImpl implements BoardService {
     private final MemberDao memberDao;
     private final BoardDao boardDao;
-    private static final String UPLOAD_DIR = "C:\\Users\\admin\\Desktop\\프로젝트\\image\\";
+    private static final String UPLOAD_DIR = "C:\\프로젝트\\image\\";
     private static final String WEB_ACCESS_PATH = "/image/";
 
     // 게시글 작성
@@ -73,6 +73,7 @@ public class BoardServiceImpl implements BoardService {
             // 파일이 없거나 비어있는 경우 URL을 명시적으로 null로 설정 (BoardCreateReq 생성 시 null이면 생략 가능)
             b.setImage_Url(null);
         }
+
 
         // 3. DAO 호출
         return boardDao.save(b);

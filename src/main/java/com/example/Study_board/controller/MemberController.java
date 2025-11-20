@@ -109,7 +109,7 @@ public class MemberController {
         // 프로필 이미지 저장 처리
         String savedPath = loginmember.getProfilePath();  // 기본 이미지 유지 기본값
         if (profileImage != null && !profileImage.isEmpty()) {
-            String uploadDir = "C:\\Users\\admin\\Desktop\\프로젝트\\image\\";
+            String uploadDir = "C:\\프로젝트\\image\\";
             File folder = new File(uploadDir);
             if (!folder.exists()) folder.mkdirs();
 
@@ -148,7 +148,7 @@ public class MemberController {
         return "redirect:/login/memberinfo";
     }
 
-    @GetMapping("/member/dele")
+    @PostMapping("/member/delete")
     public String deleteMember(HttpSession session) {
         MemberRes loginmember = (MemberRes) session.getAttribute("loginMember");
         if (loginmember == null) {
